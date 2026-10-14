@@ -1,0 +1,3109 @@
+<!DOCTYPE html>
+<html lang="id" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
+  <title>Limboto Smart-Gate | LKPD Digital Teorema Sisa Polinomial — SMAIT Al Ishlah Gorontalo</title>
+
+  <!-- Google Fonts: Plus Jakarta Sans, Space Grotesk & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@600;700&family=Amiri:wght@400;700&display=swap" rel="stylesheet" />
+
+  <!-- KaTeX CDN (cdnjs) untuk merender rumus Polinomial dengan tajam -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css" crossorigin="anonymous" />
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js" crossorigin="anonymous"></script>
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/contrib/auto-render.min.js" crossorigin="anonymous"></script>
+
+  <style>
+    :root {
+      --bg-deep: #050b16;
+      --bg-surface: #0b1528;
+      --glass-bg: rgba(15, 25, 48, 0.68);
+      --glass-bg-strong: rgba(12, 21, 42, 0.88);
+      --glass-border: rgba(56, 189, 248, 0.22);
+      --glass-border-gold: rgba(245, 158, 11, 0.35);
+      --cyan-primary: #38bdf8;
+      --cyan-glow: #00f2fe;
+      --gold-primary: #f59e0b;
+      --gold-light: #fde68a;
+      --emerald-primary: #10b981;
+      --rose-primary: #f43f5e;
+      --text-main: #f1f5f9;
+      --text-muted: #94a3b8;
+      --radius-xl: 20px;
+      --radius-lg: 14px;
+      --radius-md: 10px;
+      --shadow-glass: 0 20px 50px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html, body {
+      min-height: 100vh;
+      background-color: var(--bg-deep);
+      color: var(--text-main);
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    /* Latar Belakang Liquid Glass & Gradient Blobs */
+    .ambient-canvas {
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      overflow: hidden;
+      background:
+        radial-gradient(circle at 15% 15%, rgba(0, 242, 254, 0.14), transparent 40%),
+        radial-gradient(circle at 85% 20%, rgba(245, 158, 11, 0.12), transparent 40%),
+        radial-gradient(circle at 50% 85%, rgba(16, 185, 129, 0.10), transparent 45%),
+        linear-gradient(180deg, #040914 0%, #091326 55%, #050b16 100%);
+    }
+
+    .ambient-grid {
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(56, 189, 248, 0.045) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(56, 189, 248, 0.045) 1px, transparent 1px);
+      background-size: 36px 36px;
+      mask-image: radial-gradient(circle at center, black 45%, transparent 95%);
+    }
+
+    .blob {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(70px);
+      opacity: 0.35;
+      animation: floatBlob 18s infinite alternate ease-in-out;
+    }
+    .blob-1 {
+      width: 360px;
+      height: 360px;
+      background: #0ea5e9;
+      top: -80px;
+      left: -80px;
+    }
+    .blob-2 {
+      width: 320px;
+      height: 320px;
+      background: #f59e0b;
+      bottom: 8%;
+      right: -70px;
+      animation-delay: -6s;
+    }
+
+    @keyframes floatBlob {
+      0% { transform: translate(0, 0) scale(1); }
+      100% { transform: translate(40px, 30px) scale(1.12); }
+    }
+
+    /* Panel Liquid Glass */
+    .glass-panel {
+      background: var(--glass-bg);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-xl);
+      box-shadow: var(--shadow-glass);
+    }
+
+    .glass-card {
+      background: rgba(17, 30, 58, 0.62);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(148, 163, 184, 0.16);
+      border-radius: var(--radius-lg);
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .font-display {
+      font-family: 'Space Grotesk', sans-serif;
+      letter-spacing: -0.02em;
+    }
+    .font-mono {
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .font-arabic {
+      font-family: 'Amiri', serif;
+      font-size: 1.55rem;
+      line-height: 2.2;
+      direction: rtl;
+    }
+
+    .app-container {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 16px 16px 96px;
+    }
+
+    /* Top Header */
+    .top-bar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      padding: 14px 20px;
+      margin-bottom: 18px;
+    }
+
+    .brand-group {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand-emblem {
+      width: 46px;
+      height: 46px;
+      border-radius: 13px;
+      background: linear-gradient(135deg, rgba(0, 242, 254, 0.25), rgba(245, 158, 11, 0.25));
+      border: 1px solid rgba(56, 189, 248, 0.45);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      color: var(--cyan-glow);
+      box-shadow: 0 0 20px rgba(56, 189, 248, 0.25);
+      flex-shrink: 0;
+    }
+
+    .brand-title {
+      font-size: 1.08rem;
+      font-weight: 800;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .brand-sub {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+    }
+
+    .status-cluster {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .sync-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 6px 12px;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      background: rgba(15, 23, 42, 0.75);
+      border: 1px solid rgba(148, 163, 184, 0.2);
+    }
+
+    .sync-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--emerald-primary);
+      box-shadow: 0 0 10px var(--emerald-primary);
+    }
+    .sync-dot.syncing {
+      background: var(--cyan-primary);
+      box-shadow: 0 0 10px var(--cyan-primary);
+      animation: pulseDot 1s infinite;
+    }
+    .sync-dot.offline {
+      background: var(--gold-primary);
+      box-shadow: 0 0 10px var(--gold-primary);
+    }
+
+    @keyframes pulseDot {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.35); opacity: 0.55; }
+    }
+
+    .student-hud {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 12px;
+      padding: 14px 18px;
+      margin-bottom: 18px;
+    }
+
+    .hud-item {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .hud-label {
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--text-muted);
+      font-weight: 700;
+    }
+
+    .hud-value {
+      font-size: 0.98rem;
+      font-weight: 700;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .xp-bar-track {
+      width: 100%;
+      height: 8px;
+      background: rgba(15, 23, 42, 0.85);
+      border-radius: 999px;
+      overflow: hidden;
+      border: 1px solid rgba(56, 189, 248, 0.2);
+      margin-top: 4px;
+    }
+
+    .xp-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--cyan-primary), var(--gold-primary));
+      border-radius: 999px;
+      transition: width 0.5s ease;
+    }
+
+    .badge-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 3px 9px;
+      border-radius: 999px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      background: rgba(245, 158, 11, 0.16);
+      color: var(--gold-light);
+      border: 1px solid rgba(245, 158, 11, 0.4);
+    }
+
+    .stem-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 3px 10px;
+      border-radius: 6px;
+      font-size: 0.72rem;
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      background: linear-gradient(135deg, rgba(56, 189, 248, 0.2), rgba(16, 185, 129, 0.2));
+      color: #7dd3fc;
+      border: 1px solid rgba(56, 189, 248, 0.4);
+    }
+
+    /* Navigasi 6 Misi INTROFLEX */
+    .mission-nav {
+      display: grid;
+      grid-template-columns: repeat(6, minmax(135px, 1fr));
+      gap: 8px;
+      overflow-x: auto;
+      padding-bottom: 6px;
+      margin-bottom: 20px;
+      scrollbar-width: thin;
+    }
+
+    .mission-tab {
+      min-height: 54px;
+      padding: 10px 12px;
+      border-radius: var(--radius-lg);
+      background: rgba(15, 23, 42, 0.65);
+      border: 1px solid rgba(148, 163, 184, 0.18);
+      color: var(--text-muted);
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 2px;
+      text-align: left;
+      transition: all 0.2s ease;
+      position: relative;
+    }
+
+    .mission-tab:hover:not(:disabled) {
+      border-color: rgba(56, 189, 248, 0.45);
+      color: #fff;
+      transform: translateY(-1px);
+    }
+
+    .mission-tab.active {
+      background: linear-gradient(135deg, rgba(56, 189, 248, 0.22), rgba(245, 158, 11, 0.14));
+      border-color: var(--cyan-primary);
+      color: #fff;
+      box-shadow: 0 8px 25px rgba(56, 189, 248, 0.18);
+    }
+
+    .mission-tab.done {
+      border-color: rgba(16, 185, 129, 0.45);
+    }
+
+    .mission-tab:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+    }
+
+    .mission-tab-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 0.7rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .mission-tab-title {
+      font-size: 0.86rem;
+      font-weight: 700;
+      color: inherit;
+    }
+
+    .btn {
+      min-height: 46px;
+      padding: 10px 20px;
+      border-radius: var(--radius-md);
+      font-family: inherit;
+      font-size: 0.92rem;
+      font-weight: 700;
+      border: 1px solid transparent;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: all 0.2s ease;
+      text-decoration: none;
+    }
+
+    .btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none !important;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #0ea5e9, #0284c7);
+      color: #fff;
+      border-color: rgba(125, 211, 252, 0.4);
+      box-shadow: 0 8px 24px rgba(14, 165, 233, 0.3);
+    }
+    .btn-primary:hover:not(:disabled) {
+      background: linear-gradient(135deg, #38bdf8, #0ea5e9);
+      transform: translateY(-1px);
+    }
+
+    .btn-gold {
+      background: linear-gradient(135deg, #f59e0b, #d97706);
+      color: #050b16;
+      border-color: rgba(253, 230, 138, 0.5);
+      box-shadow: 0 8px 24px rgba(245, 158, 11, 0.28);
+    }
+    .btn-gold:hover:not(:disabled) {
+      filter: brightness(1.08);
+      transform: translateY(-1px);
+    }
+
+    .btn-ghost {
+      background: rgba(15, 23, 42, 0.7);
+      color: var(--text-main);
+      border-color: rgba(148, 163, 184, 0.28);
+    }
+    .btn-ghost:hover:not(:disabled) {
+      border-color: var(--cyan-primary);
+      color: var(--cyan-primary);
+    }
+
+    .input-field, .select-field, .textarea-field {
+      width: 100%;
+      min-height: 48px;
+      padding: 12px 15px;
+      border-radius: var(--radius-md);
+      background: rgba(7, 13, 28, 0.82);
+      border: 1px solid rgba(148, 163, 184, 0.28);
+      color: #fff;
+      font-family: inherit;
+      font-size: 0.96rem;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .textarea-field {
+      min-height: 110px;
+      resize: vertical;
+    }
+
+    .input-field:focus, .select-field:focus, .textarea-field:focus {
+      outline: none;
+      border-color: var(--cyan-primary);
+      box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.18);
+    }
+
+    .quota-banner {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .quota-slot {
+      padding: 14px 16px;
+      border-radius: var(--radius-lg);
+      background: rgba(15, 23, 42, 0.75);
+      border: 1px solid rgba(148, 163, 184, 0.2);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .quota-slot.filled-correct {
+      border-color: rgba(16, 185, 129, 0.55);
+      background: rgba(16, 185, 129, 0.1);
+    }
+    .quota-slot.filled-active {
+      border-color: rgba(245, 158, 11, 0.65);
+      background: rgba(245, 158, 11, 0.12);
+    }
+
+    .arena-section-title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 22px 0 12px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid rgba(148, 163, 184, 0.15);
+    }
+
+    .boxes-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(195px, 1fr));
+      gap: 12px;
+    }
+
+    .box-card {
+      min-height: 128px;
+      padding: 14px;
+      border-radius: var(--radius-lg);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 8px;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      text-align: left;
+      border: 1px solid rgba(56, 189, 248, 0.28);
+      background: linear-gradient(160deg, rgba(15, 28, 56, 0.85), rgba(9, 17, 36, 0.92));
+      transition: all 0.22s ease;
+    }
+
+    .box-card.tersedia:hover {
+      transform: translateY(-3px);
+      border-color: var(--cyan-glow);
+      box-shadow: 0 12px 28px rgba(0, 242, 254, 0.18);
+    }
+
+    .box-card.level-SEDANG.tersedia {
+      border-color: rgba(245, 158, 11, 0.35);
+    }
+    .box-card.level-SEDANG.tersedia:hover {
+      border-color: var(--gold-primary);
+      box-shadow: 0 12px 28px rgba(245, 158, 11, 0.18);
+    }
+
+    .box-card.level-SULIT.tersedia {
+      border-color: rgba(244, 63, 94, 0.38);
+    }
+    .box-card.level-SULIT.tersedia:hover {
+      border-color: #fb7185;
+      box-shadow: 0 12px 28px rgba(244, 63, 94, 0.2);
+    }
+
+    /* Kotak Terkunci oleh Siswa Lain */
+    .box-card.locked-other {
+      background: rgba(15, 23, 42, 0.45);
+      border-color: rgba(100, 116, 139, 0.22);
+      color: #64748b;
+      cursor: not-allowed;
+      filter: grayscale(0.75);
+    }
+
+    /* Kotak Milik Siswa Sendiri */
+    .box-card.mine-active {
+      border: 2px solid var(--gold-primary);
+      background: linear-gradient(160deg, rgba(245, 158, 11, 0.18), rgba(15, 23, 42, 0.9));
+      box-shadow: 0 0 25px rgba(245, 158, 11, 0.25);
+    }
+
+    .box-card.mine-done {
+      border: 1.5px solid var(--emerald-primary);
+      background: linear-gradient(160deg, rgba(16, 185, 129, 0.16), rgba(15, 23, 42, 0.9));
+    }
+
+    .box-num {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.35rem;
+      font-weight: 800;
+      color: #fff;
+    }
+
+    .dnd-container {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      margin: 14px 0;
+    }
+
+    .dnd-slots-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .dnd-slot {
+      min-height: 64px;
+      padding: 12px 14px;
+      border-radius: var(--radius-md);
+      background: rgba(7, 13, 28, 0.78);
+      border: 2px dashed rgba(56, 189, 248, 0.35);
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .dnd-slot.drag-over, .dnd-slot.ready-target {
+      border-color: var(--gold-primary);
+      background: rgba(245, 158, 11, 0.12);
+    }
+
+    .dnd-slot.filled {
+      border-style: solid;
+      border-color: rgba(56, 189, 248, 0.6);
+      background: rgba(14, 165, 233, 0.12);
+    }
+
+    .dnd-slot-label {
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--cyan-primary);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .dnd-options-pool {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 10px;
+      padding: 14px;
+      border-radius: var(--radius-lg);
+      background: rgba(7, 13, 28, 0.6);
+      border: 1px solid rgba(148, 163, 184, 0.18);
+    }
+
+    .dnd-card {
+      min-height: 52px;
+      padding: 11px 14px;
+      border-radius: var(--radius-md);
+      background: linear-gradient(145deg, rgba(30, 41, 59, 0.9), rgba(15, 23, 42, 0.95));
+      border: 1px solid rgba(56, 189, 248, 0.32);
+      color: #fff;
+      font-size: 0.92rem;
+      cursor: grab;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      user-select: none;
+      transition: all 0.18s ease;
+    }
+
+    .dnd-card:hover {
+      border-color: var(--cyan-glow);
+      transform: translateY(-1px);
+    }
+
+    .dnd-card.selected-tap {
+      border: 2px solid var(--gold-primary);
+      background: rgba(245, 158, 11, 0.22);
+      box-shadow: 0 0 18px rgba(245, 158, 11, 0.35);
+    }
+
+    .dnd-card.used {
+      opacity: 0.32;
+      pointer-events: none;
+      filter: grayscale(0.8);
+    }
+
+    .timer-banner {
+      padding: 14px 18px;
+      border-radius: var(--radius-lg);
+      background: rgba(7, 13, 28, 0.9);
+      border: 1px solid rgba(56, 189, 248, 0.35);
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .timer-digits {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 1.55rem;
+      font-weight: 800;
+      color: var(--cyan-glow);
+    }
+    .timer-digits.warning {
+      color: var(--gold-primary);
+    }
+    .timer-digits.danger {
+      color: var(--rose-primary);
+      animation: pulseDot 0.8s infinite;
+    }
+
+    .feedback-box {
+      padding: 16px 18px;
+      border-radius: var(--radius-lg);
+      margin-top: 16px;
+      border: 1px solid rgba(56, 189, 248, 0.35);
+      background: rgba(15, 23, 42, 0.85);
+    }
+    .feedback-box.success {
+      border-color: var(--emerald-primary);
+      background: rgba(16, 185, 129, 0.12);
+    }
+    .feedback-box.warn {
+      border-color: var(--gold-primary);
+      background: rgba(245, 158, 11, 0.12);
+    }
+    .feedback-box.error {
+      border-color: var(--rose-primary);
+      background: rgba(244, 63, 94, 0.12);
+    }
+
+    /* Custom Modal & Toast (Tanpa alert/confirm bawaan browser) */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 100;
+      background: rgba(3, 7, 18, 0.78);
+      backdrop-filter: blur(10px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+    .modal-backdrop.open {
+      display: flex;
+    }
+
+    .modal-dialog {
+      max-width: 540px;
+      width: 100%;
+      padding: 24px;
+      background: var(--glass-bg-strong);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-xl);
+      box-shadow: var(--shadow-glass);
+    }
+
+    .toast-stack {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      z-index: 120;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      max-width: 380px;
+      width: calc(100% - 40px);
+    }
+
+    .toast-item {
+      padding: 13px 16px;
+      border-radius: var(--radius-md);
+      background: rgba(11, 21, 40, 0.95);
+      border-left: 4px solid var(--cyan-primary);
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.5);
+      font-size: 0.88rem;
+      color: #fff;
+      animation: slideInUp 0.25s ease;
+    }
+
+    @keyframes slideInUp {
+      from { transform: translateY(16px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    .math-helper-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 8px;
+    }
+
+    .math-key {
+      min-width: 44px;
+      min-height: 40px;
+      padding: 4px 12px;
+      border-radius: 8px;
+      background: rgba(30, 41, 59, 0.85);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      color: var(--cyan-glow);
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    @media (max-width: 640px) {
+      .top-bar {
+        padding: 12px 14px;
+      }
+      .boxes-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="ambient-canvas" aria-hidden="true">
+    <div class="ambient-grid"></div>
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+  </div>
+
+  <div class="app-container">
+    <!-- HEADER UTAMA -->
+    <header class="glass-panel top-bar">
+      <div class="brand-group">
+        <div class="brand-emblem font-display">P(x)</div>
+        <div>
+          <div class="brand-title">
+            <span>LIMBOTO SMART-GATE</span>
+            <span class="stem-tag">S-T-E-M • FASE F+</span>
+          </div>
+          <div class="brand-sub">LKPD Digital Teorema Sisa Polinomial • Kelas XI SMAIT Al Ishlah Gorontalo</div>
+        </div>
+      </div>
+
+      <div class="status-cluster">
+        <div class="sync-pill" id="connectionPill" title="Status Sinkronisasi Server">
+          <span class="sync-dot" id="syncDot"></span>
+          <span id="syncText">Siap Terhubung</span>
+        </div>
+        <button type="button" class="btn btn-ghost" id="btnServerConfig" style="min-height:38px; padding:6px 12px; font-size:0.78rem;">
+          ⚙️ Koneksi Server
+        </button>
+        <button type="button" class="btn btn-ghost hidden" id="btnLogout" style="min-height:38px; padding:6px 12px; font-size:0.78rem;">
+          Keluar Sesi
+        </button>
+      </div>
+    </header>
+
+    <!-- HUD PROFIL & GAMIFIKASI SISWA (Tampil Setelah Login) -->
+    <section id="studentHud" class="glass-panel student-hud hidden" aria-label="Status Insinyur Muda">
+      <div class="hud-item">
+        <span class="hud-label">Insinyur Muda Bertugas</span>
+        <div class="hud-value" id="hudStudentName">-</div>
+        <span style="font-size:0.78rem; color:var(--cyan-primary);" id="hudEngineerTitle">Insinyur Muda Lv. 1</span>
+      </div>
+
+      <div class="hud-item">
+        <span class="hud-label">Pengalaman & Skor Arena</span>
+        <div class="hud-value">
+          <span class="font-mono" id="hudXpText">0 XP</span>
+          <span style="color:var(--gold-primary);">•</span>
+          <span class="font-mono" style="color:var(--gold-light);" id="hudTotalScore">Skor: 0</span>
+        </div>
+        <div class="xp-bar-track">
+          <div class="xp-bar-fill" id="hudXpBar" style="width: 8%;"></div>
+        </div>
+      </div>
+
+      <div class="hud-item">
+        <span class="hud-label">Lencana Keahlian (Badges)</span>
+        <div class="hud-value" id="hudBadgesList">
+          <span style="font-size:0.8rem; color:var(--text-muted);">Selesaikan misi untuk meraih lencana</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- LAYAR LOGIN DAFTAR PUTIH -->
+    <main id="loginView" class="glass-panel" style="max-width:680px; margin:28px auto; padding:28px;">
+      <div style="display:flex; align-items:center; gap:10px; margin-bottom:12px; flex-wrap:wrap;">
+        <span class="stem-tag">MISI PENYELAMATAN EKOLOGI DANAU LIMBOTO</span>
+        <span class="badge-chip">Kelas XI Matematika Tingkat Lanjut</span>
+      </div>
+
+      <h1 class="font-display" style="font-size:1.65rem; margin-bottom:10px; color:#fff;">
+        Pos Komando Insinyur Muda SMAIT Al Ishlah
+      </h1>
+      <p style="color:var(--text-muted); font-size:0.95rem; margin-bottom:22px;">
+        <em>Assalamu'alaikum warahmatullahi wabarakatuh.</em> Selamat datang di pusat kendali <strong>Limboto Smart-Gate</strong>. Pilih nama Anda dari daftar putih resmi Kelas XI untuk memulai atau melanjutkan misi kalibrasi polinomial menggunakan penalaran <strong>Teorema Sisa</strong>.
+      </p>
+
+      <div class="glass-card" style="padding:20px; margin-bottom:20px;">
+        <label for="selectStudentName" style="display:block; font-weight:700; margin-bottom:8px; font-size:0.92rem;">
+          Pilih Identitas Insinyur Muda (Daftar Putih 9 Peserta Didik):
+        </label>
+        <select id="selectStudentName" class="select-field" aria-label="Pilih Nama Peserta Didik">
+          <option value="">-- Pilih Nama Lengkap Anda --</option>
+        </select>
+
+        <div style="margin-top:16px; display:flex; flex-wrap:wrap; gap:10px; align-items:center; justify-content:space-between;">
+          <button type="button" id="btnLoginSubmit" class="btn btn-primary" style="flex:1; min-width:220px;">
+            🚀 Masuk ke Pos Komando Misi
+          </button>
+        </div>
+      </div>
+
+      <div class="glass-card" style="padding:16px; border-color:rgba(245,158,11,0.3); background:rgba(245,158,11,0.06);">
+        <div style="font-weight:700; font-size:0.86rem; color:var(--gold-light); margin-bottom:4px;">
+          📌 Cakupan Misi Pembelajaran Hari Ini (INTROFLEX Terpadu):
+        </div>
+        <ul style="font-size:0.84rem; color:var(--text-muted); padding-left:18px; display:grid; gap:4px;">
+          <li>Menentukan sisa pembagian polinomial oleh pembagi linear $(x - k)$ dan $(ax + b)$ tanpa pembagian panjang.</li>
+          <li>Menentukan parameter/koefisien polinomial jika sisa pembagian diketahui serta penguatan Teorema Faktor ($S = 0$).</li>
+          <li>Menentukan sisa linear $S(x) = px + q$ pada pembagi kuadrat $(x - a)(x - b)$ dalam masalah kontekstual STEM Gorontalo.</li>
+        </ul>
+      </div>
+    </main>
+
+    <!-- AREA KERJA UTAMA (MISI 1 - 6) -->
+    <div id="missionWorkspace" class="hidden">
+      <!-- Navigasi Tab 6 Misi -->
+      <nav class="mission-nav" id="missionNav" aria-label="Tahapan Misi INTROFLEX">
+        <button type="button" class="mission-tab active" data-misi="1">
+          <div class="mission-tab-top"><span>Misi 1</span><span id="statusM1">•</span></div>
+          <div class="mission-tab-title">1. Telaah</div>
+        </button>
+        <button type="button" class="mission-tab" data-misi="2">
+          <div class="mission-tab-top"><span>Misi 2</span><span id="statusM2">•</span></div>
+          <div class="mission-tab-title">2. Eksplorasi</div>
+        </button>
+        <button type="button" class="mission-tab" data-misi="3">
+          <div class="mission-tab-top"><span>Misi 3</span><span id="statusM3">•</span></div>
+          <div class="mission-tab-title">3. Rumuskan</div>
+        </button>
+        <button type="button" class="mission-tab" data-misi="4">
+          <div class="mission-tab-top"><span>Misi 4 • Inti</span><span id="statusM4">•</span></div>
+          <div class="mission-tab-title">4. Arena Kotak</div>
+        </button>
+        <button type="button" class="mission-tab" data-misi="5">
+          <div class="mission-tab-top"><span>Misi 5</span><span id="statusM5">•</span></div>
+          <div class="mission-tab-title">5. Presentasikan</div>
+        </button>
+        <button type="button" class="mission-tab" data-misi="6">
+          <div class="mission-tab-top"><span>Misi 6</span><span id="statusM6">•</span></div>
+          <div class="mission-tab-title">6. Duniawi & Ukhrowi</div>
+        </button>
+      </nav>
+
+      <!-- ==================== MISI 1: TELAAH (MINDFUL BRIEFING) ==================== -->
+      <section id="panelMisi1" class="glass-panel" style="padding:24px;">
+        <div style="display:flex; flex-wrap:wrap; justify-content:space-between; gap:10px; margin-bottom:14px;">
+          <span class="stem-tag">MISI 1 • TELAAH (MINDFUL BRIEFING)</span>
+          <span class="badge-chip">Tahap 1 INTROFLEX</span>
+        </div>
+
+        <h2 class="font-display" style="font-size:1.45rem; margin-bottom:12px;">
+          Darurat Kalibrasi Sensor Ekologi Danau Limboto
+        </h2>
+
+        <div class="glass-card" style="padding:18px; margin-bottom:18px; border-left:4px solid var(--cyan-primary);">
+          <p style="margin-bottom:12px;">
+            <strong>Konteks Masalah (Gorontalo):</strong> Danau Limboto merupakan penyangga ekologis utama di Provinsi Gorontalo yang menerima aliran dari Sungai Biyonga, Sungai Alo, dan Sungai Pohu. Untuk mencegah banjir dan memantau pendangkalan (sedimentasi), Tim Riset <strong>SMAIT Al Ishlah Gorontalo</strong> mengoperasikan sistem <strong>Limboto Smart-Gate</strong>.
+          </p>
+          <p style="margin-bottom:12px;">
+            Setiap sensor memodelkan fluktuasi debit air, suhu mesin sterilisasi UMKM <em>Binte Biluhuta</em>, dan struktur pintu air dalam bentuk fungsi polinomial berderajat tinggi $f(x)$. Sistem kontrol hanya membutuhkan <strong>nilai sisa pembagian $S(x)$</strong> saat $f(x)$ dibagi oleh modul filter $(x - k)$, $(ax + b)$, atau $(x - a)(x - b)$ sebagai kode kalibrasi (*checksum*).
+          </p>
+          <p style="color:var(--gold-light);">
+            <strong>Kendala Kritis:</strong> Chip mikrokontroler pada 30 pelampung sensor memiliki memori sangat terbatas sehingga <strong>tidak sanggup melakukan pembagian bersusun panjang</strong> setiap detik. Sebagai Tim Insinyur Muda, Anda harus menemukan metode matematis agar sisa pembagian dapat dihitung secara instan!
+          </p>
+        </div>
+
+        <!-- Integrasi S-T-E-M -->
+        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(210px, 1fr)); gap:12px; margin-bottom:22px;">
+          <div class="glass-card" style="padding:14px;">
+            <div class="stem-tag" style="margin-bottom:6px;">S • SCIENCE</div>
+            <div style="font-size:0.85rem; color:var(--text-muted);">Pemodelan laju sedimentasi lumpur Danau Limboto, reaktor biogas eceng gondok, dan kurva termal sterilisasi pangan dengan fungsi polinomial $f(x)$.</div>
+          </div>
+          <div class="glass-card" style="padding:14px;">
+            <div class="stem-tag" style="margin-bottom:6px;">T • TECHNOLOGY</div>
+            <div style="font-size:0.85rem; color:var(--text-muted);">Komputasi *checksum* telemetri IoT Pelabuhan Gorontalo yang mengevaluasi nilai sisa $S$ secara langsung untuk menghemat memori mikrokontroler.</div>
+          </div>
+          <div class="glass-card" style="padding:14px;">
+            <div class="stem-tag" style="margin-bottom:6px;">E • ENGINEERING</div>
+            <div style="font-size:0.85rem; color:var(--text-muted);">Perancangan lengkung pintu air Sungai Biyonga dan kubah geodesik Masjid Kampus Al-Ishlah agar bebas getaran harmonik (syarat residu/sisa $= 0$).</div>
+          </div>
+          <div class="glass-card" style="padding:14px;">
+            <div class="stem-tag" style="margin-bottom:6px;">M • MATHEMATICS</div>
+            <div style="font-size:0.85rem; color:var(--text-muted);">Penalaran <strong>Teorema Sisa</strong> pada pembagi $(x - k)$, $(ax + b)$, dan pembagi kuadrat $(x - a)(x - b)$ beserta penentuan parameter koefisien.</div>
+          </div>
+        </div>
+
+        <!-- Form Identifikasi Masalah Siswa -->
+        <div class="glass-card" style="padding:20px;">
+          <h3 style="font-size:1.05rem; margin-bottom:14px; color:var(--cyan-primary);">
+            📝 Lembar Kerja Insinyur 1: Identifikasi Masalah Utama
+          </h3>
+
+          <div style="margin-bottom:16px;">
+            <label for="inputM1Diketahui" style="display:block; font-weight:700; font-size:0.9rem; margin-bottom:6px;">
+              1. Apa saja informasi yang DIKETAHUI dari permasalahan sistem Limboto Smart-Gate di atas?
+            </label>
+            <textarea id="inputM1Diketahui" class="textarea-field" placeholder="Contoh: Sensor memodelkan data sebagai polinomial f(x) yang dibagi oleh modul (x - k), (ax + b), atau (x - a)(x - b), namun memori mikrokontroler tidak cukup untuk pembagian bersusun..."></textarea>
+          </div>
+
+          <div style="margin-bottom:16px;">
+            <label for="inputM1Ditanya" style="display:block; font-weight:700; font-size:0.9rem; margin-bottom:6px;">
+              2. Apa masalah utama yang DITANYAKAN / harus dipecahkan oleh Tim Insinyur Muda?
+            </label>
+            <textarea id="inputM1Ditanya" class="textarea-field" placeholder="Contoh: Bagaimana cara menentukan sisa pembagian polinomial f(x) secara langsung tanpa harus melakukan pembagian polinomial penuh?"></textarea>
+          </div>
+
+          <div style="display:flex; justify-content:flex-end; gap:12px; flex-wrap:wrap;">
+            <button type="button" id="btnSaveMisi1" class="btn btn-primary">
+              ✅ Simpan Hasil Telaah & Lanjut ke Misi 2 (+25 XP)
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==================== MISI 2: EKSPLORASI (MEANINGFUL DISCOVERY) ==================== -->
+      <section id="panelMisi2" class="glass-panel hidden" style="padding:24px;">
+        <div style="display:flex; flex-wrap:wrap; justify-content:space-between; gap:10px; margin-bottom:14px;">
+          <span class="stem-tag">MISI 2 • EKSPLORASI (PENEMUAN TERBIMBING)</span>
+          <span class="badge-chip">Tahap 2 INTROFLEX</span>
+        </div>
+
+        <h2 class="font-display" style="font-size:1.45rem; margin-bottom:8px;">
+          Laboratorium Eksplorasi: Pembagian Manual vs Substitusi Nilai Fungsi
+        </h2>
+        <p style="color:var(--text-muted); font-size:0.93rem; margin-bottom:18px;">
+          Mari kita uji 3 sampel polinomial sensor. Bandingkan <strong>sisa hasil pembagian cara bersusun/Horner</strong> dengan <strong>nilai substitusi langsung $f(k)$</strong> pada pembuat nol pembagi. Apakah keduanya selalu menghasilkan angka yang sama?
+        </p>
+
+        <!-- 3 Kartu Eksperimen Interaktif -->
+        <div style="display:grid; gap:16px; margin-bottom:20px;">
+          <!-- Eksperimen 1 -->
+          <div class="glass-card" style="padding:18px;">
+            <div style="display:flex; justify-content:space-between; flex-wrap:wrap; gap:8px; margin-bottom:10px;">
+              <span class="stem-tag">SAMPEL LABORATORIUM #1 • Pembagi $(x - k)$</span>
+              <span id="badgeExp1" style="font-size:0.8rem; color:var(--text-muted);">Belum Terverifikasi</span>
+            </div>
+            <p style="margin-bottom:10px;">
+              Polinomial $f(x) = x^2 - 5x + 8$ dibagi oleh $(x - 3)$. Pembuat nol pembagi: $x - 3 = 0 \Rightarrow x = 3$.
+              <br />Jika dibagi secara manual: $x^2 - 5x + 8 = (x - 3)(x - 2) + 2$, sehingga hasil baginya $H(x) = x - 2$ dan sisanya $S = 2$.
+            </p>
+            <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(220px, 1fr)); gap:12px; align-items:end;">
+              <div>
+                <label style="font-size:0.82rem; font-weight:700; display:block; margin-bottom:6px;">
+                  Sisa Pembagian Manual / Horner ($S$):
+                </label>
+                <input type="text" id="exp1Sisa" class="input-field" placeholder="Ketik nilai sisa dari (x-3)(x-2) + 2" />
+              </div>
+              <div>
+                <label style="font-size:0.82rem; font-weight:700; display:block; margin-bottom:6px;">
+                  Hitung Substitusi $f(3) = (3)^2 - 5(3) + 8$:
+                </label>
+                <input type="text" id="exp1Substitusi" class="input-field" placeholder="9 - 15 + 8 = ?" />
+              </div>
+              <button type="button" class="btn btn-ghost" onclick="checkExplorationSample(1)">
+                🔍 Bandingkan Sampel #1
+              </button>
+            </div>
+            <div id="feedbackExp1" class="feedback-box hidden"></div>
+          </div>
+
+          <!-- Eksperimen 2 -->
+          <div class="glass-card" style="padding:18px;">
+            <div style="display:flex; justify-content:space-between; flex-wrap:wrap; gap:8px; margin-bottom:10px;">
+              <span class="stem-tag">SAMPEL LABORATORIUM #2 • Pembagi $(x + k)$</span>
+              <span id="badgeExp2" style="font-size:0.8rem; color:var(--text-muted);">Belum Terverifikasi</span>
+            </div>
+            <p style="margin-bottom:10px;">
+              Polinomial $f(x) = 2x^3 + 3x^2 - 4x + 5$ dibagi oleh $(x + 2)$. Pembuat nol pembagi: $x + 2 = 0 \Rightarrow x = -2$.
+              <br />Dengan skema Horner untuk $x = -2$, diperoleh hasil bagi $H(x) = 2x^2 - x - 2$ dan sisa pembagian $S = 9$.
+            </p>
+            <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(220px, 1fr)); gap:12px; align-items:end;">
+              <div>
+                <label style="font-size:0.82rem; font-weight:700; display:block; margin-bottom:6px;">
+                  Pembuat Nol dari Pembagi $(x + 2 = 0)$:
+                </label>
+                <input type="text" id="exp2PembuatNol" class="input-field" placeholder="Ketik nilai x (hati-hati tanda!)" />
+              </div>
+              <div>
+                <label style="font-size:0.82rem; font-weight:700; display:block; margin-bottom:6px;">
+                  Hitung $f(-2) = 2(-2)^3 + 3(-2)^2 - 4(-2) + 5$:
+                </label>
+                <input type="text" id="exp2Substitusi" class="input-field" placeholder="-16 + 12 + 8 + 5 = ?" />
+              </div>
+              <button type="button" class="btn btn-ghost" onclick="checkExplorationSample(2)">
+                🔍 Bandingkan Sampel #2
+              </button>
+            </div>
+            <div id="feedbackExp2" class="feedback-box hidden"></div>
+          </div>
+
+          <!-- Eksperimen 3 -->
+          <div class="glass-card" style="padding:18px;">
+            <div style="display:flex; justify-content:space-between; flex-wrap:wrap; gap:8px; margin-bottom:10px;">
+              <span class="stem-tag">SAMPEL LABORATORIUM #3 • Pembagi $(ax + b)$</span>
+              <span id="badgeExp3" style="font-size:0.8rem; color:var(--text-muted);">Belum Terverifikasi</span>
+            </div>
+            <p style="margin-bottom:10px;">
+              Polinomial $f(x) = 2x^2 + 5x - 1$ dibagi oleh $(2x - 1)$.
+              <br />Jika dibagi bersusun: $2x^2 + 5x - 1 = (2x - 1)(x + 3) + 2$, sehingga sisanya adalah $S = 2$.
+            </p>
+            <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(220px, 1fr)); gap:12px; align-items:end;">
+              <div>
+                <label style="font-size:0.82rem; font-weight:700; display:block; margin-bottom:6px;">
+                  Pembuat Nol dari $(2x - 1 = 0)$ (pecahan `a/b`):
+                </label>
+                <input type="text" id="exp3PembuatNol" class="input-field" placeholder="Contoh: 1/2" />
+              </div>
+              <div>
+                <label style="font-size:0.82rem; font-weight:700; display:block; margin-bottom:6px;">
+                  Hitung $f\left(\frac{1}{2}\right) = 2\left(\frac{1}{2}\right)^2 + 5\left(\frac{1}{2}\right) - 1$:
+                </label>
+                <input type="text" id="exp3Substitusi" class="input-field" placeholder="1/2 + 5/2 - 1 = ?" />
+              </div>
+              <button type="button" class="btn btn-ghost" onclick="checkExplorationSample(3)">
+                🔍 Bandingkan Sampel #3
+              </button>
+            </div>
+            <div id="feedbackExp3" class="feedback-box hidden"></div>
+          </div>
+        </div>
+
+        <!-- Pertanyaan Penemuan Pola -->
+        <div class="glass-card" style="padding:20px; border-color:rgba(56,189,248,0.4);">
+          <h3 style="font-size:1.05rem; margin-bottom:10px; color:var(--gold-light);">
+            💡 Kesimpulan Pola Eksplorasi: Mengapa $S = f(k)$ Selalu Berlaku?
+          </h3>
+          <p style="font-size:0.9rem; color:var(--text-muted); margin-bottom:12px;">
+            Ingat algoritma pembagian polinomial: $\text{Yang Dibagi} = (\text{Pembagi}) \times (\text{Hasil Bagi}) + \text{Sisa}$, atau dapat ditulis:
+            $$f(x) = (x - k) \cdot H(x) + S$$
+            Apa yang terjadi pada suku $(x - k) \cdot H(x)$ jika kita menyubstitusikan pembuat nol pembagi yaitu $x = k$?
+          </p>
+
+          <select id="selectM2Conclusion" class="select-field" style="margin-bottom:14px;">
+            <option value="">-- Pilih Kesimpulan Penalaran Anda --</option>
+            <option value="wrong1">Saat x = k, nilai H(k) menjadi 0 sehingga sisa pembagian bergantung pada derajat H(x).</option>
+            <option value="correct">Saat x = k, faktor (k - k) bernilai 0 sehingga (k - k)·H(k) = 0, dan tersisa f(k) = S secara eksak tanpa perlu menghitung H(x).</option>
+            <option value="wrong2">Saat x = k, nilai f(k) harus dibagi lagi dengan (x - k) untuk memperoleh sisa S.</option>
+          </select>
+
+          <div id="feedbackM2Conclusion" class="feedback-box hidden" style="margin-bottom:14px;"></div>
+
+          <div style="display:flex; justify-content:flex-end;">
+            <button type="button" id="btnSaveMisi2" class="btn btn-primary">
+              ✅ Kunci Penemuan Pola & Lanjut ke Misi 3 (+25 XP)
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==================== MISI 3: RUMUSKAN (CONCEPT FORMULATION) ==================== -->
+      <section id="panelMisi3" class="glass-panel hidden" style="padding:24px;">
+        <div style="display:flex; flex-wrap:wrap; justify-content:space-between; gap:10px; margin-bottom:14px;">
+          <span class="stem-tag">MISI 3 • RUMUSKAN (FORMULASI TEOREMA SISA)</span>
+          <span class="badge-chip">Tahap 3 INTROFLEX</span>
+        </div>
+
+        <h2 class="font-display" style="font-size:1.45rem; margin-bottom:8px;">
+          Merumuskan Cetak Biru Algoritma Teorema Sisa
+        </h2>
+        <p style="color:var(--text-muted); font-size:0.93rem; margin-bottom:16px;">
+          Pasangkanlah <strong>4 kondisi pembagi polinomial</strong> di bawah ini dengan <strong>rumus Teorema Sisa</strong> yang tepat.
+          <br /><span style="color:var(--gold-light); font-size:0.84rem;">📱 <strong>Tips Layar Sentuh / HP:</strong> Anda dapat menyeret kartu (<em>Drag & Drop</em>) <strong>ATAU</strong> cukup <strong>ketuk kartu pilihan</strong> lalu <strong>ketuk kotak tujuan</strong>!</span>
+        </p>
+
+        <div class="dnd-container" id="misi3DndRoot">
+          <div class="dnd-slots-list" id="misi3Slots"></div>
+          <div>
+            <div style="font-size:0.8rem; font-weight:700; color:var(--text-muted); margin-bottom:8px; text-transform:uppercase;">
+              Pilihan Kartu Rumus (Waspadai 2 Kartu Pengecoh!):
+            </div>
+            <div class="dnd-options-pool" id="misi3Options"></div>
+          </div>
+        </div>
+
+        <div id="feedbackMisi3" class="feedback-box hidden"></div>
+
+        <div style="display:flex; justify-content:space-between; flex-wrap:wrap; gap:12px; margin-top:18px;">
+          <button type="button" class="btn btn-ghost" onclick="resetMisi3Dnd()">
+            🔄 Susun Ulang Kartu
+          </button>
+          <button type="button" id="btnVerifyMisi3" class="btn btn-primary">
+            ⚡ Verifikasi Rumusan Teorema & Buka Arena Misi 4 (+25 XP)
+          </button>
+        </div>
+      </section>
+
+      <!-- ==================== MISI 4: APLIKASIKAN (ARENA 30 KOTAK SOAL) ==================== -->
+      <section id="panelMisi4" class="glass-panel hidden" style="padding:24px;">
+        <div style="display:flex; flex-wrap:wrap; justify-content:space-between; gap:10px; margin-bottom:14px;">
+          <span class="stem-tag">MISI 4 • APLIKASIKAN (ARENA 30 KOTAK MODUL SMART-GATE)</span>
+          <span class="badge-chip">Inti Penilaian • Wajib 1 Mudah, 1 Sedang, 1 Sulit</span>
+        </div>
+
+        <h2 class="font-display" style="font-size:1.45rem; margin-bottom:8px;">
+          Arena Kalibrasi 30 Modul Polinomial Danau Limboto
+        </h2>
+        <p style="color:var(--text-muted); font-size:0.92rem; margin-bottom:18px;">
+          Setiap Insinyur Muda <strong>wajib mengklaim dan menuntaskan tepat 3 kotak soal</strong>: <strong>1 Level Mudah</strong>, <strong>1 Level Sedang</strong>, dan <strong>1 Level Sulit (Kontekstual STEM)</strong>. Kotak yang telah diklaim oleh rekan sekelas otomatis terkunci secara <em>real-time</em>.
+        </p>
+
+        <!-- Kuota 3 Level Milik Siswa -->
+        <div class="quota-banner" id="studentQuotaBanner">
+          <div class="quota-slot" id="quotaCardMUDAH">
+            <div>
+              <div style="font-size:0.72rem; font-weight:800; color:var(--cyan-primary);">WAJIB 1 • LEVEL MUDAH</div>
+              <div style="font-weight:700; font-size:0.95rem;" id="quotaTextMUDAH">Belum Memilih Kotak</div>
+            </div>
+            <span class="badge-chip" id="quotaBadgeMUDAH">10 Poin Dasar</span>
+          </div>
+
+          <div class="quota-slot" id="quotaCardSEDANG">
+            <div>
+              <div style="font-size:0.72rem; font-weight:800; color:var(--gold-primary);">WAJIB 2 • LEVEL SEDANG</div>
+              <div style="font-weight:700; font-size:0.95rem;" id="quotaTextSEDANG">Belum Memilih Kotak</div>
+            </div>
+            <span class="badge-chip" id="quotaBadgeSEDANG">20 Poin Dasar</span>
+          </div>
+
+          <div class="quota-slot" id="quotaCardSULIT">
+            <div>
+              <div style="font-size:0.72rem; font-weight:800; color:#fb7185;">WAJIB 3 • LEVEL SULIT (STEM)</div>
+              <div style="font-weight:700; font-size:0.95rem;" id="quotaTextSULIT">Belum Memilih Kotak</div>
+            </div>
+            <span class="badge-chip" id="quotaBadgeSULIT">30 Poin Dasar</span>
+          </div>
+        </div>
+
+        <!-- PANEL SOAL AKTIF YANG SEDANG DIKERJAKAN / PEMBAHASAN -->
+        <div id="activeQuestionWorkspace" class="glass-card hidden" style="padding:22px; margin-bottom:26px; border:2px solid var(--cyan-primary);">
+          <!-- Timer & Info Percobaan -->
+          <div class="timer-banner">
+            <div>
+              <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+                <span class="stem-tag" id="activeQLevelBadge">LEVEL MUDAH</span>
+                <span class="stem-tag" id="activeQStemBadge">S-T-E-M</span>
+                <span class="badge-chip" id="activeQAttemptBadge">Percobaan 1 dari 2</span>
+              </div>
+              <h3 class="font-display" id="activeQTitle" style="font-size:1.2rem; margin-top:6px; color:#fff;">
+                Modul Kalibrasi #1
+              </h3>
+            </div>
+
+            <div style="text-align:right;">
+              <div style="font-size:0.72rem; color:var(--text-muted); text-transform:uppercase; font-weight:700;">
+                Sisa Waktu Server
+              </div>
+              <div class="timer-digits" id="activeQTimer">03:00</div>
+            </div>
+          </div>
+
+          <!-- Teks Soal (KaTeX) -->
+          <div id="activeQBody" class="glass-card" style="padding:18px; margin-bottom:18px; font-size:1.02rem; background:rgba(5,11,22,0.75);"></div>
+
+          <!-- Area Input Tipe FILL -->
+          <div id="activeQFillArea" class="hidden" style="margin-bottom:18px;">
+            <label for="inputStudentAnswerFill" style="display:block; font-weight:700; font-size:0.9rem; margin-bottom:6px;">
+              Jawaban Hasil Perhitungan Anda:
+            </label>
+            <input type="text" id="inputStudentAnswerFill" class="input-field font-mono" placeholder="Ketik jawaban Anda..." autocomplete="off" />
+            <div style="font-size:0.78rem; color:var(--text-muted); margin-top:6px;" id="activeQPlaceholderHint">
+              Format menerima bilangan bulat, pecahan (mis. 2/3), desimal (0,5), atau aljabar linear (mis. 3x+2).
+            </div>
+            <div class="math-helper-bar">
+              <button type="button" class="math-key" onclick="insertMathChar('x')">x</button>
+              <button type="button" class="math-key" onclick="insertMathChar('+')">+</button>
+              <button type="button" class="math-key" onclick="insertMathChar('-')">-</button>
+              <button type="button" class="math-key" onclick="insertMathChar('/')">/</button>
+            </div>
+          </div>
+
+          <!-- Area Input Tipe DND -->
+          <div id="activeQDndArea" class="hidden" style="margin-bottom:18px;">
+            <div style="font-size:0.84rem; color:var(--gold-light); margin-bottom:10px;">
+              💡 Seret kartu ke slot yang sesuai, <strong>atau ketuk kartu lalu ketuk slot tujuan</strong> (ketuk slot terisi untuk mengosongkan).
+            </div>
+            <div class="dnd-container">
+              <div class="dnd-slots-list" id="arenaDndSlots"></div>
+              <div>
+                <div style="font-size:0.78rem; font-weight:700; color:var(--text-muted); margin-bottom:8px; text-transform:uppercase;">
+                  Kartu Pilihan (Terdapat Kartu Pengecoh):
+                </div>
+                <div class="dnd-options-pool" id="arenaDndOptions"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Kotak Bantuan (Hint) -->
+          <div id="activeQHintBox" class="feedback-box warn hidden" style="margin-bottom:16px;"></div>
+
+          <!-- Kotak Umpan Balik Diagnostik & Pembahasan Akhir -->
+          <div id="activeQFeedbackBox" class="feedback-box hidden" style="margin-bottom:16px;"></div>
+          <div id="activeQSolutionBox" class="feedback-box success hidden" style="margin-bottom:16px;"></div>
+
+          <!-- Tombol Aksi Soal -->
+          <div style="display:flex; flex-wrap:wrap; justify-content:space-between; gap:12px;" id="activeQActionsBar">
+            <button type="button" id="btnRequestHint" class="btn btn-ghost">
+              💡 Buka Petunjuk / Hint (-15% Poin Dasar)
+            </button>
+            <div style="display:flex; gap:10px; flex-wrap:wrap;">
+              <button type="button" id="btnSubmitArenaAnswer" class="btn btn-gold">
+                🚀 Kirim & Validasi Jawaban ke Server
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- GRID 30 KOTAK SOAL PER LEVEL -->
+        <div class="arena-section-title">
+          <div>
+            <span class="stem-tag" style="background:rgba(56,189,248,0.18);">ZONA 1 • LEVEL MUDAH (KOTAK 1 – 10)</span>
+            <span style="font-size:0.84rem; color:var(--text-muted); margin-left:8px;">Pembagi $(x - k)$, $(ax + b)$ dasar & uji faktor sisa nol</span>
+          </div>
+          <span class="font-mono" style="font-size:0.82rem; color:var(--cyan-primary);" id="infoLimitMudah">Waktu: 3 Menit | Poin: 10</span>
+        </div>
+        <div class="boxes-grid" id="gridBoxesMudah"></div>
+
+        <div class="arena-section-title">
+          <div>
+            <span class="stem-tag" style="background:rgba(245,158,11,0.18); color:var(--gold-light); border-color:rgba(245,158,11,0.4);">ZONA 2 • LEVEL SEDANG (KOTAK 11 – 20)</span>
+            <span style="font-size:0.84rem; color:var(--text-muted); margin-left:8px;">Penentuan parameter koefisien & pengantar pembagi kuadrat $(x - a)(x - b)$</span>
+          </div>
+          <span class="font-mono" style="font-size:0.82rem; color:var(--gold-light);" id="infoLimitSedang">Waktu: 5 Menit | Poin: 20</span>
+        </div>
+        <div class="boxes-grid" id="gridBoxesSedang"></div>
+
+        <div class="arena-section-title">
+          <div>
+            <span class="stem-tag" style="background:rgba(244,63,94,0.18); color:#fda4af; border-color:rgba(244,63,94,0.4);">ZONA 3 • LEVEL SULIT — KONTEKSTUAL STEM (KOTAK 21 – 30)</span>
+            <span style="font-size:0.84rem; color:var(--text-muted); margin-left:8px;">Rekayasa STEM Gorontalo, pembagi kuadrat $S(x)=px+q$ & sistem 2 parameter</span>
+          </div>
+          <span class="font-mono" style="font-size:0.82rem; color:#fda4af;" id="infoLimitSulit">Waktu: 8 Menit | Poin: 30</span>
+        </div>
+        <div class="boxes-grid" id="gridBoxesSulit"></div>
+      </section>
+
+      <!-- ==================== MISI 5: PRESENTASIKAN (COLLABORATIVE SHOWCASE) ==================== -->
+      <section id="panelMisi5" class="glass-panel hidden" style="padding:24px;">
+        <div style="display:flex; flex-wrap:wrap; justify-content:space-between; gap:10px; margin-bottom:14px;">
+          <span class="stem-tag">MISI 5 • PRESENTASIKAN (PORTOFOLIO DISKUSI KELAS)</span>
+          <span class="badge-chip">Tahap 5 INTROFLEX • Tanpa Penilaian Otomatis</span>
+        </div>
+
+        <h2 class="font-display" style="font-size:1.45rem; margin-bottom:8px;">
+          Layar Presentasi Hasil Kalibrasi Insinyur Muda
+        </h2>
+        <p style="color:var(--text-muted); font-size:0.93rem; margin-bottom:18px;">
+          Halaman ini merangkum 3 modul soal yang telah Anda kerjakan di Misi 4 beserta pembahasan lengkapnya agar siap Anda presentasikan di depan kelas bersama Ustadz/Ustadzah dan rekan-rekan.
+        </p>
+
+        <div id="presentationPortfolioList" style="display:grid; gap:16px; margin-bottom:22px;"></div>
+
+        <div class="glass-card" style="padding:20px;">
+          <h3 style="font-size:1.05rem; margin-bottom:12px; color:var(--cyan-primary);">
+            🎙️ Catatan Poin Penting untuk Presentasi Lisan di Kelas
+          </h3>
+          <div style="margin-bottom:14px;">
+            <label for="inputM5Catatan" style="display:block; font-weight:700; font-size:0.88rem; margin-bottom:6px;">
+              1. Modul nomor berapa yang paling menarik untuk Anda jelaskan kepada teman sekelas, dan apa langkah kunci penyelesaiannya?
+            </label>
+            <textarea id="inputM5Catatan" class="textarea-field" placeholder="Tuliskan poin-poin inti yang akan Anda sampaikan saat maju presentasi..."></textarea>
+          </div>
+          <div style="margin-bottom:16px;">
+            <label for="inputM5Strategi" style="display:block; font-weight:700; font-size:0.88rem; margin-bottom:6px;">
+              2. Kesalahan umum apa yang perlu diwaspadai teman-teman saat menggunakan Teorema Sisa pada soal tersebut?
+            </label>
+            <textarea id="inputM5Strategi" class="textarea-field" placeholder="Contoh: Waspadai tanda negatif saat mencari pembuat nol dari (ax + b) = 0 yaitu x = -b/a..."></textarea>
+          </div>
+
+          <div style="display:flex; justify-content:flex-end;">
+            <button type="button" id="btnSaveMisi5" class="btn btn-primary">
+              ✅ Simpan Catatan Presentasi & Lanjut ke Misi 6 (+25 XP)
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==================== MISI 6: DUNIAWI & UKHROWI (ISLAMIC REFLECTION) ==================== -->
+      <section id="panelMisi6" class="glass-panel hidden" style="padding:24px;">
+        <div style="display:flex; flex-wrap:wrap; justify-content:space-between; gap:10px; margin-bottom:14px;">
+          <span class="stem-tag">MISI 6 • REFLEKSI DUNIAWI & UKHROWI</span>
+          <span class="badge-chip">Tahap 6 INTROFLEX • Integrasi Nilai Islam Terpadu</span>
+        </div>
+
+        <h2 class="font-display" style="font-size:1.45rem; margin-bottom:12px;">
+          Tadabbur Ketelitian Ilmuwan Muslim: Presisi, <em>Itqan</em>, dan <em>Amanah</em>
+        </h2>
+
+        <!-- Dalil Al-Qur'an & Hadis Akurat -->
+        <div class="glass-card" style="padding:22px; margin-bottom:20px; border:1px solid var(--glass-border-gold); background:linear-gradient(145deg, rgba(245,158,11,0.09), rgba(15,23,42,0.88));">
+          <div style="font-size:0.8rem; font-weight:800; color:var(--gold-light); text-transform:uppercase; letter-spacing:0.06em; margin-bottom:8px;">
+            📖 Tadabbur Al-Qur'an: QS. Al-Mulk [67] Ayat 3–4
+          </div>
+          <div class="font-arabic" style="color:#fff; margin-bottom:12px; text-align:right;">
+            مَّا تَرَىٰ فِي خَلْقِ الرَّحْمَٰنِ مِن تَفَاوُتٍ ۖ فَارْجِعِ الْبَصَرَ هَلْ تَرَىٰ مِن فُطُورٍ ﴿٣﴾ ثُمَّ ارْجِعِ الْبَصَرَ كَرَّتَيْنِ يَنقَلِبْ إِلَيْكَ الْبَصَرُ خَاسِئًا وَهُوَ حَسِيرٌ ﴿٤﴾
+          </div>
+          <p style="font-size:0.9rem; color:var(--text-main); font-style:italic; margin-bottom:14px;">
+            "Kamu sekali-kali tidak melihat pada ciptaan Tuhan Yang Maha Pemurah sesuatu yang tidak seimbang. Maka lihatlah berulang-ulang, adakah kamu lihat sesuatu yang tidak seimbang? Kemudian pandanglah sekali lagi niscaya penglihatanmu akan kembali kepadamu dengan tidak menemukan sesuatu cacat dan penglihatanmu itu pun dalam keadaan payah." <strong>(QS. Al-Mulk: 3–4)</strong>
+          </p>
+
+          <div style="border-top:1px solid rgba(245,158,11,0.25); padding-top:12px; font-size:0.88rem; color:var(--gold-light);">
+            <strong>Hadis tentang <em>Itqan</em> (Ketelitian & Kesungguhan Kerja):</strong><br />
+            Rasulullah ﷺ bersabda: <em>"Sesungguhnya Allah mencintai jika salah seorang di antara kalian melakukan suatu pekerjaan, ia melakukannya secara <strong>itqan</strong> (teliti, rapi, dan sungguh-sungguh)."</em> <strong>(HR. Thabrani dalam Al-Mu'jam Al-Awsath)</strong>.
+          </div>
+        </div>
+
+        <div class="glass-card" style="padding:20px;">
+          <div style="margin-bottom:18px;">
+            <label for="inputM6Duniawi" style="display:block; font-weight:700; font-size:0.92rem; margin-bottom:6px; color:var(--cyan-primary);">
+              🌍 1. Refleksi Duniawi (Manfaat Sains & Rekayasa):
+            </label>
+            <p style="font-size:0.84rem; color:var(--text-muted); margin-bottom:8px;">
+              Berdasarkan pengalaman Anda di proyek Limboto Smart-Gate hari ini, mengapa efisiensi <strong>Teorema Sisa</strong> ($S = f(k)$ dan $S(x) = px + q$) sangat bermanfaat dibandingkan membagi polinomial secara penuh dalam pemodelan sains dan teknologi?
+            </p>
+            <textarea id="inputM6Duniawi" class="textarea-field" placeholder="Tuliskan refleksi manfaat Teorema Sisa dalam memecahkan masalah komputasi dan rekayasa..."></textarea>
+          </div>
+
+          <div style="margin-bottom:18px;">
+            <label for="inputM6Ukhrowi" style="display:block; font-weight:700; font-size:0.92rem; margin-bottom:6px; color:var(--gold-light);">
+              🕌 2. Refleksi Ukhrowi (Nilai <em>Itqan</em> & <em>Amanah</em>):
+            </label>
+            <p style="font-size:0.84rem; color:var(--text-muted); margin-bottom:8px;">
+              Dalam Teorema Sisa, kekeliruan satu tanda negatif saja (misalnya pada $x = -\frac{b}{a}$) akan mengubah seluruh nilai residu kalibrasi pintu air. Bagaimana pelajaran ini melatih sikap <strong>Itqan</strong> (teliti) dan <strong>Amanah</strong> (jujur & bertanggung jawab) Anda sebagai seorang pelajar Muslim?
+            </p>
+            <textarea id="inputM6Ukhrowi" class="textarea-field" placeholder="Tuliskan hikmah ketelitian dan amanah yang Anda rasakan selama menyelesaikan misi ini..."></textarea>
+          </div>
+
+          <div style="display:flex; justify-content:flex-end;">
+            <button type="button" id="btnSaveMisi6" class="btn btn-gold">
+              🏆 Simpan Refleksi Akhir & Tuntaskan Seluruh Misi (+25 XP)
+            </button>
+          </div>
+        </div>
+
+        <!-- Kartu Sertifikat Ketuntasan Misi -->
+        <div id="missionCompleteBanner" class="glass-card hidden" style="padding:24px; margin-top:20px; text-align:center; border:2px solid var(--gold-primary);">
+          <div class="badge-chip" style="margin-bottom:8px;">ALHAMDULILLAH • MISI TUNTAS</div>
+          <h3 class="font-display" style="font-size:1.5rem; color:#fff; margin-bottom:6px;">
+            Selamat, Tim Insinyur Muda SMAIT Al Ishlah Gorontalo!
+          </h3>
+          <p style="color:var(--text-muted); max-width:620px; margin:0 auto 14px; font-size:0.94rem;">
+            Seluruh tahapan INTROFLEX (Telaah, Eksplorasi, Rumuskan, Aplikasikan, Presentasikan, serta Refleksi Duniawi & Ukhrowi) telah tersimpan di server kelas. Pantau peringkat tim Anda pada layar proyektor kelas!
+          </p>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <!-- MODAL DIALOG KUSTOM (PENGGANTI ALERT / CONFIRM) -->
+  <div class="modal-backdrop" id="customModalBackdrop" role="dialog" aria-modal="true">
+    <div class="modal-dialog">
+      <h3 class="font-display" id="modalTitle" style="font-size:1.22rem; margin-bottom:10px; color:#fff;">
+        Konfirmasi Sistem
+      </h3>
+      <div id="modalBody" style="font-size:0.93rem; color:var(--text-muted); margin-bottom:20px;"></div>
+      <div id="modalInputWrap" class="hidden" style="margin-bottom:18px;">
+        <input type="text" id="modalInputField" class="input-field font-mono" placeholder="https://script.google.com/macros/s/.../exec" />
+      </div>
+      <div style="display:flex; justify-content:flex-end; gap:10px; flex-wrap:wrap;" id="modalButtonsWrap">
+        <button type="button" class="btn btn-ghost" id="btnModalCancel">Batal</button>
+        <button type="button" class="btn btn-primary" id="btnModalConfirm">Lanjutkan</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOAST STACK -->
+  <div class="toast-stack" id="toastStack" aria-live="polite"></div>
+
+  <script>
+    /**
+     * ============================================================================
+     * KONFIGURASI UTAMA BACKEND GOOGLE APPS SCRIPT (WAJIB SATU VARIABEL DI ATAS)
+     * Tempelkan URL Web App (/exec) dari hasil deploy code.gs pada variabel di bawah:
+     * ============================================================================
+     */
+    const SCRIPT_URL = "PASTE_URL_WEB_APP_EXEC_DI_SINI";
+
+    // Daftar putih 9 peserta didik Kelas XI SMAIT Al Ishlah Gorontalo (identik dengan Sheet Siswa)
+    const WHITELIST_SISWA = [
+      "Alif Firmansya Monoarfa",
+      "Andi Aisyah Humaira Nurmuhammad",
+      "Fathiyyah Naailah Abdullah",
+      "Lutfiah Nur Magfirah Pakaya",
+      "Muhammad Faiz Dako",
+      "Nida' Husniah R. Ma'ruf",
+      "Nurul Istiqomah R. Ali",
+      "Shofiyyah Sholihah Adam",
+      "Zuhairah Diniyyah Atifah Pakudu"
+    ];
+
+    const STORAGE_KEY_SESSION = "LIMBOTO_SMARTGATE_SESSION_V1";
+    const STORAGE_KEY_CUSTOM_URL = "LIMBOTO_SMARTGATE_EXEC_URL_V1";
+
+    // State Aplikasi Terpusat
+    const appState = {
+      execUrl: "",
+      isSimulationMode: false,
+      studentName: "",
+      sessionToken: "",
+      serverTimeOffsetMs: 0,
+      pollingTimerId: null,
+      countdownTimerId: null,
+      heartbeatTimerId: null,
+      currentMission: 1,
+      misiTerbuka: [1, 2, 3, 4, 5, 6],
+      pengaturan: {
+        WAKTU_MUDAH_DETIK: 180,
+        WAKTU_SEDANG_DETIK: 300,
+        WAKTU_SULIT_DETIK: 480,
+        POIN_MUDAH: 10,
+        POIN_SEDANG: 20,
+        POIN_SULIT: 30,
+        POLLING_INTERVAL_MS: 4000
+      },
+      siswaProfil: {
+        xp: 0,
+        level_insinyur: "Insinyur Muda Lv. 1",
+        badges: []
+      },
+      progres: {
+        m1_selesai: false,
+        m2_selesai: false,
+        m3_selesai: false,
+        m4_selesai: false,
+        m5_selesai: false,
+        m6_selesai: false,
+        kotak_mudah: null,
+        kotak_sedang: null,
+        kotak_sulit: null,
+        total_skor: 0
+      },
+      kotakList: [],
+      soalAktif: null,
+      riwayatKotakSiswa: [],
+      refleksiSiswa: {},
+      expVerified: { 1: false, 2: false, 3: false },
+      // State Drag & Drop / Tap-to-Place Misi 3 & Misi 4
+      misi3Placements: {},
+      misi3SelectedCardId: null,
+      arenaPlacements: {},
+      arenaSelectedCardId: null
+    };
+
+    function safeGetStorage(key) {
+      try {
+        return localStorage.getItem(key) || sessionStorage.getItem(key) || "";
+      } catch (e) {
+        return "";
+      }
+    }
+
+    function safeSetStorage(key, val) {
+      try {
+        localStorage.setItem(key, val);
+        sessionStorage.setItem(key, val);
+      } catch (e) {}
+    }
+
+    function safeRemoveStorage(key) {
+      try {
+        localStorage.removeItem(key);
+        sessionStorage.removeItem(key);
+      } catch (e) {}
+    }
+
+    function resolveActiveScriptUrl() {
+      const savedOverride = safeGetStorage(STORAGE_KEY_CUSTOM_URL).trim();
+      if (savedOverride && savedOverride.startsWith("https://script.google.com/")) {
+        return savedOverride;
+      }
+      if (SCRIPT_URL && SCRIPT_URL.startsWith("https://script.google.com/")) {
+        return SCRIPT_URL.trim();
+      }
+      return "";
+    }
+
+    function showToast(message, type = "info") {
+      const stack = document.getElementById("toastStack");
+      if (!stack) return;
+      const item = document.createElement("div");
+      item.className = "toast-item";
+      if (type === "success") item.style.borderLeftColor = "var(--emerald-primary)";
+      if (type === "warn") item.style.borderLeftColor = "var(--gold-primary)";
+      if (type === "error") item.style.borderLeftColor = "var(--rose-primary)";
+      item.textContent = message;
+      stack.appendChild(item);
+      setTimeout(() => {
+        if (item.parentNode) item.parentNode.removeChild(item);
+      }, 4200);
+    }
+
+    function renderMathInContainer(el) {
+      if (!el) return;
+      if (typeof renderMathInElement === "function") {
+        try {
+          renderMathInElement(el, {
+            delimiters: [
+              { left: "$$", right: "$$", display: true },
+              { left: "$", right: "$", display: false }
+            ],
+            throwOnError: false
+          });
+        } catch (e) {}
+      }
+    }
+
+    function formatRichMathText(rawText) {
+      if (!rawText) return "";
+      const escaped = String(rawText)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")
+        .replace(/\*(.*?)\*/g, "<em>$1</em>")
+        .replace(/\n/g, "<br />");
+      return escaped;
+    }
+
+    function openCustomModal({ title, htmlBody, showCancel = true, confirmText = "Ya, Lanjutkan", cancelText = "Batal", showInput = false, defaultInput = "" }) {
+      return new Promise((resolve) => {
+        const backdrop = document.getElementById("customModalBackdrop");
+        const titleEl = document.getElementById("modalTitle");
+        const bodyEl = document.getElementById("modalBody");
+        const inputWrap = document.getElementById("modalInputWrap");
+        const inputField = document.getElementById("modalInputField");
+        const btnCancel = document.getElementById("btnModalCancel");
+        const btnConfirm = document.getElementById("btnModalConfirm");
+
+        titleEl.textContent = title || "Informasi Sistem";
+        bodyEl.innerHTML = htmlBody || "";
+        renderMathInContainer(bodyEl);
+
+        if (showInput) {
+          inputWrap.classList.remove("hidden");
+          inputField.value = defaultInput || "";
+        } else {
+          inputWrap.classList.add("hidden");
+        }
+
+        if (showCancel) {
+          btnCancel.classList.remove("hidden");
+          btnCancel.textContent = cancelText;
+        } else {
+          btnCancel.classList.add("hidden");
+        }
+        btnConfirm.textContent = confirmText;
+
+        backdrop.classList.add("open");
+
+        const cleanup = (result) => {
+          backdrop.classList.remove("open");
+          btnCancel.onclick = null;
+          btnConfirm.onclick = null;
+          resolve(result);
+        };
+
+        btnCancel.onclick = () => cleanup({ confirmed: false, value: "" });
+        btnConfirm.onclick = () => cleanup({ confirmed: true, value: inputField.value.trim() });
+      });
+    }
+
+    function setSyncStatus(mode, text) {
+      const dot = document.getElementById("syncDot");
+      const label = document.getElementById("syncText");
+      if (!dot || !label) return;
+      dot.className = "sync-dot";
+      if (mode === "syncing") dot.classList.add("syncing");
+      if (mode === "offline") dot.classList.add("offline");
+      label.textContent = text;
+    }
+
+    async function apiGet(paramsObj, retries = 2) {
+      const url = resolveActiveScriptUrl();
+      if (!url) {
+        return simulateBackendGet(paramsObj);
+      }
+
+      setSyncStatus("syncing", "Menyinkronkan...");
+      const qs = new URLSearchParams(paramsObj).toString();
+      const fullUrl = url + (url.indexOf("?") === -1 ? "?" : "&") + qs;
+
+      for (let attempt = 0; attempt <= retries; attempt++) {
+        try {
+          const resp = await fetch(fullUrl, { method: "GET", cache: "no-store" });
+          const data = await resp.json();
+          if (data && data.serverTime) {
+            appState.serverTimeOffsetMs = data.serverTime - Date.now();
+          }
+          setSyncStatus("online", "Terhubung Real-Time");
+          return data;
+        } catch (err) {
+          if (attempt === retries) {
+            setSyncStatus("offline", "Gangguan Jaringan (Mencoba Ulang...)");
+            throw err;
+          }
+          await new Promise(r => setTimeout(r, 1200 * (attempt + 1)));
+        }
+      }
+    }
+
+    async function apiPost(payloadObj, retries = 2) {
+      const url = resolveActiveScriptUrl();
+      if (!url) {
+        return simulateBackendPost(payloadObj);
+      }
+
+      setSyncStatus("syncing", "Mengirim Data...");
+      for (let attempt = 0; attempt <= retries; attempt++) {
+        try {
+          // Menggunakan text/plain agar terhindar dari preflight CORS OPTIONS di GitHub Pages
+          const resp = await fetch(url, {
+            method: "POST",
+            headers: { "Content-Type": "text/plain;charset=utf-8" },
+            body: JSON.stringify(payloadObj)
+          });
+          const data = await resp.json();
+          if (data && data.serverTime) {
+            appState.serverTimeOffsetMs = data.serverTime - Date.now();
+          }
+          setSyncStatus("online", "Tersimpan di Server");
+          return data;
+        } catch (err) {
+          if (attempt === retries) {
+            setSyncStatus("offline", "Koneksi Terputus");
+            showToast("Koneksi ke server terputus. Meminta ulang secara otomatis...", "warn");
+            throw err;
+          }
+          await new Promise(r => setTimeout(r, 1300 * (attempt + 1)));
+        }
+      }
+    }
+
+    function buildPreviewBoxesList() {
+      if (appState.kotakList && appState.kotakList.length === 30) return appState.kotakList;
+      const list = [];
+      const stemLabels = ["M", "S-T-M", "T-E-M", "S-T-E-M", "S-E-M", "E-M"];
+      for (let i = 1; i <= 30; i++) {
+        const lvl = i <= 10 ? "MUDAH" : (i <= 20 ? "SEDANG" : "SULIT");
+        list.push({
+          no_kotak: i,
+          level: lvl,
+          tipe: (i % 3 === 0) ? "DND" : "FILL",
+          label_stem: lvl === "SULIT" ? stemLabels[i % stemLabels.length] : "M",
+          judul_konteks: lvl === "SULIT" ? ("Modul Rekayasa STEM #" + i) : ("Modul Kalibrasi #" + i),
+          status: "TERSEDIA",
+          pemilih: "",
+          batas_waktu_detik: lvl === "MUDAH" ? 180 : (lvl === "SEDANG" ? 300 : 480),
+          percobaan_ke: 0,
+          pakai_hint: false,
+          status_benar: false,
+          skor_kotak: 0
+        });
+      }
+      return list;
+    }
+
+    async function simulateBackendGet(params) {
+      appState.isSimulationMode = true;
+      setSyncStatus("offline", "Mode Pratinjau (Tempel SCRIPT_URL untuk Server Kelas)");
+      const action = params.action || "getDashboardState";
+      const kotak = buildPreviewBoxesList();
+      if (action === "getInitialData" || action === "getDashboardState") {
+        return {
+          ok: true,
+          serverTime: Date.now(),
+          pengaturan: appState.pengaturan,
+          misiTerbuka: [1, 2, 3, 4, 5, 6],
+          kotak: kotak
+        };
+      }
+      return {
+        ok: true,
+        serverTime: Date.now(),
+        siswa: {
+          nama_siswa: appState.studentName,
+          xp: appState.siswaProfil.xp,
+          level_insinyur: appState.siswaProfil.level_insinyur,
+          badges: appState.siswaProfil.badges
+        },
+        progres: appState.progres,
+        soalAktif: appState.soalAktif,
+        riwayatKotakSiswa: appState.riwayatKotakSiswa,
+        refleksiSiswa: appState.refleksiSiswa
+      };
+    }
+
+    async function simulateBackendPost(body) {
+      appState.isSimulationMode = true;
+      setSyncStatus("offline", "Mode Pratinjau (Tempel SCRIPT_URL untuk Server Kelas)");
+      const action = body.action;
+
+      if (action === "login") {
+        appState.studentName = body.nama;
+        return {
+          ok: true,
+          warningMultiDevice: false,
+          siswa: {
+            nama_siswa: body.nama,
+            xp: appState.siswaProfil.xp,
+            level_insinyur: appState.siswaProfil.level_insinyur,
+            badges: appState.siswaProfil.badges
+          },
+          progres: appState.progres,
+          soalAktif: null,
+          riwayatKotakSiswa: appState.riwayatKotakSiswa,
+          refleksiSiswa: appState.refleksiSiswa
+        };
+      }
+
+      if (action === "saveMissionProgress") {
+        const m = Number(body.misi);
+        appState.progres["m" + m + "_selesai"] = true;
+        if (body.bagian1 || body.bagian2) {
+          appState.refleksiSiswa["MISI_" + m] = { bagian_1: body.bagian1 || "", bagian_2: body.bagian2 || "" };
+        }
+        appState.siswaProfil.xp += 25;
+        if (m === 2 && !appState.siswaProfil.badges.includes("Peneliti Pola")) appState.siswaProfil.badges.push("Peneliti Pola");
+        if (m === 3 && !appState.siswaProfil.badges.includes("Perumus Teorema")) appState.siswaProfil.badges.push("Perumus Teorema");
+        if (m === 6 && !appState.siswaProfil.badges.includes("Penjaga Limboto")) appState.siswaProfil.badges.push("Penjaga Limboto");
+        return simulateBackendGet({ action: "getStudentSession" });
+      }
+
+      if (action === "claimBox") {
+        return {
+          ok: false,
+          message: "Untuk mengklaim dan memvalidasi 30 Kotak Soal secara aman (kunci jawaban berada di Google Sheets server), silakan klik tombol '⚙️ Koneksi Server' di kanan atas lalu tempelkan URL Web App (/exec) dari Google Apps Script Anda."
+        };
+      }
+
+      return { ok: true, serverTime: Date.now() };
+    }
+
+    function populateWhitelistDropdown() {
+      const sel = document.getElementById("selectStudentName");
+      if (!sel) return;
+      sel.innerHTML = '<option value="">-- Pilih Nama Lengkap Anda --</option>';
+      WHITELIST_SISWA.forEach((nama) => {
+        const opt = document.createElement("option");
+        opt.value = nama; // Tanda petik pada Nida' Husniah R. Ma'ruf aman menggunakan DOM property
+        opt.textContent = nama;
+        sel.appendChild(opt);
+      });
+    }
+
+    function generateClientToken() {
+      return "tok-" + Math.random().toString(36).substring(2, 10) + "-" + Date.now().toString(36);
+    }
+
+    async function handleStudentLogin(forceTakeover = false) {
+      const sel = document.getElementById("selectStudentName");
+      const nama = sel ? sel.value.trim() : "";
+      if (!nama) {
+        showToast("Silakan pilih nama Anda dari daftar putih terlebih dahulu.", "warn");
+        return;
+      }
+
+      const btn = document.getElementById("btnLoginSubmit");
+      btn.disabled = true;
+      btn.textContent = "⏳ Menghubungi Pos Komando...";
+
+      try {
+        if (!appState.sessionToken) {
+          appState.sessionToken = generateClientToken();
+        }
+        const res = await apiPost({
+          action: "login",
+          nama: nama,
+          token: appState.sessionToken,
+          forceTakeover: forceTakeover
+        });
+
+        if (!res.ok) {
+          showToast(res.message || "Gagal masuk sesi.", "error");
+          return;
+        }
+
+        // Deteksi multi-perangkat aktif (tampilkan konfirmasi ramah tanpa blokir permanen)
+        if (res.warningMultiDevice && !forceTakeover) {
+          const modalRes = await openCustomModal({
+            title: "Peringatan Sesi Perangkat Lain Aktif",
+            htmlBody: `<p>${res.message}</p><p style="margin-top:8px; font-size:0.84rem; color:var(--gold-light);">Progres dan sisa waktu Anda tetap aman di server.</p>`,
+            showCancel: true,
+            confirmText: "Ya, Alihkan ke Perangkat Ini",
+            cancelText: "Batal"
+          });
+          if (modalRes.confirmed) {
+            await handleStudentLogin(true);
+          }
+          return;
+        }
+
+        appState.studentName = nama;
+        safeSetStorage(STORAGE_KEY_SESSION, JSON.stringify({
+          nama: nama,
+          token: appState.sessionToken
+        }));
+
+        applySessionPayload(res);
+        enterWorkspaceView();
+        showToast("Assalamu'alaikum, " + nama + "! Sesi berhasil dimuat.", "success");
+      } catch (err) {
+        showToast("Tidak dapat terhubung ke server. Periksa internet atau URL Web App.", "error");
+      } finally {
+        btn.disabled = false;
+        btn.textContent = "🚀 Masuk ke Pos Komando Misi";
+      }
+    }
+
+    function applySessionPayload(payload) {
+      if (!payload) return;
+      if (payload.siswa) {
+        appState.siswaProfil = {
+          xp: Number(payload.siswa.xp || 0),
+          level_insinyur: payload.siswa.level_insinyur || "Insinyur Muda Lv. 1",
+          badges: Array.isArray(payload.siswa.badges) ? payload.siswa.badges : []
+        };
+      }
+      if (payload.progres) {
+        appState.progres = Object.assign({}, appState.progres, payload.progres);
+      }
+      if (Array.isArray(payload.riwayatKotakSiswa)) {
+        appState.riwayatKotakSiswa = payload.riwayatKotakSiswa;
+      }
+      if (payload.refleksiSiswa) {
+        appState.refleksiSiswa = payload.refleksiSiswa;
+        populateSavedReflections();
+      }
+      if (payload.soalAktif !== undefined) {
+        appState.soalAktif = payload.soalAktif;
+      }
+
+      updateStudentHudUI();
+      updateMissionTabsUI();
+      renderQuotaBannerUI();
+      renderActiveQuestionWorkspace();
+      renderPresentationPortfolio();
+    }
+
+    function updateStudentHudUI() {
+      document.getElementById("hudStudentName").textContent = appState.studentName || "-";
+      document.getElementById("hudEngineerTitle").textContent = appState.siswaProfil.level_insinyur || "Insinyur Muda Lv. 1";
+      const xp = Number(appState.siswaProfil.xp || 0);
+      document.getElementById("hudXpText").textContent = xp + " XP";
+      document.getElementById("hudTotalScore").textContent = "Skor Arena: " + (appState.progres.total_skor || 0);
+
+      const pct = Math.min(100, Math.max(8, Math.round((xp / 260) * 100)));
+      document.getElementById("hudXpBar").style.width = pct + "%";
+
+      const badgesWrap = document.getElementById("hudBadgesList");
+      const badges = appState.siswaProfil.badges || [];
+      if (badges.length === 0) {
+        badgesWrap.innerHTML = '<span style="font-size:0.8rem; color:var(--text-muted);">Belum ada lencana — ayo tuntaskan misi!</span>';
+      } else {
+        badgesWrap.innerHTML = badges.map(b => `<span class="badge-chip">🏅 ${b}</span>`).join("");
+      }
+    }
+
+    function updateMissionTabsUI() {
+      const buttons = document.querySelectorAll(".mission-tab");
+      buttons.forEach((btn) => {
+        const m = Number(btn.getAttribute("data-misi"));
+        const isDone = Boolean(appState.progres["m" + m + "_selesai"]);
+        const isUnlocked = appState.misiTerbuka.indexOf(m) !== -1;
+
+        btn.disabled = !isUnlocked;
+        btn.classList.toggle("done", isDone);
+        btn.classList.toggle("active", appState.currentMission === m);
+
+        const statusSpan = document.getElementById("statusM" + m);
+        if (statusSpan) {
+          statusSpan.textContent = !isUnlocked ? "🔒" : (isDone ? "✅" : "•");
+        }
+      });
+
+      const bannerM6 = document.getElementById("missionCompleteBanner");
+      if (bannerM6) {
+        bannerM6.classList.toggle("hidden", !appState.progres.m6_selesai);
+      }
+    }
+
+    function switchMissionTab(misiNum) {
+      const m = Number(misiNum);
+      if (appState.misiTerbuka.indexOf(m) === -1) {
+        showToast("Misi " + m + " saat ini sedang dikunci oleh Ustadz/Ustadzah.", "warn");
+        return;
+      }
+      appState.currentMission = m;
+      for (let i = 1; i <= 6; i++) {
+        const panel = document.getElementById("panelMisi" + i);
+        if (panel) panel.classList.toggle("hidden", i !== m);
+      }
+      updateMissionTabsUI();
+      if (m === 5) renderPresentationPortfolio();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    function populateSavedReflections() {
+      const r1 = appState.refleksiSiswa["MISI_1"];
+      if (r1) {
+        document.getElementById("inputM1Diketahui").value = r1.bagian_1 || "";
+        document.getElementById("inputM1Ditanya").value = r1.bagian_2 || "";
+      }
+      const r5 = appState.refleksiSiswa["MISI_5"];
+      if (r5) {
+        document.getElementById("inputM5Catatan").value = r5.bagian_1 || "";
+        document.getElementById("inputM5Strategi").value = r5.bagian_2 || "";
+      }
+      const r6 = appState.refleksiSiswa["MISI_6"];
+      if (r6) {
+        document.getElementById("inputM6Duniawi").value = r6.bagian_1 || "";
+        document.getElementById("inputM6Ukhrowi").value = r6.bagian_2 || "";
+      }
+    }
+
+    async function handleSaveMisi1() {
+      const diketahui = document.getElementById("inputM1Diketahui").value.trim();
+      const ditanya = document.getElementById("inputM1Ditanya").value.trim();
+      if (diketahui.length < 10 || ditanya.length < 10) {
+        showToast("Mohon lengkapi komponen Diketahui dan Ditanyakan minimal 1 kalimat jelas.", "warn");
+        return;
+      }
+
+      const btn = document.getElementById("btnSaveMisi1");
+      btn.disabled = true;
+      try {
+        const res = await apiPost({
+          action: "saveMissionProgress",
+          nama: appState.studentName,
+          token: appState.sessionToken,
+          misi: 1,
+          bagian1: diketahui,
+          bagian2: ditanya
+        });
+        if (res.ok) {
+          applySessionPayload(res);
+          showToast("Misi 1 (Telaah) tuntas! Lanjut ke Misi 2 (Eksplorasi).", "success");
+          switchMissionTab(2);
+        } else {
+          showToast(res.message || "Gagal menyimpan Misi 1.", "error");
+        }
+      } finally {
+        btn.disabled = false;
+      }
+    }
+
+    function checkExplorationSample(sampleNum) {
+      if (sampleNum === 1) {
+        const v1 = document.getElementById("exp1Sisa").value.trim();
+        const v2 = document.getElementById("exp1Substitusi").value.trim();
+        const fb = document.getElementById("feedbackExp1");
+        fb.classList.remove("hidden", "success", "warn");
+        if (v1 === "2" && v2 === "2") {
+          appState.expVerified[1] = true;
+          fb.classList.add("success");
+          fb.innerHTML = "✅ <strong>Tepat!</strong> Sisa pembagian manual ($S = 2$) sama persis dengan nilai substitusi $f(3) = 9 - 15 + 8 = 2$.";
+          document.getElementById("badgeExp1").textContent = "✅ Terverifikasi (S = f(3) = 2)";
+          document.getElementById("badgeExp1").style.color = "var(--emerald-primary)";
+        } else {
+          fb.classList.add("warn");
+          fb.innerHTML = "💡 Perhatikan bahwa pada $x^2 - 5x + 8 = (x - 3)(x - 2) + 2$, sisa pembagiannya adalah $2$, dan $f(3) = 9 - 15 + 8 = 2$.";
+        }
+        renderMathInContainer(fb);
+      }
+
+      if (sampleNum === 2) {
+        const v1 = document.getElementById("exp2PembuatNol").value.trim();
+        const v2 = document.getElementById("exp2Substitusi").value.trim();
+        const fb = document.getElementById("feedbackExp2");
+        fb.classList.remove("hidden", "success", "warn");
+        if (v1 === "-2" && v2 === "9") {
+          appState.expVerified[2] = true;
+          fb.classList.add("success");
+          fb.innerHTML = "✅ <strong>Tepat sekali!</strong> Pembuat nol dari $(x + 2)$ adalah $x = -2$, dan nilai $f(-2) = -16 + 12 + 8 + 5 = 9$ (sama dengan sisa skema Horner!).";
+          document.getElementById("badgeExp2").textContent = "✅ Terverifikasi (S = f(-2) = 9)";
+          document.getElementById("badgeExp2").style.color = "var(--emerald-primary)";
+        } else {
+          fb.classList.add("warn");
+          fb.innerHTML = "💡 Ingat: pembuat nol dari $x + 2 = 0$ adalah $x = -2$ (perhatikan tanda negatif!), lalu $(-16) + 12 + 8 + 5 = 9$.";
+        }
+        renderMathInContainer(fb);
+      }
+
+      if (sampleNum === 3) {
+        const v1 = document.getElementById("exp3PembuatNol").value.trim().replace(",", ".");
+        const v2 = document.getElementById("exp3Substitusi").value.trim();
+        const fb = document.getElementById("feedbackExp3");
+        fb.classList.remove("hidden", "success", "warn");
+        if ((v1 === "1/2" || v1 === "0.5") && v2 === "2") {
+          appState.expVerified[3] = true;
+          fb.classList.add("success");
+          fb.innerHTML = "✅ <strong>Luar biasa!</strong> Pembuat nol dari $(2x - 1)$ adalah $x = \\frac{1}{2}$, dan nilai $f\\left(\\frac{1}{2}\\right) = \\frac{1}{2} + \\frac{5}{2} - 1 = 2$.";
+          document.getElementById("badgeExp3").textContent = "✅ Terverifikasi (S = f(1/2) = 2)";
+          document.getElementById("badgeExp3").style.color = "var(--emerald-primary)";
+        } else {
+          fb.classList.add("warn");
+          fb.innerHTML = "💡 Dari $2x - 1 = 0$, kita peroleh $x = \\frac{1}{2}$ (atau $0,5$). Substitusinya menghasilkan $\\frac{1}{2} + \\frac{5}{2} - 1 = 3 - 1 = 2$.";
+        }
+        renderMathInContainer(fb);
+      }
+    }
+
+    async function handleSaveMisi2() {
+      const concl = document.getElementById("selectM2Conclusion").value;
+      const fb = document.getElementById("feedbackM2Conclusion");
+      fb.classList.remove("hidden", "success", "warn");
+
+      if (!appState.expVerified[1] || !appState.expVerified[2] || !appState.expVerified[3]) {
+        showToast("Selesaikan dan klik tombol Bandingkan pada ketiga sampel laboratorium terlebih dahulu.", "warn");
+        return;
+      }
+
+      if (concl !== "correct") {
+        fb.classList.add("warn");
+        fb.innerHTML = "💡 <strong>Periksa kembali penalaran aljabarnya:</strong> Pada persamaan $f(x) = (x - k)\\cdot H(x) + S$, ketika kita menyubstitusikan $x = k$, faktor $(k - k)$ bernilai $0$, sehingga suku $(k - k)\\cdot H(k)$ lenyap menjadi $0$ dan menyisakan $f(k) = S$.";
+        renderMathInContainer(fb);
+        return;
+      }
+
+      fb.classList.add("success");
+      fb.innerHTML = "✅ <strong>Alhamdulillah, penalaran yang sangat tajam!</strong> Inilah bukti mengapa kita tidak perlu menghitung hasil bagi $H(x)$ untuk mendapatkan sisa $S$.";
+
+      const btn = document.getElementById("btnSaveMisi2");
+      btn.disabled = true;
+      try {
+        const res = await apiPost({
+          action: "saveMissionProgress",
+          nama: appState.studentName,
+          token: appState.sessionToken,
+          misi: 2,
+          bagian1: "Eksplorasi 3 sampel terverifikasi: f(3)=2, f(-2)=9, f(1/2)=2",
+          bagian2: "Bukti f(x) = (x-k)H(x) + S => f(k) = S"
+        });
+        if (res.ok) {
+          applySessionPayload(res);
+          showToast("Misi 2 (Eksplorasi) selesai! Lencana 'Peneliti Pola' diraih.", "success");
+          switchMissionTab(3);
+        }
+      } finally {
+        btn.disabled = false;
+      }
+    }
+
+    const MISI3_DND_CONFIG = {
+      slots: [
+        { idx: 0, title: "1. Polinomial $f(x)$ dibagi oleh pembagi linear $(x - k)$" },
+        { idx: 1, title: "2. Polinomial $f(x)$ dibagi oleh pembagi linear $(ax + b)$" },
+        { idx: 2, title: "3. Polinomial $f(x)$ dibagi oleh pembagi kuadrat $(x - a)(x - b)$" },
+        { idx: 3, title: "4. Syarat $(x - k)$ merupakan faktor dari $f(x)$ (Penguatan Teorema Faktor)" }
+      ],
+      options: [
+        { id: "R1", label: "Sisa pembagiannya adalah konstanta $S = f(k)$" },
+        { id: "R2", label: "Sisa pembagiannya adalah konstanta $S = f\\left(-\\frac{b}{a}\\right)$" },
+        { id: "R3", label: "Sisa berbentuk linear $S(x) = px + q$ dengan $f(a) = pa + q$ dan $f(b) = pb + q$" },
+        { id: "R4", label: "Sisa pembagian bernilai nol, yaitu $S = f(k) = 0$" },
+        { id: "X1", label: "Sisa pembagiannya adalah konstanta $S = f\\left(\\frac{b}{a}\\right)$" },
+        { id: "X2", label: "Sisa pembagiannya berbentuk kuadrat $S(x) = px^2 + qx + r$" }
+      ],
+      expectedOrder: ["R1", "R2", "R3", "R4"]
+    };
+
+    function renderMisi3Dnd() {
+      const slotsEl = document.getElementById("misi3Slots");
+      const optsEl = document.getElementById("misi3Options");
+      if (!slotsEl || !optsEl) return;
+
+      const usedIds = Object.values(appState.misi3Placements);
+
+      slotsEl.innerHTML = MISI3_DND_CONFIG.slots.map((slot) => {
+        const placedId = appState.misi3Placements[slot.idx];
+        const placedObj = MISI3_DND_CONFIG.options.find(o => o.id === placedId);
+        const readyClass = appState.misi3SelectedCardId ? "ready-target" : "";
+        return `
+          <div class="dnd-slot ${placedObj ? 'filled' : ''} ${readyClass}"
+               data-slot-idx="${slot.idx}"
+               ondragover="event.preventDefault(); this.classList.add('drag-over');"
+               ondragleave="this.classList.remove('drag-over');"
+               ondrop="handleMisi3Drop(event, ${slot.idx})"
+               onclick="handleMisi3SlotTap(${slot.idx})">
+            <div class="dnd-slot-label">${slot.title}</div>
+            <div style="font-size:0.94rem; color:${placedObj ? '#fff' : 'var(--text-muted)'};">
+              ${placedObj ? `✅ ${placedObj.label} <span style="font-size:0.75rem; color:var(--gold-light); margin-left:6px;">(Ketuk untuk ganti)</span>` : '➕ Ketuk atau seret kartu rumus ke kotak ini'}
+            </div>
+          </div>
+        `;
+      }).join("");
+
+      optsEl.innerHTML = MISI3_DND_CONFIG.options.map((opt) => {
+        const isUsed = usedIds.indexOf(opt.id) !== -1;
+        const isSelected = appState.misi3SelectedCardId === opt.id;
+        return `
+          <div class="dnd-card ${isUsed ? 'used' : ''} ${isSelected ? 'selected-tap' : ''}"
+               draggable="${!isUsed}"
+               ondragstart="handleMisi3DragStart(event, '${opt.id}')"
+               onclick="handleMisi3CardTap('${opt.id}')">
+            <span>${opt.label}</span>
+            <span style="font-size:0.75rem; color:var(--cyan-primary);">⠿</span>
+          </div>
+        `;
+      }).join("");
+
+      renderMathInContainer(slotsEl);
+      renderMathInContainer(optsEl);
+    }
+
+    function handleMisi3DragStart(ev, cardId) {
+      ev.dataTransfer.setData("text/plain", cardId);
+      appState.misi3SelectedCardId = cardId;
+    }
+
+    function handleMisi3Drop(ev, slotIdx) {
+      ev.preventDefault();
+      const cardId = ev.dataTransfer.getData("text/plain") || appState.misi3SelectedCardId;
+      if (cardId) {
+        appState.misi3Placements[slotIdx] = cardId;
+        appState.misi3SelectedCardId = null;
+        renderMisi3Dnd();
+      }
+    }
+
+    function handleMisi3CardTap(cardId) {
+      if (appState.misi3SelectedCardId === cardId) {
+        appState.misi3SelectedCardId = null;
+      } else {
+        appState.misi3SelectedCardId = cardId;
+      }
+      renderMisi3Dnd();
+    }
+
+    function handleMisi3SlotTap(slotIdx) {
+      if (appState.misi3SelectedCardId) {
+        appState.misi3Placements[slotIdx] = appState.misi3SelectedCardId;
+        appState.misi3SelectedCardId = null;
+        renderMisi3Dnd();
+      } else if (appState.misi3Placements[slotIdx]) {
+        delete appState.misi3Placements[slotIdx];
+        renderMisi3Dnd();
+      }
+    }
+
+    function resetMisi3Dnd() {
+      appState.misi3Placements = {};
+      appState.misi3SelectedCardId = null;
+      document.getElementById("feedbackMisi3").classList.add("hidden");
+      renderMisi3Dnd();
+    }
+
+    async function handleVerifyMisi3() {
+      const fb = document.getElementById("feedbackMisi3");
+      fb.classList.remove("hidden", "success", "warn", "error");
+
+      const currentArr = [0, 1, 2, 3].map(i => appState.misi3Placements[i] || "");
+      if (currentArr.some(x => !x)) {
+        showToast("Lengkapi keempat slot rumusan Teorema Sisa terlebih dahulu.", "warn");
+        return;
+      }
+
+      const isCorrect = currentArr.every((val, idx) => val === MISI3_DND_CONFIG.expectedOrder[idx]);
+      if (!isCorrect) {
+        fb.classList.add("warn");
+        fb.innerHTML = "⚠️ <strong>Masih ada pasangan rumus yang belum tepat.</strong> Perhatikan bahwa pembuat nol dari $(ax + b) = 0$ adalah $x = -\\frac{b}{a}$ (bertanda negatif!), dan jika dibagi polinomial berderajat 2 seperti $(x - a)(x - b)$, maka derajat sisanya maksimal berderajat 1 yaitu $S(x) = px + q$.";
+        renderMathInContainer(fb);
+        return;
+      }
+
+      fb.classList.add("success");
+      fb.innerHTML = "✅ <strong>Sempurna!</strong> Keempat rumusan Teorema Sisa telah terverifikasi. Anda kini siap memasuki <strong>Misi 4: Arena 30 Kotak Soal</strong>!";
+
+      const btn = document.getElementById("btnVerifyMisi3");
+      btn.disabled = true;
+      try {
+        const res = await apiPost({
+          action: "saveMissionProgress",
+          nama: appState.studentName,
+          token: appState.sessionToken,
+          misi: 3,
+          bagian1: "Formulasi Teorema Sisa Terverifikasi (R1,R2,R3,R4)",
+          bagian2: "Siap masuk Arena Misi 4"
+        });
+        if (res.ok) {
+          applySessionPayload(res);
+          showToast("Misi 3 (Rumuskan) selesai! Lencana 'Perumus Teorema' diraih.", "success");
+          setTimeout(() => switchMissionTab(4), 900);
+        }
+      } finally {
+        btn.disabled = false;
+      }
+    }
+
+    function renderQuotaBannerUI() {
+      const levels = ["MUDAH", "SEDANG", "SULIT"];
+      const propMap = { MUDAH: "kotak_mudah", SEDANG: "kotak_sedang", SULIT: "kotak_sulit" };
+      const basePts = {
+        MUDAH: appState.pengaturan.POIN_MUDAH || 10,
+        SEDANG: appState.pengaturan.POIN_SEDANG || 20,
+        SULIT: appState.pengaturan.POIN_SULIT || 30
+      };
+
+      levels.forEach((lvl) => {
+        const card = document.getElementById("quotaCard" + lvl);
+        const textEl = document.getElementById("quotaText" + lvl);
+        const badgeEl = document.getElementById("quotaBadge" + lvl);
+        if (!card || !textEl || !badgeEl) return;
+
+        card.className = "quota-slot";
+        const chosenNo = appState.progres[propMap[lvl]];
+        const riwayat = appState.riwayatKotakSiswa.find(r => Number(r.no_kotak) === Number(chosenNo));
+
+        if (!chosenNo) {
+          textEl.textContent = "Belum Memilih Kotak";
+          badgeEl.textContent = basePts[lvl] + " Poin Dasar";
+        } else if (riwayat && riwayat.status === "SELESAI") {
+          card.classList.add("filled-correct");
+          textEl.textContent = "Kotak #" + chosenNo + " • Selesai (" + (riwayat.status_benar ? "Benar" : "Selesai") + ")";
+          badgeEl.textContent = "Skor: " + riwayat.skor_kotak;
+        } else {
+          card.classList.add("filled-active");
+          textEl.textContent = "Kotak #" + chosenNo + " • Sedang Dikerjakan";
+          badgeEl.textContent = "Aktif";
+        }
+      });
+    }
+
+    function renderArenaBoxesGrid() {
+      const boxes = (appState.kotakList && appState.kotakList.length > 0)
+        ? appState.kotakList
+        : buildPreviewBoxesList();
+
+      const groups = {
+        MUDAH: document.getElementById("gridBoxesMudah"),
+        SEDANG: document.getElementById("gridBoxesSedang"),
+        SULIT: document.getElementById("gridBoxesSulit")
+      };
+
+      if (!groups.MUDAH || !groups.SEDANG || !groups.SULIT) return;
+      groups.MUDAH.innerHTML = "";
+      groups.SEDANG.innerHTML = "";
+      groups.SULIT.innerHTML = "";
+
+      document.getElementById("infoLimitMudah").textContent =
+        `Waktu: ${Math.round((appState.pengaturan.WAKTU_MUDAH_DETIK || 180) / 60)} Menit | Poin Dasar: ${appState.pengaturan.POIN_MUDAH || 10}`;
+      document.getElementById("infoLimitSedang").textContent =
+        `Waktu: ${Math.round((appState.pengaturan.WAKTU_SEDANG_DETIK || 300) / 60)} Menit | Poin Dasar: ${appState.pengaturan.POIN_SEDANG || 20}`;
+      document.getElementById("infoLimitSulit").textContent =
+        `Waktu: ${Math.round((appState.pengaturan.WAKTU_SULIT_DETIK || 480) / 60)} Menit | Poin Dasar: ${appState.pengaturan.POIN_SULIT || 30}`;
+
+      boxes.forEach((box) => {
+        const lvl = String(box.level || "MUDAH").toUpperCase();
+        const status = String(box.status || "TERSEDIA").toUpperCase();
+        const pemilih = String(box.pemilih || "").trim();
+        const isMine = pemilih && pemilih === appState.studentName;
+
+        let stateClass = "tersedia";
+        let statusLabel = "⚡ Tersedia — Klik Klaim";
+
+        if (status !== "TERSEDIA") {
+          if (isMine && status === "DIKERJAKAN") {
+            stateClass = "mine-active";
+            statusLabel = "⏳ Sedang Anda Kerjakan";
+          } else if (isMine && status === "SELESAI") {
+            stateClass = "mine-done";
+            statusLabel = box.status_benar
+              ? `✅ Tuntas • Skor ${box.skor_kotak}`
+              : `📘 Selesai • Lihat Pembahasan`;
+          } else {
+            stateClass = "locked-other";
+            statusLabel = `🔒 ${pemilih || "Terkunci"}`;
+          }
+        }
+
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = `box-card level-${lvl} ${stateClass}`;
+        btn.innerHTML = `
+          <div style="display:flex; justify-content:space-between; align-items:center; width:100%;">
+            <span class="box-num">#${box.no_kotak}</span>
+            <span class="stem-tag">${box.label_stem || "M"} • ${box.tipe === "DND" ? "Susun" : "Isian"}</span>
+          </div>
+          <div style="font-size:0.84rem; font-weight:700; color:#e2e8f0; line-height:1.35;">
+            ${box.judul_konteks || ("Modul Sensor #" + box.no_kotak)}
+          </div>
+          <div style="font-size:0.75rem; font-weight:700; color:${isMine ? 'var(--gold-light)' : (status === 'TERSEDIA' ? 'var(--cyan-primary)' : '#94a3b8')};">
+            ${statusLabel}
+          </div>
+        `;
+
+        btn.onclick = () => handleBoxCardClick(box);
+        if (groups[lvl]) groups[lvl].appendChild(btn);
+      });
+    }
+
+    async function handleBoxCardClick(box) {
+      const no = Number(box.no_kotak);
+      const status = String(box.status || "TERSEDIA").toUpperCase();
+      const pemilih = String(box.pemilih || "").trim();
+      const isMine = pemilih === appState.studentName;
+
+      // Jika kotak milik siswa sendiri dan sudah SELESAI, tampilkan kembali pembahasannya
+      if (isMine && status === "SELESAI") {
+        const riwayat = appState.riwayatKotakSiswa.find(r => Number(r.no_kotak) === no);
+        if (riwayat) {
+          showCompletedBoxReview(riwayat);
+        }
+        return;
+      }
+
+      // Jika kotak sedang dikerjakan siswa sendiri, scroll ke ruang kerja soal
+      if (isMine && status === "DIKERJAKAN") {
+        const ws = document.getElementById("activeQuestionWorkspace");
+        if (ws) ws.scrollIntoView({ behavior: "smooth" });
+        return;
+      }
+
+      // Jika kotak sudah diklaim siswa lain
+      if (status !== "TERSEDIA" && !isMine) {
+        showToast(`Kotak #${no} telah diklaim oleh ${pemilih}. Silakan pilih kotak lain yang masih tersedia.`, "warn");
+        return;
+      }
+
+      // Konfirmasi klaim kotak secara atomik
+      const confirmRes = await openCustomModal({
+        title: `Klaim Modul Kotak #${no} (Level ${box.level})?`,
+        htmlBody: `
+          <p>Anda akan mengklaim <strong>Kotak #${no} (${box.judul_konteks})</strong> untuk kuota level <strong>${box.level}</strong>.</p>
+          <ul style="margin-top:10px; padding-left:18px; font-size:0.86rem; color:var(--gold-light);">
+            <li>Begitu diklaim, kotak ini terkunci atas nama Anda dan <strong>timer server langsung berjalan</strong>.</li>
+            <li>Anda memiliki maksimal <strong>2 kali percobaan</strong> untuk menjawab.</li>
+          </ul>
+        `,
+        showCancel: true,
+        confirmText: "⚡ Ya, Klaim & Mulai Timer",
+        cancelText: "Batal"
+      });
+
+      if (!confirmRes.confirmed) return;
+
+      try {
+        const res = await apiPost({
+          action: "claimBox",
+          nama: appState.studentName,
+          token: appState.sessionToken,
+          noKotak: no
+        });
+
+        if (!res.ok) {
+          showToast(res.message || "Gagal mengklaim kotak.", "warn");
+          await pollLiveState();
+          return;
+        }
+
+        appState.soalAktif = res.soalAktif;
+        appState.arenaPlacements = {};
+        appState.arenaSelectedCardId = null;
+
+        // Perbarui kuota lokal
+        const lvl = String(res.soalAktif.level).toUpperCase();
+        if (lvl === "MUDAH") appState.progres.kotak_mudah = no;
+        if (lvl === "SEDANG") appState.progres.kotak_sedang = no;
+        if (lvl === "SULIT") appState.progres.kotak_sulit = no;
+
+        renderQuotaBannerUI();
+        renderActiveQuestionWorkspace();
+        await pollLiveState();
+
+        const ws = document.getElementById("activeQuestionWorkspace");
+        if (ws) ws.scrollIntoView({ behavior: "smooth" });
+      } catch (err) {
+        showToast("Gagal menghubungi server saat klaim kotak.", "error");
+      }
+    }
+
+    function renderActiveQuestionWorkspace() {
+      const ws = document.getElementById("activeQuestionWorkspace");
+      if (!ws) return;
+
+      if (appState.countdownTimerId) {
+        clearInterval(appState.countdownTimerId);
+        appState.countdownTimerId = null;
+      }
+
+      const aktif = appState.soalAktif;
+      if (!aktif || !aktif.soal) {
+        ws.classList.add("hidden");
+        return;
+      }
+
+      ws.classList.remove("hidden");
+      const soal = aktif.soal;
+
+      document.getElementById("activeQLevelBadge").textContent = `KOTAK #${aktif.no_kotak} • ${aktif.level}`;
+      document.getElementById("activeQStemBadge").textContent = `INTEGRASI ${soal.label_stem || "M"}`;
+      const nextTry = Math.min(2, Number(aktif.percobaan_ke || 0) + 1);
+      document.getElementById("activeQAttemptBadge").textContent = `Percobaan ${nextTry} dari 2`;
+      document.getElementById("activeQTitle").textContent = soal.judul_konteks || `Modul Sensor #${aktif.no_kotak}`;
+
+      const bodyEl = document.getElementById("activeQBody");
+      bodyEl.innerHTML = formatRichMathText(soal.teks_soal);
+      renderMathInContainer(bodyEl);
+
+      // Tampilkan Hint jika sudah dibuka sebelumnya
+      const hintBox = document.getElementById("activeQHintBox");
+      const btnHint = document.getElementById("btnRequestHint");
+      if (aktif.pakai_hint && aktif.hint_teks) {
+        hintBox.classList.remove("hidden");
+        hintBox.innerHTML = `💡 <strong>Petunjuk Kalibrasi (Hint):</strong> ${formatRichMathText(aktif.hint_teks)}`;
+        renderMathInContainer(hintBox);
+        btnHint.disabled = true;
+        btnHint.textContent = "💡 Hint Telah Dibuka";
+      } else {
+        hintBox.classList.add("hidden");
+        btnHint.disabled = false;
+        btnHint.textContent = "💡 Buka Petunjuk / Hint (-15% Poin Dasar)";
+      }
+
+      document.getElementById("activeQSolutionBox").classList.add("hidden");
+      document.getElementById("activeQActionsBar").classList.remove("hidden");
+
+      // Setup Area Jawaban (FILL vs DND)
+      const fillArea = document.getElementById("activeQFillArea");
+      const dndArea = document.getElementById("activeQDndArea");
+
+      if (String(soal.tipe || "FILL").toUpperCase() === "DND" && soal.data_dnd) {
+        fillArea.classList.add("hidden");
+        dndArea.classList.remove("hidden");
+        renderArenaDndQuestion(soal.data_dnd);
+      } else {
+        dndArea.classList.add("hidden");
+        fillArea.classList.remove("hidden");
+        const inp = document.getElementById("inputStudentAnswerFill");
+        inp.disabled = false;
+        if (soal.placeholder_input) {
+          inp.placeholder = soal.placeholder_input;
+        }
+      }
+
+      startServerSyncedCountdown(aktif);
+    }
+
+    function renderArenaDndQuestion(dndData) {
+      const slotsWrap = document.getElementById("arenaDndSlots");
+      const optsWrap = document.getElementById("arenaDndOptions");
+      if (!slotsWrap || !optsWrap || !dndData) return;
+
+      const slots = dndData.slots || [];
+      const options = dndData.options || [];
+      const usedIds = Object.values(appState.arenaPlacements);
+
+      slotsWrap.innerHTML = slots.map((slotLabel, idx) => {
+        const placedId = appState.arenaPlacements[idx];
+        const placedObj = options.find(o => String(o.id) === String(placedId));
+        const readyClass = appState.arenaSelectedCardId ? "ready-target" : "";
+        return `
+          <div class="dnd-slot ${placedObj ? 'filled' : ''} ${readyClass}"
+               ondragover="event.preventDefault(); this.classList.add('drag-over');"
+               ondragleave="this.classList.remove('drag-over');"
+               ondrop="handleArenaDrop(event, ${idx})"
+               onclick="handleArenaSlotTap(${idx})">
+            <div class="dnd-slot-label">${formatRichMathText(slotLabel)}</div>
+            <div style="font-size:0.95rem; color:${placedObj ? '#fff' : 'var(--text-muted)'};">
+              ${placedObj ? `✅ ${formatRichMathText(placedObj.label)} <span style="font-size:0.75rem; color:var(--gold-light);">(Ketuk untuk ubah)</span>` : '➕ Ketuk atau seret kartu jawaban ke sini'}
+            </div>
+          </div>
+        `;
+      }).join("");
+
+      optsWrap.innerHTML = options.map((opt) => {
+        const idStr = String(opt.id);
+        const isUsed = usedIds.indexOf(idStr) !== -1;
+        const isSelected = String(appState.arenaSelectedCardId) === idStr;
+        return `
+          <div class="dnd-card ${isUsed ? 'used' : ''} ${isSelected ? 'selected-tap' : ''}"
+               draggable="${!isUsed}"
+               ondragstart="handleArenaDragStart(event, '${idStr}')"
+               onclick="handleArenaCardTap('${idStr}')">
+            <span>${formatRichMathText(opt.label)}</span>
+            <span style="font-size:0.75rem; color:var(--cyan-primary);">⠿</span>
+          </div>
+        `;
+      }).join("");
+
+      renderMathInContainer(slotsWrap);
+      renderMathInContainer(optsWrap);
+    }
+
+    function handleArenaDragStart(ev, idStr) {
+      ev.dataTransfer.setData("text/plain", idStr);
+      appState.arenaSelectedCardId = idStr;
+    }
+
+    function handleArenaDrop(ev, slotIdx) {
+      ev.preventDefault();
+      const idStr = ev.dataTransfer.getData("text/plain") || appState.arenaSelectedCardId;
+      if (idStr) {
+        appState.arenaPlacements[slotIdx] = idStr;
+        appState.arenaSelectedCardId = null;
+        if (appState.soalAktif && appState.soalAktif.soal) {
+          renderArenaDndQuestion(appState.soalAktif.soal.data_dnd);
+        }
+      }
+    }
+
+    function handleArenaCardTap(idStr) {
+      appState.arenaSelectedCardId = (appState.arenaSelectedCardId === idStr) ? null : idStr;
+      if (appState.soalAktif && appState.soalAktif.soal) {
+        renderArenaDndQuestion(appState.soalAktif.soal.data_dnd);
+      }
+    }
+
+    function handleArenaSlotTap(slotIdx) {
+      if (appState.arenaSelectedCardId) {
+        appState.arenaPlacements[slotIdx] = appState.arenaSelectedCardId;
+        appState.arenaSelectedCardId = null;
+      } else if (appState.arenaPlacements[slotIdx]) {
+        delete appState.arenaPlacements[slotIdx];
+      }
+      if (appState.soalAktif && appState.soalAktif.soal) {
+        renderArenaDndQuestion(appState.soalAktif.soal.data_dnd);
+      }
+    }
+
+    function insertMathChar(ch) {
+      const inp = document.getElementById("inputStudentAnswerFill");
+      if (!inp || inp.disabled) return;
+      const start = inp.selectionStart || inp.value.length;
+      const end = inp.selectionEnd || inp.value.length;
+      inp.value = inp.value.substring(0, start) + ch + inp.value.substring(end);
+      inp.focus();
+    }
+
+    function startServerSyncedCountdown(aktif) {
+      const timerEl = document.getElementById("activeQTimer");
+      if (!timerEl || !aktif) return;
+
+      const mulaiMs = Number(aktif.waktu_mulai_ms || Date.now());
+      const batasDetik = Number(aktif.batas_waktu_detik || 180);
+
+      const tick = () => {
+        const estimatedServerNow = Date.now() + (appState.serverTimeOffsetMs || 0);
+        const elapsedSec = Math.floor((estimatedServerNow - mulaiMs) / 1000);
+        const remainingSec = Math.max(0, batasDetik - elapsedSec);
+
+        const mins = String(Math.floor(remainingSec / 60)).padStart(2, "0");
+        const secs = String(remainingSec % 60).padStart(2, "0");
+        timerEl.textContent = `${mins}:${secs}`;
+
+        timerEl.className = "timer-digits";
+        if (remainingSec <= 30) timerEl.classList.add("danger");
+        else if (remainingSec <= 60) timerEl.classList.add("warning");
+
+        if (remainingSec <= 0) {
+          clearInterval(appState.countdownTimerId);
+          appState.countdownTimerId = null;
+          handleAutoTimeoutSubmit();
+        }
+      };
+
+      tick();
+      appState.countdownTimerId = setInterval(tick, 1000);
+    }
+
+    async function handleAutoTimeoutSubmit() {
+      if (!appState.soalAktif) return;
+      showToast("Waktu pengerjaan habis! Menyinkronkan status soal dengan server...", "warn");
+      await submitArenaAnswerToServer(true);
+    }
+
+    async function handleRequestHintClick() {
+      if (!appState.soalAktif) return;
+      const confirmRes = await openCustomModal({
+        title: "Buka Petunjuk / Hint Kalibrasi?",
+        htmlBody: `<p>Membuka petunjuk akan membantu mengarahkan rumus Teorema Sisa yang tepat, dengan pengurangan <strong>15% dari poin dasar</strong> soal ini.</p>`,
+        showCancel: true,
+        confirmText: "💡 Ya, Buka Hint",
+        cancelText: "Batal"
+      });
+      if (!confirmRes.confirmed) return;
+
+      const btn = document.getElementById("btnRequestHint");
+      btn.disabled = true;
+      try {
+        const res = await apiPost({
+          action: "useHint",
+          nama: appState.studentName,
+          token: appState.sessionToken,
+          noKotak: appState.soalAktif.no_kotak
+        });
+        if (res.ok) {
+          appState.soalAktif.pakai_hint = true;
+          appState.soalAktif.hint_teks = res.hint_teks;
+          const hintBox = document.getElementById("activeQHintBox");
+          hintBox.classList.remove("hidden");
+          hintBox.innerHTML = `💡 <strong>Petunjuk Kalibrasi (Hint):</strong> ${formatRichMathText(res.hint_teks)}`;
+          renderMathInContainer(hintBox);
+          btn.textContent = "💡 Hint Telah Dibuka";
+        } else {
+          btn.disabled = false;
+          showToast(res.message || "Gagal memuat hint.", "warn");
+        }
+      } catch (e) {
+        btn.disabled = false;
+      }
+    }
+
+    async function submitArenaAnswerToServer(forceTimeout = false) {
+      if (!appState.soalAktif || !appState.soalAktif.soal) return;
+      const soal = appState.soalAktif.soal;
+      let jawabanStr = "";
+
+      if (String(soal.tipe || "FILL").toUpperCase() === "DND" && soal.data_dnd) {
+        const totalSlots = (soal.data_dnd.slots || []).length;
+        const arr = [];
+        for (let i = 0; i < totalSlots; i++) {
+          arr.push(appState.arenaPlacements[i] || "");
+        }
+        if (!forceTimeout && arr.some(x => !x)) {
+          showToast("Silakan lengkapi seluruh slot susunan kartu sebelum mengirim jawaban.", "warn");
+          return;
+        }
+        jawabanStr = arr.join(",");
+      } else {
+        jawabanStr = document.getElementById("inputStudentAnswerFill").value.trim();
+        if (!forceTimeout && !jawabanStr) {
+          showToast("Silakan isi jawaban Anda terlebih dahulu.", "warn");
+          return;
+        }
+      }
+
+      const btnSubmit = document.getElementById("btnSubmitArenaAnswer");
+      btnSubmit.disabled = true;
+      btnSubmit.textContent = "⏳ Memvalidasi di Server...";
+
+      try {
+        const res = await apiPost({
+          action: "submitAnswer",
+          nama: appState.studentName,
+          token: appState.sessionToken,
+          noKotak: appState.soalAktif.no_kotak,
+          jawaban: jawabanStr,
+          forceTimeout: forceTimeout
+        });
+
+        if (!res.ok) {
+          showToast(res.message || "Gagal memvalidasi jawaban.", "error");
+          return;
+        }
+
+        const fbBox = document.getElementById("activeQFeedbackBox");
+        const solBox = document.getElementById("activeQSolutionBox");
+        fbBox.classList.remove("hidden", "success", "warn", "error");
+
+        // Jika masih percobaan 1 dan salah (status masih DIKERJAKAN)
+        if (res.statusKotak === "DIKERJAKAN") {
+          appState.soalAktif.percobaan_ke = 1;
+          document.getElementById("activeQAttemptBadge").textContent = "Percobaan 2 dari 2 (Kesempatan Terakhir)";
+          fbBox.classList.add("warn");
+          fbBox.innerHTML = `
+            <div style="font-weight:800; color:var(--gold-light); margin-bottom:4px;">
+              🔍 Umpan Balik Diagnostik (Percobaan 1 Belum Tepat — Sisa 1 Kesempatan):
+            </div>
+            <div>${formatRichMathText(res.umpanBalik)}</div>
+          `;
+          renderMathInContainer(fbBox);
+          showToast("Jawaban belum tepat. Pelajari petunjuk diagnostik untuk kesempatan ke-2!", "warn");
+          return;
+        }
+
+        // Jika Kotak SELESAI (Benar, atau Percobaan 2 selesai, atau Waktu Habis)
+        if (appState.countdownTimerId) {
+          clearInterval(appState.countdownTimerId);
+          appState.countdownTimerId = null;
+        }
+
+        document.getElementById("activeQTimer").textContent = res.benar ? "TUNTAS" : "SELESAI";
+        document.getElementById("activeQActionsBar").classList.add("hidden");
+
+        if (res.benar) {
+          fbBox.classList.add("success");
+          const r = res.rincianSkor || {};
+          fbBox.innerHTML = `
+            <div style="font-weight:800; font-size:1.05rem; color:var(--emerald-primary); margin-bottom:6px;">
+              🎉 ${formatRichMathText(res.umpanBalik)}
+            </div>
+            <div style="font-size:0.86rem; color:#e2e8f0;">
+              <strong>Rincian Skor Server:</strong> Poin Dasar (${r.poinDasar || 0}) + Bonus Kecepatan (+${r.bonusCepat || 0}) − Penalti Hint (${r.potonganHint || 0}) − Penalti Percobaan Ke-2 (${r.potonganPercobaan2 || 0}) = <strong style="color:var(--gold-light);">Total ${res.skor} Poin</strong> (Durasi: ${r.durasiDetik || 0} detik).
+            </div>
+          `;
+          showToast(`Alhamdulillah! Jawaban benar (+${res.skor} Poin).`, "success");
+        } else {
+          fbBox.classList.add("error");
+          fbBox.innerHTML = `
+            <div style="font-weight:800; color:#fda4af; margin-bottom:4px;">
+              📘 Evaluasi Modul #${appState.soalAktif.no_kotak}:
+            </div>
+            <div>${formatRichMathText(res.umpanBalik)}</div>
+          `;
+        }
+
+        if (res.pembahasan) {
+          solBox.classList.remove("hidden");
+          solBox.innerHTML = `
+            <div style="font-weight:800; color:var(--cyan-glow); margin-bottom:8px;">
+              📐 Pembahasan Lengkap Langkah demi Langkah:
+            </div>
+            <div>${formatRichMathText(res.pembahasan)}</div>
+          `;
+          renderMathInContainer(solBox);
+        }
+
+        renderMathInContainer(fbBox);
+
+        // Perbarui progres & riwayat siswa tanpa langsung menutup pembahasan
+        appState.soalAktif = null;
+        if (res.progres) appState.progres = res.progres;
+        if (res.siswa) appState.siswaProfil = res.siswa;
+        if (res.riwayatKotakSiswa) appState.riwayatKotakSiswa = res.riwayatKotakSiswa;
+
+        updateStudentHudUI();
+        updateMissionTabsUI();
+        renderQuotaBannerUI();
+        await pollLiveState();
+      } finally {
+        btnSubmit.disabled = false;
+        btnSubmit.textContent = "🚀 Kirim & Validasi Jawaban ke Server";
+      }
+    }
+
+    function showCompletedBoxReview(riwayat) {
+      const ws = document.getElementById("activeQuestionWorkspace");
+      if (!ws || !riwayat) return;
+      ws.classList.remove("hidden");
+
+      document.getElementById("activeQLevelBadge").textContent = `KOTAK #${riwayat.no_kotak} • ${riwayat.level}`;
+      document.getElementById("activeQStemBadge").textContent = `INTEGRASI ${riwayat.label_stem || "M"}`;
+      document.getElementById("activeQAttemptBadge").textContent = `Selesai (${riwayat.percobaan_ke} Percobaan)`;
+      document.getElementById("activeQTitle").textContent = riwayat.judul_konteks || `Modul #${riwayat.no_kotak}`;
+      document.getElementById("activeQTimer").textContent = `Skor: ${riwayat.skor_kotak}`;
+
+      const bodyEl = document.getElementById("activeQBody");
+      bodyEl.innerHTML = formatRichMathText(riwayat.teks_soal);
+      renderMathInContainer(bodyEl);
+
+      document.getElementById("activeQFillArea").classList.add("hidden");
+      document.getElementById("activeQDndArea").classList.add("hidden");
+      document.getElementById("activeQHintBox").classList.add("hidden");
+      document.getElementById("activeQActionsBar").classList.add("hidden");
+
+      const fbBox = document.getElementById("activeQFeedbackBox");
+      fbBox.className = "feedback-box " + (riwayat.status_benar ? "success" : "warn");
+      fbBox.innerHTML = `
+        <strong>Rekaman Jawaban Anda:</strong> <span class="font-mono">${riwayat.jawaban_terakhir || "-"}</span>
+        • Status: <strong>${riwayat.status_benar ? "Benar" : "Belum Tepat"}</strong>
+        • Waktu: ${riwayat.durasi_detik || 0} detik
+      `;
+
+      const solBox = document.getElementById("activeQSolutionBox");
+      if (riwayat.pembahasan) {
+        solBox.classList.remove("hidden");
+        solBox.innerHTML = `
+          <div style="font-weight:800; color:var(--cyan-glow); margin-bottom:8px;">
+            📐 Pembahasan Lengkap Langkah demi Langkah:
+          </div>
+          <div>${formatRichMathText(riwayat.pembahasan)}</div>
+        `;
+        renderMathInContainer(solBox);
+      }
+      ws.scrollIntoView({ behavior: "smooth" });
+    }
+
+    function renderPresentationPortfolio() {
+      const container = document.getElementById("presentationPortfolioList");
+      if (!container) return;
+
+      const list = appState.riwayatKotakSiswa || [];
+      if (list.length === 0) {
+        container.innerHTML = `
+          <div class="glass-card" style="padding:20px; text-align:center; color:var(--text-muted);">
+            Anda belum menyelesaikan kotak soal di Misi 4. Silakan klaim dan kerjakan 1 kotak Mudah, 1 Sedang, dan 1 Sulit pada <strong>Misi 4 (Arena Kotak)</strong> agar portofolio presentasi Anda tampil di sini.
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = list.map((item) => `
+        <div class="glass-card" style="padding:20px; border-left:4px solid ${item.status_benar ? 'var(--emerald-primary)' : 'var(--gold-primary)'};">
+          <div style="display:flex; justify-content:space-between; flex-wrap:wrap; gap:8px; margin-bottom:10px;">
+            <div>
+              <span class="stem-tag">KOTAK #${item.no_kotak} • LEVEL ${item.level}</span>
+              <span class="stem-tag" style="margin-left:6px;">${item.label_stem || "M"}</span>
+            </div>
+            <span class="badge-chip">
+              ${item.status_benar ? "✅ Dijawab Benar" : "📘 Selesai"} • Skor: ${item.skor_kotak} • Durasi: ${item.durasi_detik || 0} dtk
+            </span>
+          </div>
+          <h4 style="font-size:1.05rem; margin-bottom:8px; color:#fff;">${item.judul_konteks || ("Modul #" + item.no_kotak)}</h4>
+          <div style="padding:12px; border-radius:10px; background:rgba(5,11,22,0.65); margin-bottom:10px; font-size:0.93rem;">
+            ${formatRichMathText(item.teks_soal)}
+          </div>
+          <div style="font-size:0.86rem; color:var(--gold-light); margin-bottom:10px;">
+            <strong>Jawaban Terkirim:</strong> <span class="font-mono">${item.jawaban_terakhir || "-"}</span> (Percobaan ke-${item.percobaan_ke || 1})
+          </div>
+          ${item.pembahasan ? `
+            <div style="padding:14px; border-radius:10px; background:rgba(16,185,129,0.08); border:1px solid rgba(16,185,129,0.3); font-size:0.9rem;">
+              <strong style="color:var(--cyan-glow); display:block; margin-bottom:4px;">Pembahasan untuk Presentasi Kelas:</strong>
+              ${formatRichMathText(item.pembahasan)}
+            </div>
+          ` : ""}
+        </div>
+      `).join("");
+
+      renderMathInContainer(container);
+    }
+
+    async function handleSaveMisi5() {
+      const catatan = document.getElementById("inputM5Catatan").value.trim();
+      const strategi = document.getElementById("inputM5Strategi").value.trim();
+      if (catatan.length < 8) {
+        showToast("Tuliskan catatan poin presentasi Anda terlebih dahulu.", "warn");
+        return;
+      }
+
+      const btn = document.getElementById("btnSaveMisi5");
+      btn.disabled = true;
+      try {
+        const res = await apiPost({
+          action: "saveMissionProgress",
+          nama: appState.studentName,
+          token: appState.sessionToken,
+          misi: 5,
+          bagian1: catatan,
+          bagian2: strategi
+        });
+        if (res.ok) {
+          applySessionPayload(res);
+          showToast("Catatan Presentasi (Misi 5) tersimpan! Lanjut ke Misi 6.", "success");
+          switchMissionTab(6);
+        }
+      } finally {
+        btn.disabled = false;
+      }
+    }
+
+    async function handleSaveMisi6() {
+      const duniawi = document.getElementById("inputM6Duniawi").value.trim();
+      const ukhrowi = document.getElementById("inputM6Ukhrowi").value.trim();
+      if (duniawi.length < 12 || ukhrowi.length < 12) {
+        showToast("Mohon isi kedua refleksi Duniawi dan Ukhrowi dengan sungguh-sungguh.", "warn");
+        return;
+      }
+
+      const btn = document.getElementById("btnSaveMisi6");
+      btn.disabled = true;
+      try {
+        const res = await apiPost({
+          action: "saveMissionProgress",
+          nama: appState.studentName,
+          token: appState.sessionToken,
+          misi: 6,
+          bagian1: duniawi,
+          bagian2: ukhrowi
+        });
+        if (res.ok) {
+          applySessionPayload(res);
+          document.getElementById("missionCompleteBanner").classList.remove("hidden");
+          showToast("Alhamdulillah! Seluruh rangkaian Misi 1–6 telah Anda tuntaskan.", "success");
+        }
+      } finally {
+        btn.disabled = false;
+      }
+    }
+
+    async function pollLiveState() {
+      try {
+        const data = await apiGet({ action: "getDashboardState" }, 1);
+        if (!data || !data.ok) return;
+
+        if (data.pengaturan) {
+          appState.pengaturan = Object.assign({}, appState.pengaturan, data.pengaturan);
+        }
+        if (Array.isArray(data.misiTerbuka)) {
+          appState.misiTerbuka = data.misiTerbuka;
+        }
+        if (Array.isArray(data.kotak)) {
+          appState.kotakList = data.kotak;
+        }
+
+        updateMissionTabsUI();
+        renderArenaBoxesGrid();
+      } catch (e) {}
+    }
+
+    function startRealtimeLoops() {
+      if (appState.pollingTimerId) clearInterval(appState.pollingTimerId);
+      const intervalMs = Math.max(3000, Number(appState.pengaturan.POLLING_INTERVAL_MS || 4000));
+      appState.pollingTimerId = setInterval(pollLiveState, intervalMs);
+
+      if (appState.heartbeatTimerId) clearInterval(appState.heartbeatTimerId);
+      appState.heartbeatTimerId = setInterval(() => {
+        if (appState.studentName && resolveActiveScriptUrl()) {
+          apiPost({
+            action: "heartbeat",
+            nama: appState.studentName,
+            token: appState.sessionToken,
+            misiAktif: appState.currentMission
+          }, 0).catch(() => {});
+        }
+      }, 25000);
+    }
+
+    function enterWorkspaceView() {
+      document.getElementById("loginView").classList.add("hidden");
+      document.getElementById("studentHud").classList.remove("hidden");
+      document.getElementById("missionWorkspace").classList.remove("hidden");
+      document.getElementById("btnLogout").classList.remove("hidden");
+
+      renderMisi3Dnd();
+      renderArenaBoxesGrid();
+      startRealtimeLoops();
+
+      // Jika siswa sedang punya soal aktif di Misi 4, langsung arahkan ke Misi 4
+      if (appState.soalAktif) {
+        switchMissionTab(4);
+      } else {
+        switchMissionTab(appState.progres.misi_aktif || 1);
+      }
+    }
+
+    async function handleOpenServerConfigModal() {
+      const currentUrl = resolveActiveScriptUrl();
+      const res = await openCustomModal({
+        title: "Konfigurasi URL Server Google Apps Script",
+        htmlBody: `
+          <p>Secara default aplikasi membaca variabel <code>SCRIPT_URL</code> di bagian atas file <code>index.html</code>.</p>
+          <p style="margin-top:6px; font-size:0.84rem;">Jika Anda sedang menguji coba langsung dari <em>Preview</em>, Anda juga dapat menempelkan URL Web App (berakhiran <code>/exec</code>) di bawah ini:</p>
+        `,
+        showCancel: true,
+        confirmText: "Simpan & Hubungkan",
+        cancelText: "Tutup",
+        showInput: true,
+        defaultInput: currentUrl
+      });
+
+      if (res.confirmed) {
+        if (res.value && res.value.startsWith("https://script.google.com/")) {
+          safeSetStorage(STORAGE_KEY_CUSTOM_URL, res.value);
+          appState.isSimulationMode = false;
+          showToast("URL Web App berhasil disimpan. Menyinkronkan dengan server...", "success");
+          await pollLiveState();
+        } else if (!res.value) {
+          safeRemoveStorage(STORAGE_KEY_CUSTOM_URL);
+          showToast("Kembali ke pengaturan default kode.", "info");
+          await pollLiveState();
+        } else {
+          showToast("Format URL harus diawali https://script.google.com/.../exec", "warn");
+        }
+      }
+    }
+
+    window.addEventListener("DOMContentLoaded", async () => {
+      populateWhitelistDropdown();
+      renderMisi3Dnd();
+
+      // Render rumus statis pada halaman
+      setTimeout(() => renderMathInContainer(document.body), 350);
+
+      // Event Listeners
+      document.getElementById("btnLoginSubmit").addEventListener("click", () => handleStudentLogin(false));
+      document.getElementById("btnServerConfig").addEventListener("click", handleOpenServerConfigModal);
+
+      document.getElementById("btnLogout").addEventListener("click", async () => {
+        const res = await openCustomModal({
+          title: "Keluar dari Sesi Pos Komando?",
+          htmlBody: "<p>Progres misi dan skor Anda tetap tersimpan dengan aman di Google Sheets server.</p>",
+          showCancel: true,
+          confirmText: "Ya, Keluar",
+          cancelText: "Batal"
+        });
+        if (res.confirmed) {
+          safeRemoveStorage(STORAGE_KEY_SESSION);
+          window.location.reload();
+        }
+      });
+
+      document.querySelectorAll(".mission-tab").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const m = Number(btn.getAttribute("data-misi"));
+          switchMissionTab(m);
+        });
+      });
+
+      document.getElementById("btnSaveMisi1").addEventListener("click", handleSaveMisi1);
+      document.getElementById("btnSaveMisi2").addEventListener("click", handleSaveMisi2);
+      document.getElementById("btnVerifyMisi3").addEventListener("click", handleVerifyMisi3);
+      document.getElementById("btnRequestHint").addEventListener("click", handleRequestHintClick);
+      document.getElementById("btnSubmitArenaAnswer").addEventListener("click", () => submitArenaAnswerToServer(false));
+      document.getElementById("btnSaveMisi5").addEventListener("click", handleSaveMisi5);
+      document.getElementById("btnSaveMisi6").addEventListener("click", handleSaveMisi6);
+
+      // Muat status awal kotak & pengaturan
+      await pollLiveState();
+
+      // Pulihkan sesi otomatis jika halaman di-refresh di tengah pengerjaan soal
+      const savedSessionRaw = safeGetStorage(STORAGE_KEY_SESSION);
+      if (savedSessionRaw) {
+        try {
+          const parsed = JSON.parse(savedSessionRaw);
+          if (parsed && parsed.nama && WHITELIST_SISWA.indexOf(parsed.nama) !== -1) {
+            appState.studentName = parsed.nama;
+            appState.sessionToken = parsed.token || generateClientToken();
+            document.getElementById("selectStudentName").value = parsed.nama;
+
+            const sessionRes = await apiGet({
+              action: "getStudentSession",
+              nama: parsed.nama,
+              token: appState.sessionToken
+            });
+
+            if (sessionRes && sessionRes.ok) {
+              applySessionPayload(sessionRes);
+              enterWorkspaceView();
+              if (sessionRes.soalAktif) {
+                showToast(`Melanjutkan timer Kotak #${sessionRes.soalAktif.no_kotak} sesuai waktu server.`, "info");
+              }
+            }
+          }
+        } catch (e) {}
+      }
+    });
+  </script>
+</body>
+</html>
