@@ -1,0 +1,1839 @@
+<!DOCTYPE html>
+<html lang="id" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
+  <title>Live Dashboard Proyektor — Limboto Smart-Gate | SMAIT Al Ishlah Gorontalo</title>
+
+  <!-- Google Fonts: Plus Jakarta Sans, Space Grotesk & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@600;700;800&display=swap" rel="stylesheet" />
+
+  <style>
+    :root {
+      --bg-deep: #040914;
+      --bg-surface: #0a1428;
+      --glass-bg: rgba(12, 22, 44, 0.72);
+      --glass-bg-strong: rgba(9, 17, 36, 0.92);
+      --glass-border: rgba(56, 189, 248, 0.25);
+      --glass-border-gold: rgba(245, 158, 11, 0.42);
+      --cyan-primary: #38bdf8;
+      --cyan-glow: #00f2fe;
+      --gold-primary: #f59e0b;
+      --gold-light: #fde68a;
+      --silver-light: #e2e8f0;
+      --bronze-light: #fdba74;
+      --emerald-primary: #10b981;
+      --rose-primary: #f43f5e;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --radius-xl: 22px;
+      --radius-lg: 16px;
+      --radius-md: 12px;
+      --shadow-glass: 0 22px 55px rgba(0, 0, 0, 0.65), inset 0 1px 0 rgba(255, 255, 255, 0.14);
+      --font-scale: 1;
+    }
+
+    /* Mode Proyektor Kontras Tinggi & Huruf Ekstra Besar */
+    body.projector-mode {
+      --font-scale: 1.12;
+      --glass-bg: rgba(8, 16, 34, 0.88);
+      --glass-border: rgba(56, 189, 248, 0.42);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html, body {
+      min-height: 100vh;
+      background-color: var(--bg-deep);
+      color: var(--text-main);
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      font-size: calc(16px * var(--font-scale));
+      line-height: 1.5;
+      overflow-x: hidden;
+    }
+
+    .ambient-canvas {
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      overflow: hidden;
+      background:
+        radial-gradient(circle at 12% 18%, rgba(0, 242, 254, 0.15), transparent 42%),
+        radial-gradient(circle at 88% 15%, rgba(245, 158, 11, 0.14), transparent 40%),
+        radial-gradient(circle at 50% 88%, rgba(16, 185, 129, 0.12), transparent 48%),
+        linear-gradient(180deg, #030711 0%, #081226 55%, #040914 100%);
+    }
+
+    .ambient-grid {
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(56, 189, 248, 0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(56, 189, 248, 0.05) 1px, transparent 1px);
+      background-size: 40px 40px;
+      mask-image: radial-gradient(circle at center, black 50%, transparent 98%);
+    }
+
+    .blob {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(80px);
+      opacity: 0.32;
+      animation: floatBlob 20s infinite alternate ease-in-out;
+    }
+    .blob-1 {
+      width: 420px;
+      height: 420px;
+      background: #0ea5e9;
+      top: -100px;
+      left: -100px;
+    }
+    .blob-2 {
+      width: 380px;
+      height: 380px;
+      background: #f59e0b;
+      bottom: 5%;
+      right: -90px;
+      animation-delay: -8s;
+    }
+
+    @keyframes floatBlob {
+      0% { transform: translate(0, 0) scale(1); }
+      100% { transform: translate(45px, 35px) scale(1.1); }
+    }
+
+    .glass-panel {
+      background: var(--glass-bg);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-xl);
+      box-shadow: var(--shadow-glass);
+    }
+
+    .glass-card {
+      background: rgba(15, 27, 52, 0.72);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(148, 163, 184, 0.2);
+      border-radius: var(--radius-lg);
+    }
+
+    .font-display {
+      font-family: 'Space Grotesk', sans-serif;
+      letter-spacing: -0.02em;
+    }
+    .font-mono {
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .dashboard-Shell {
+      max-width: 1440px;
+      margin: 0 auto;
+      padding: 16px 20px 64px;
+    }
+
+    .top-header {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 16px 24px;
+      margin-bottom: 20px;
+    }
+
+    .brand-cluster {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .brand-icon {
+      width: 54px;
+      height: 54px;
+      border-radius: 15px;
+      background: linear-gradient(135deg, rgba(0, 242, 254, 0.28), rgba(245, 158, 11, 0.28));
+      border: 1.5px solid rgba(56, 189, 248, 0.55);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: var(--cyan-glow);
+      box-shadow: 0 0 25px rgba(0, 242, 254, 0.28);
+      flex-shrink: 0;
+    }
+
+    .live-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 7px 14px;
+      border-radius: 999px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      background: rgba(15, 23, 42, 0.85);
+      border: 1px solid rgba(56, 189, 248, 0.35);
+      color: #e2e8f0;
+    }
+
+    .pulse-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--emerald-primary);
+      box-shadow: 0 0 12px var(--emerald-primary);
+      animation: pulseLive 1.4s infinite;
+    }
+    .pulse-dot.syncing {
+      background: var(--cyan-glow);
+      box-shadow: 0 0 12px var(--cyan-glow);
+    }
+    .pulse-dot.offline {
+      background: var(--gold-primary);
+      box-shadow: 0 0 12px var(--gold-primary);
+    }
+
+    @keyframes pulseLive {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.35); opacity: 0.55; }
+    }
+
+    .btn {
+      min-height: 44px;
+      padding: 9px 16px;
+      border-radius: var(--radius-md);
+      font-family: inherit;
+      font-size: 0.86rem;
+      font-weight: 700;
+      border: 1px solid transparent;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: all 0.2s ease;
+      color: var(--text-main);
+    }
+
+    .btn-ghost {
+      background: rgba(15, 23, 42, 0.78);
+      border-color: rgba(148, 163, 184, 0.3);
+    }
+    .btn-ghost:hover {
+      border-color: var(--cyan-primary);
+      color: var(--cyan-glow);
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #0ea5e9, #0284c7);
+      color: #fff;
+      border-color: rgba(125, 211, 252, 0.45);
+      box-shadow: 0 8px 22px rgba(14, 165, 233, 0.28);
+    }
+
+    .btn-gold {
+      background: linear-gradient(135deg, #f59e0b, #d97706);
+      color: #040914;
+      border-color: rgba(253, 230, 138, 0.55);
+      font-weight: 800;
+    }
+
+    .btn-danger {
+      background: rgba(244, 63, 94, 0.18);
+      color: #fda4af;
+      border-color: rgba(244, 63, 94, 0.45);
+    }
+    .btn-danger:hover {
+      background: rgba(244, 63, 94, 0.32);
+      color: #fff;
+    }
+
+    /* Baris Ringkasan KPI Kelas */
+    .kpi-strip {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      gap: 14px;
+      margin-bottom: 22px;
+    }
+
+    .kpi-card {
+      padding: 16px 20px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 6px;
+    }
+
+    .kpi-label {
+      font-size: 0.76rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--text-muted);
+      font-weight: 800;
+    }
+
+    .kpi-value {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.75rem;
+      font-weight: 800;
+      color: #fff;
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
+    }
+
+    .main-grid {
+      display: grid;
+      grid-template-columns: 1.65fr 1fr;
+      gap: 20px;
+      align-items: start;
+    }
+
+    @media (max-width: 1120px) {
+      .main-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .podium-stage {
+      display: grid;
+      grid-template-columns: 1fr 1.12fr 1fr;
+      gap: 14px;
+      align-items: end;
+      margin-bottom: 22px;
+      padding-top: 10px;
+    }
+
+    @media (max-width: 680px) {
+      .podium-stage {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .podium-card {
+      padding: 18px 16px;
+      border-radius: var(--radius-lg);
+      text-align: center;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+      transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s ease;
+    }
+
+    .podium-rank-1 {
+      min-height: 235px;
+      background: linear-gradient(165deg, rgba(245, 158, 11, 0.24), rgba(15, 23, 42, 0.92));
+      border: 2px solid var(--gold-primary);
+      box-shadow: 0 18px 40px rgba(245, 158, 11, 0.22);
+    }
+
+    .podium-rank-2 {
+      min-height: 200px;
+      background: linear-gradient(165deg, rgba(56, 189, 248, 0.18), rgba(15, 23, 42, 0.9));
+      border: 1.5px solid rgba(148, 163, 184, 0.45);
+    }
+
+    .podium-rank-3 {
+      min-height: 185px;
+      background: linear-gradient(165deg, rgba(251, 146, 60, 0.18), rgba(15, 23, 42, 0.9));
+      border: 1.5px solid rgba(251, 146, 60, 0.45);
+    }
+
+    .podium-medal {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.25rem;
+      font-weight: 800;
+      margin-bottom: 10px;
+    }
+
+    .podium-rank-1 .podium-medal {
+      background: linear-gradient(135deg, #fde68a, #f59e0b);
+      color: #040914;
+      box-shadow: 0 0 22px rgba(245, 158, 11, 0.55);
+    }
+    .podium-rank-2 .podium-medal {
+      background: linear-gradient(135deg, #f1f5f9, #94a3b8);
+      color: #0f172a;
+    }
+    .podium-rank-3 .podium-medal {
+      background: linear-gradient(135deg, #fed7aa, #ea580c);
+      color: #0f172a;
+    }
+
+    .podium-name {
+      font-weight: 800;
+      font-size: 1.05rem;
+      color: #fff;
+      margin-bottom: 4px;
+      line-height: 1.3;
+    }
+
+    .podium-score {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 1.45rem;
+      font-weight: 800;
+      color: var(--gold-light);
+      margin: 6px 0;
+    }
+
+    .leaderboard-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      position: relative;
+    }
+
+    .rank-row {
+      display: grid;
+      grid-template-columns: 52px 1.6fr 1.1fr 0.9fr 0.85fr;
+      align-items: center;
+      gap: 12px;
+      padding: 13px 16px;
+      border-radius: var(--radius-lg);
+      background: rgba(13, 24, 48, 0.78);
+      border: 1px solid rgba(148, 163, 184, 0.2);
+      transition: transform 0.55s cubic-bezier(0.22, 1, 0.36, 1), background-color 0.35s ease, border-color 0.35s ease;
+      will-change: transform;
+    }
+
+    @media (max-width: 780px) {
+      .rank-row {
+        grid-template-columns: 44px 1fr auto;
+      }
+      .rank-col-missions, .rank-col-stats {
+        grid-column: 2 / -1;
+      }
+    }
+
+    .rank-row.rank-top-1 {
+      border-color: rgba(245, 158, 11, 0.6);
+      background: linear-gradient(90deg, rgba(245, 158, 11, 0.14), rgba(13, 24, 48, 0.88));
+    }
+    .rank-row.rank-top-2 {
+      border-color: rgba(56, 189, 248, 0.5);
+    }
+    .rank-row.rank-top-3 {
+      border-color: rgba(251, 146, 60, 0.45);
+    }
+
+    .rank-row.rank-changed-up {
+      animation: highlightRankUp 1.6s ease;
+    }
+
+    @keyframes highlightRankUp {
+      0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); border-color: var(--emerald-primary); }
+      50% { box-shadow: 0 0 28px 4px rgba(16, 185, 129, 0.45); background: rgba(16, 185, 129, 0.22); }
+      100% { box-shadow: none; }
+    }
+
+    .rank-num-badge {
+      width: 40px;
+      height: 40px;
+      border-radius: 11px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 800;
+      font-size: 1.08rem;
+      background: rgba(30, 41, 59, 0.9);
+      color: #e2e8f0;
+      border: 1px solid rgba(148, 163, 184, 0.25);
+    }
+
+    .rank-top-1 .rank-num-badge {
+      background: var(--gold-primary);
+      color: #040914;
+      border-color: var(--gold-light);
+    }
+    .rank-top-2 .rank-num-badge {
+      background: var(--cyan-primary);
+      color: #040914;
+    }
+    .rank-top-3 .rank-num-badge {
+      background: #fb923c;
+      color: #040914;
+    }
+
+    .student-status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 3px 10px;
+      border-radius: 999px;
+      font-size: 0.74rem;
+      font-weight: 700;
+    }
+
+    .status-belum {
+      background: rgba(100, 116, 139, 0.2);
+      color: #cbd5e1;
+      border: 1px solid rgba(148, 163, 184, 0.3);
+    }
+    .status-aktif {
+      background: rgba(56, 189, 248, 0.18);
+      color: #7dd3fc;
+      border: 1px solid rgba(56, 189, 248, 0.45);
+    }
+    .status-selesai {
+      background: rgba(16, 185, 129, 0.2);
+      color: #6ee7b7;
+      border: 1px solid rgba(16, 185, 129, 0.5);
+    }
+
+    .mission-dots {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      flex-wrap: wrap;
+    }
+
+    .m-pill {
+      width: 28px;
+      height: 24px;
+      border-radius: 6px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem;
+      font-weight: 800;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(15, 23, 42, 0.85);
+      color: #64748b;
+      border: 1px solid rgba(100, 116, 139, 0.25);
+    }
+    .m-pill.done {
+      background: rgba(16, 185, 129, 0.22);
+      color: #34d399;
+      border-color: rgba(16, 185, 129, 0.55);
+    }
+    .m-pill.current {
+      border-color: var(--gold-primary);
+      color: var(--gold-light);
+    }
+
+    .level-stat-block {
+      padding: 14px 16px;
+      border-radius: var(--radius-md);
+      background: rgba(11, 20, 40, 0.78);
+      border: 1px solid rgba(148, 163, 184, 0.16);
+      margin-bottom: 12px;
+    }
+
+    .stacked-bar {
+      width: 100%;
+      height: 12px;
+      border-radius: 999px;
+      background: rgba(30, 41, 59, 0.85);
+      overflow: hidden;
+      display: flex;
+      margin: 8px 0 6px;
+      border: 1px solid rgba(148, 163, 184, 0.2);
+    }
+
+    .bar-seg-benar { background: var(--emerald-primary); height: 100%; transition: width 0.5s ease; }
+    .bar-seg-salah { background: var(--rose-primary); height: 100%; transition: width 0.5s ease; }
+    .bar-seg-aktif { background: var(--gold-primary); height: 100%; transition: width 0.5s ease; }
+
+    .mini-boxes-matrix {
+      display: grid;
+      grid-template-columns: repeat(10, 1fr);
+      gap: 6px;
+      margin-top: 10px;
+    }
+
+    @media (max-width: 540px) {
+      .mini-boxes-matrix {
+        grid-template-columns: repeat(5, 1fr);
+      }
+    }
+
+    .mini-box-cell {
+      padding: 6px 4px;
+      border-radius: 8px;
+      text-align: center;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem;
+      font-weight: 800;
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      background: rgba(15, 28, 56, 0.85);
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
+    }
+    .mini-box-cell.dikerjakan {
+      border-color: var(--gold-primary);
+      background: rgba(245, 158, 11, 0.22);
+      color: var(--gold-light);
+    }
+    .mini-box-cell.selesai-benar {
+      border-color: var(--emerald-primary);
+      background: rgba(16, 185, 129, 0.22);
+      color: #6ee7b7;
+    }
+    .mini-box-cell.selesai-salah {
+      border-color: var(--rose-primary);
+      background: rgba(244, 63, 94, 0.2);
+      color: #fda4af;
+    }
+
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 100;
+      background: rgba(3, 7, 18, 0.82);
+      backdrop-filter: blur(12px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      overflow-y: auto;
+    }
+    .modal-backdrop.open {
+      display: flex;
+    }
+
+    .modal-dialog {
+      max-width: 720px;
+      width: 100%;
+      padding: 26px;
+      background: var(--glass-bg-strong);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-xl);
+      box-shadow: var(--shadow-glass);
+      max-height: 92vh;
+      overflow-y: auto;
+    }
+
+    .input-field, .select-field {
+      width: 100%;
+      min-height: 44px;
+      padding: 10px 14px;
+      border-radius: var(--radius-md);
+      background: rgba(7, 13, 28, 0.9);
+      border: 1px solid rgba(148, 163, 184, 0.32);
+      color: #fff;
+      font-family: inherit;
+      font-size: 0.92rem;
+    }
+
+    .mission-toggle-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 10px;
+      margin: 10px 0 16px;
+    }
+
+    .mission-check-card {
+      padding: 10px 12px;
+      border-radius: var(--radius-md);
+      background: rgba(15, 23, 42, 0.85);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+      font-size: 0.86rem;
+      font-weight: 700;
+    }
+
+    .toast-stack {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      z-index: 140;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      max-width: 390px;
+      width: calc(100% - 40px);
+    }
+
+    .toast-item {
+      padding: 13px 16px;
+      border-radius: var(--radius-md);
+      background: rgba(11, 21, 40, 0.96);
+      border-left: 4px solid var(--cyan-primary);
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.55);
+      font-size: 0.88rem;
+      color: #fff;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+  </style>
+</head>
+
+<body class="projector-mode">
+  <div class="ambient-canvas" aria-hidden="true">
+    <div class="ambient-grid"></div>
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+  </div>
+
+  <div class="dashboard-Shell">
+    <!-- TOP BAR PROYEKTOR -->
+    <header class="glass-panel top-header">
+      <div class="brand-cluster">
+        <div class="brand-icon font-display">P(x)</div>
+        <div>
+          <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+            <h1 class="font-display" style="font-size:1.35rem; color:#fff;">
+              POS KOMANDO LIMBOTO SMART-GATE
+            </h1>
+            <span style="padding:3px 10px; border-radius:6px; font-size:0.74rem; font-weight:800; background:rgba(56,189,248,0.18); color:var(--cyan-glow); border:1px solid rgba(56,189,248,0.4);">
+              KELAS XI • SMAIT AL ISHLAH GORONTALO
+            </span>
+          </div>
+          <div style="font-size:0.84rem; color:var(--text-muted);">
+            Dashboard Peringkat & Telemetri Ketuntasan Teorema Sisa Polinomial (INTROFLEX • S-T-E-M)
+          </div>
+        </div>
+      </div>
+
+      <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+        <div class="live-badge" id="liveIndicatorBadge">
+          <span class="pulse-dot" id="livePulseDot"></span>
+          <span id="lastUpdatedText">Diperbarui baru saja</span>
+        </div>
+
+        <button type="button" class="btn btn-ghost" id="btnRefreshNow" title="Segarkan Data Sekarang">
+          🔄 Segarkan
+        </button>
+        <button type="button" class="btn btn-ghost" id="btnToggleProjectorFont" title="Ubah Ukuran Huruf Proyektor">
+          🔍 Mode Proyektor: AKTIF
+        </button>
+        <button type="button" class="btn btn-ghost" id="btnFullscreen" title="Layar Penuh Proyektor">
+          ⛶ Layar Penuh
+        </button>
+        <button type="button" class="btn btn-ghost" id="btnServerUrlModal" title="Atur URL Web App Server">
+          ⚙️ Server
+        </button>
+        <button type="button" class="btn btn-gold" id="btnOpenTeacherPanel">
+          🔐 Panel Guru
+        </button>
+      </div>
+    </header>
+
+    <!-- BARIS RINGKASAN KPI KELAS -->
+    <section class="kpi-strip" aria-label="Ringkasan Statistik Kelas">
+      <div class="glass-panel kpi-card">
+        <span class="kpi-label">Insinyur Muda Aktif / Selesai</span>
+        <div class="kpi-value">
+          <span id="kpiActiveCount">0 / 9</span>
+          <span style="font-size:0.84rem; color:var(--cyan-primary); font-weight:600;" id="kpiFinishedCount">(0 Tuntas Penuh)</span>
+        </div>
+      </div>
+
+      <div class="glass-panel kpi-card">
+        <span class="kpi-label">Modul Arena 30 Kotak Terkalibrasi</span>
+        <div class="kpi-value">
+          <span id="kpiBoxesClaimed">0 / 30</span>
+          <span style="font-size:0.84rem; color:var(--gold-light); font-weight:600;" id="kpiBoxesTarget">Target Kelas: 27 Kotak</span>
+        </div>
+      </div>
+
+      <div class="glass-panel kpi-card">
+        <span class="kpi-label">Akurasi Penyelesaian Teorema Sisa</span>
+        <div class="kpi-value">
+          <span id="kpiClassAccuracy">0%</span>
+          <span style="font-size:0.84rem; color:var(--emerald-primary); font-weight:600;" id="kpiCorrectRatio">0 Benar • 0 Belum Tepat</span>
+        </div>
+      </div>
+
+      <div class="glass-panel kpi-card">
+        <span class="kpi-label">Akses Misi INTROFLEX Saat Ini</span>
+        <div class="kpi-value" style="font-size:1.18rem;" id="kpiOpenMissionsText">
+          Misi 1, 2, 3, 4, 5, 6 Terbuka
+        </div>
+      </div>
+    </section>
+
+    <div class="main-grid">
+      <!-- KOLOM KIRI: PODIUM 3 TERATAS & PAPAN PERINGKAT 9 SISWA -->
+      <section class="glass-panel" style="padding:22px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:14px;">
+          <div>
+            <h2 class="font-display" style="font-size:1.3rem; color:#fff;">
+              🏆 Podium & Klasemen Insinyur Muda (9 Peserta Didik)
+            </h2>
+            <p style="font-size:0.82rem; color:var(--text-muted);">
+              Urutan peringkat dihitung otomatis dari Total Skor Arena, Ketepatan Jawaban, Progres Misi, dan Kecepatan Waktu.
+            </p>
+          </div>
+          <span class="font-mono" style="font-size:0.78rem; color:var(--cyan-primary);" id="pollingRateLabel">
+            Auto-Update: 4 dtk
+          </span>
+        </div>
+
+        <!-- PODIUM VISUAL 3 TERATAS -->
+        <div class="podium-stage" id="podiumStage"></div>
+
+        <!-- HEADER KOLOM TABEL PERINGKAT -->
+        <div style="display:grid; grid-template-columns:52px 1.6fr 1.1fr 0.9fr 0.85fr; gap:12px; padding:6px 16px; font-size:0.74rem; font-weight:800; text-transform:uppercase; letter-spacing:0.05em; color:var(--text-muted);">
+          <span>Pos</span>
+          <span>Nama Insinyur Muda & Status</span>
+          <span>Progres Misi 1–6</span>
+          <span>Kotak (M/S/Sl) & Waktu</span>
+          <span style="text-align:right;">Skor & Benar/Salah</span>
+        </div>
+
+        <!-- DAFTAR 9 SISWA DENGAN ANIMASI TRANSISI HALUS -->
+        <div class="leaderboard-list" id="leaderboardContainer"></div>
+      </section>
+
+      <!-- KOLOM KANAN: GRAFIK KETUNTASAN LEVEL, RADAR INTERVENSI SOAL & MATRIKS 30 KOTAK -->
+      <div style="display:flex; flex-direction:column; gap:20px;">
+        <!-- GRAFIK KETUNTASAN PER LEVEL -->
+        <section class="glass-panel" style="padding:20px;">
+          <h2 class="font-display" style="font-size:1.15rem; color:#fff; margin-bottom:4px;">
+            📊 Grafik Ketuntasan Arena per Level
+          </h2>
+          <p style="font-size:0.8rem; color:var(--text-muted); margin-bottom:14px;">
+            Proporsi kotak Selesai Benar (Hijau), Selesai Belum Tepat (Merah), Sedang Dikerjakan (Kuning), dan Tersedia.
+          </p>
+
+          <div id="levelChartsContainer"></div>
+        </section>
+
+        <!-- RADAR INTERVENSI GURU: SOAL PALING BANYAK SALAH -->
+        <section class="glass-panel" style="padding:20px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; gap:8px; margin-bottom:6px;">
+            <h2 class="font-display" style="font-size:1.15rem; color:#fff;">
+              🎯 Radar Intervensi Guru (Soal Perlu Penguatan)
+            </h2>
+            <span style="font-size:0.72rem; padding:3px 8px; border-radius:999px; background:rgba(244,63,94,0.18); color:#fda4af; font-weight:700;">
+              Diagnostik Kelas
+            </span>
+          </div>
+          <p style="font-size:0.8rem; color:var(--text-muted); margin-bottom:12px;">
+            Menampilkan modul soal dengan frekuensi kesalahan tertinggi agar Ustadz/Ustadzah dapat memberikan penguatan terarah.
+          </p>
+
+          <div id="hardestQuestionsContainer" style="display:flex; flex-direction:column; gap:10px;"></div>
+        </section>
+
+        <!-- MATRIKS REAL-TIME 30 KOTAK MODUL -->
+        <section class="glass-panel" style="padding:20px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:6px;">
+            <h2 class="font-display" style="font-size:1.12rem; color:#fff;">
+              🧩 Peta Status 30 Kotak Smart-Gate
+            </h2>
+            <div style="display:flex; gap:10px; font-size:0.72rem; color:var(--text-muted);">
+              <span>🟦 Tersedia</span>
+              <span>🟨 Aktif</span>
+              <span>🟩 Benar</span>
+              <span>🟥 Selesai</span>
+            </div>
+          </div>
+
+          <div class="mini-boxes-matrix" id="miniBoxesMatrix"></div>
+        </section>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL PANEL GURU (DILINDUNGI PIN) -->
+  <div class="modal-backdrop" id="teacherModalBackdrop" role="dialog" aria-modal="true">
+    <div class="modal-dialog">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; padding-bottom:12px; border-bottom:1px solid rgba(148,163,184,0.2);">
+        <div>
+          <h3 class="font-display" style="font-size:1.3rem; color:#fff;">
+            🔐 Panel Kendali Guru — Limboto Smart-Gate
+          </h3>
+          <p style="font-size:0.82rem; color:var(--text-muted);">
+            Kelola akses misi INTROFLEX, waktu & poin, reset sesi siswa, dan ekspor nilai kelas.
+          </p>
+        </div>
+        <button type="button" class="btn btn-ghost" id="btnCloseTeacherModal" style="min-height:38px; padding:6px 12px;">
+          ✕ Tutup
+        </button>
+      </div>
+
+      <!-- Langkah 1: Otentikasi PIN Guru -->
+      <div id="teacherPinGate">
+        <label for="inputTeacherPin" style="display:block; font-weight:700; font-size:0.9rem; margin-bottom:8px;">
+          Masukkan PIN Guru (Default di Sheet Pengaturan: <code style="color:var(--gold-light);">2026</code>):
+        </label>
+        <div style="display:flex; gap:10px; flex-wrap:wrap;">
+          <input type="password" id="inputTeacherPin" class="input-field font-mono" placeholder="Ketik PIN Guru..." style="flex:1;" />
+          <button type="button" class="btn btn-gold" id="btnVerifyPin">
+            🔓 Buka Panel Guru
+          </button>
+        </div>
+      </div>
+
+      <!-- Langkah 2: Isi Kontrol Panel Guru (Tampil Setelah PIN Terverifikasi) -->
+      <div id="teacherControlsBody" class="hidden" style="display:flex; flex-direction:column; gap:20px;">
+        <!-- 1. Buka / Tutup Misi INTROFLEX -->
+        <div class="glass-card" style="padding:16px;">
+          <h4 style="font-size:0.98rem; color:var(--cyan-glow); margin-bottom:6px;">
+            1. Kendali Buka / Kunci Tahapan Misi (1–6)
+          </h4>
+          <p style="font-size:0.8rem; color:var(--text-muted);">
+            Centang misi yang diizinkan untuk diakses oleh siswa di perangkat mereka saat ini:
+          </p>
+          <div class="mission-toggle-grid" id="teacherMissionCheckboxes">
+            <label class="mission-check-card"><input type="checkbox" value="1" checked /> Misi 1: Telaah</label>
+            <label class="mission-check-card"><input type="checkbox" value="2" checked /> Misi 2: Eksplorasi</label>
+            <label class="mission-check-card"><input type="checkbox" value="3" checked /> Misi 3: Rumuskan</label>
+            <label class="mission-check-card"><input type="checkbox" value="4" checked /> Misi 4: Arena 30 Kotak</label>
+            <label class="mission-check-card"><input type="checkbox" value="5" checked /> Misi 5: Presentasikan</label>
+            <label class="mission-check-card"><input type="checkbox" value="6" checked /> Misi 6: Duniawi & Ukhrowi</label>
+          </div>
+          <button type="button" class="btn btn-primary" id="btnSaveMissionAccess">
+            💾 Terapkan Akses Misi Kelas
+          </button>
+        </div>
+
+        <!-- 2. Pengaturan Waktu & Poin -->
+        <div class="glass-card" style="padding:16px;">
+          <h4 style="font-size:0.98rem; color:var(--gold-light); margin-bottom:10px;">
+            2. Parameter Waktu (Detik) & Poin Dasar
+          </h4>
+          <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(145px, 1fr)); gap:10px; margin-bottom:14px;">
+            <div>
+              <label style="font-size:0.75rem; color:var(--text-muted);">Waktu Mudah (dtk)</label>
+              <input type="number" id="setWaktuMudah" class="input-field font-mono" value="180" />
+            </div>
+            <div>
+              <label style="font-size:0.75rem; color:var(--text-muted);">Waktu Sedang (dtk)</label>
+              <input type="number" id="setWaktuSedang" class="input-field font-mono" value="300" />
+            </div>
+            <div>
+              <label style="font-size:0.75rem; color:var(--text-muted);">Waktu Sulit (dtk)</label>
+              <input type="number" id="setWaktuSulit" class="input-field font-mono" value="480" />
+            </div>
+            <div>
+              <label style="font-size:0.75rem; color:var(--text-muted);">Poin Mudah</label>
+              <input type="number" id="setPoinMudah" class="input-field font-mono" value="10" />
+            </div>
+            <div>
+              <label style="font-size:0.75rem; color:var(--text-muted);">Poin Sedang</label>
+              <input type="number" id="setPoinSedang" class="input-field font-mono" value="20" />
+            </div>
+            <div>
+              <label style="font-size:0.75rem; color:var(--text-muted);">Poin Sulit</label>
+              <input type="number" id="setPoinSulit" class="input-field font-mono" value="30" />
+            </div>
+          </div>
+          <button type="button" class="btn btn-primary" id="btnSaveSettings">
+            ⚙️ Simpan Parameter ke Sheet Pengaturan
+          </button>
+        </div>
+
+        <!-- 3. Ekspor Rekap Nilai & Reset Siswa / Kelas -->
+        <div class="glass-card" style="padding:16px;">
+          <h4 style="font-size:0.98rem; color:#fff; margin-bottom:10px;">
+            3. Ekspor Rekap Nilai & Manajemen Reset Sesi
+          </h4>
+          <div style="display:flex; flex-wrap:wrap; gap:10px; margin-bottom:16px;">
+            <button type="button" class="btn btn-gold" id="btnExportClassSummary">
+              📊 Ekspor ke Sheet "Rekap_Nilai_Kelas" & Unduh CSV
+            </button>
+          </div>
+
+          <div style="border-top:1px solid rgba(148,163,184,0.2); padding-top:14px; display:grid; gap:12px;">
+            <div style="display:flex; flex-wrap:wrap; gap:10px; align-items:center;">
+              <select id="selectResetStudent" class="select-field" style="flex:1; min-width:220px;">
+                <option value="">-- Pilih Siswa untuk Reset Individu --</option>
+              </select>
+              <button type="button" class="btn btn-danger" id="btnResetSingleStudent">
+                🔄 Reset Siswa Terpilih
+              </button>
+            </div>
+
+            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+              <span style="font-size:0.8rem; color:var(--text-muted);">
+                Ingin mengulang sesi untuk seluruh kelas (mereset 30 kotak & 9 siswa)?
+              </span>
+              <button type="button" class="btn btn-danger" id="btnResetAllClass">
+                ⚠️ Reset Seluruh Kelas (30 Kotak & 9 Siswa)
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL KONFIRMASI / PENGATURAN SERVER UMUM -->
+  <div class="modal-backdrop" id="genericModalBackdrop" role="dialog" aria-modal="true">
+    <div class="modal-dialog" style="max-width:520px;">
+      <h3 class="font-display" id="genericModalTitle" style="font-size:1.2rem; color:#fff; margin-bottom:10px;">
+        Konfirmasi
+      </h3>
+      <div id="genericModalBody" style="font-size:0.92rem; color:var(--text-muted); margin-bottom:18px;"></div>
+      <div id="genericModalInputWrap" class="hidden" style="margin-bottom:18px;">
+        <input type="text" id="genericModalInput" class="input-field font-mono" placeholder="https://script.google.com/macros/s/.../exec" />
+      </div>
+      <div style="display:flex; justify-content:flex-end; gap:10px;">
+        <button type="button" class="btn btn-ghost" id="btnGenericCancel">Batal</button>
+        <button type="button" class="btn btn-primary" id="btnGenericConfirm">Ya, Lanjutkan</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOAST STACK -->
+  <div class="toast-stack" id="toastStack" aria-live="polite"></div>
+
+  <script>
+    /**
+     * ============================================================================
+     * KONFIGURASI UTAMA BACKEND GOOGLE APPS SCRIPT (WAJIB SATU VARIABEL DI ATAS)
+     * Tempelkan URL Web App (/exec) dari hasil deploy code.gs pada variabel di bawah:
+     * ============================================================================
+     */
+    const SCRIPT_URL = "PASTE_URL_WEB_APP_EXEC_DI_SINI";
+
+    const STORAGE_KEY_CUSTOM_URL = "LIMBOTO_SMARTGATE_EXEC_URL_V1";
+
+    const WHITELIST_SISWA = [
+      "Alif Firmansya Monoarfa",
+      "Andi Aisyah Humaira Nurmuhammad",
+      "Fathiyyah Naailah Abdullah",
+      "Lutfiah Nur Magfirah Pakaya",
+      "Muhammad Faiz Dako",
+      "Nida' Husniah R. Ma'ruf",
+      "Nurul Istiqomah R. Ali",
+      "Shofiyyah Sholihah Adam",
+      "Zuhairah Diniyyah Atifah Pakudu"
+    ];
+
+    const dashState = {
+      verifiedPin: "",
+      lastUpdateTimestampMs: Date.now(),
+      pollingIntervalMs: 4000,
+      pollingTimerId: null,
+      secondTickerId: null,
+      previousRanksMap: {}, // Menyimpan posisi peringkat sebelumnya untuk animasi FLIP
+      peringkat: [],
+      kotak: [],
+      statistikLevel: {
+        MUDAH: { total: 10, tersedia: 10, dikerjakan: 0, selesai: 0, benar: 0, salah: 0 },
+        SEDANG: { total: 10, tersedia: 10, dikerjakan: 0, selesai: 0, benar: 0, salah: 0 },
+        SULIT: { total: 10, tersedia: 10, dikerjakan: 0, selesai: 0, benar: 0, salah: 0 }
+      },
+      soalTersulit: [],
+      misiTerbuka: [1, 2, 3, 4, 5, 6],
+      pengaturan: {
+        WAKTU_MUDAH_DETIK: 180,
+        WAKTU_SEDANG_DETIK: 300,
+        WAKTU_SULIT_DETIK: 480,
+        POIN_MUDAH: 10,
+        POIN_SEDANG: 20,
+        POIN_SULIT: 30,
+        POLLING_INTERVAL_MS: 4000
+      }
+    };
+
+    function safeGetStorage(key) {
+      try {
+        return localStorage.getItem(key) || sessionStorage.getItem(key) || "";
+      } catch (e) {
+        return "";
+      }
+    }
+
+    function safeSetStorage(key, val) {
+      try {
+        localStorage.setItem(key, val);
+        sessionStorage.setItem(key, val);
+      } catch (e) {}
+    }
+
+    function safeRemoveStorage(key) {
+      try {
+        localStorage.removeItem(key);
+        sessionStorage.removeItem(key);
+      } catch (e) {}
+    }
+
+    function resolveActiveScriptUrl() {
+      const custom = safeGetStorage(STORAGE_KEY_CUSTOM_URL).trim();
+      if (custom && custom.startsWith("https://script.google.com/")) return custom;
+      if (SCRIPT_URL && SCRIPT_URL.startsWith("https://script.google.com/")) return SCRIPT_URL.trim();
+      return "";
+    }
+
+    function showToast(msg, type = "info") {
+      const stack = document.getElementById("toastStack");
+      if (!stack) return;
+      const el = document.createElement("div");
+      el.className = "toast-item";
+      if (type === "success") el.style.borderLeftColor = "var(--emerald-primary)";
+      if (type === "warn") el.style.borderLeftColor = "var(--gold-primary)";
+      if (type === "error") el.style.borderLeftColor = "var(--rose-primary)";
+      el.textContent = msg;
+      stack.appendChild(el);
+      setTimeout(() => {
+        if (el.parentNode) el.parentNode.removeChild(el);
+      }, 4200);
+    }
+
+    function openGenericModal({ title, htmlBody, showInput = false, defaultInput = "", confirmText = "Ya, Lanjutkan", showCancel = true }) {
+      return new Promise((resolve) => {
+        const backdrop = document.getElementById("genericModalBackdrop");
+        document.getElementById("genericModalTitle").textContent = title || "Konfirmasi";
+        document.getElementById("genericModalBody").innerHTML = htmlBody || "";
+        const inpWrap = document.getElementById("genericModalInputWrap");
+        const inp = document.getElementById("genericModalInput");
+        const btnCancel = document.getElementById("btnGenericCancel");
+        const btnConfirm = document.getElementById("btnGenericConfirm");
+
+        if (showInput) {
+          inpWrap.classList.remove("hidden");
+          inp.value = defaultInput || "";
+        } else {
+          inpWrap.classList.add("hidden");
+        }
+
+        btnCancel.classList.toggle("hidden", !showCancel);
+        btnConfirm.textContent = confirmText;
+        backdrop.classList.add("open");
+
+        const close = (res) => {
+          backdrop.classList.remove("open");
+          btnCancel.onclick = null;
+          btnConfirm.onclick = null;
+          resolve(res);
+        };
+
+        btnCancel.onclick = () => close({ confirmed: false, value: "" });
+        btnConfirm.onclick = () => close({ confirmed: true, value: inp.value.trim() });
+      });
+    }
+
+    async function fetchDashboardStateFromServer() {
+      const url = resolveActiveScriptUrl();
+      const dot = document.getElementById("livePulseDot");
+      if (!url) {
+        if (dot) dot.className = "pulse-dot offline";
+        return buildPreviewSimulationData();
+      }
+
+      if (dot) dot.className = "pulse-dot syncing";
+      const fullUrl = url + (url.indexOf("?") === -1 ? "?" : "&") + "action=getDashboardState&_t=" + Date.now();
+
+      for (let attempt = 0; attempt < 2; attempt++) {
+        try {
+          const resp = await fetch(fullUrl, { method: "GET", cache: "no-store" });
+          const data = await resp.json();
+          if (dot) dot.className = "pulse-dot";
+          return data;
+        } catch (err) {
+          if (attempt === 1) {
+            if (dot) dot.className = "pulse-dot offline";
+            throw err;
+          }
+          await new Promise(r => setTimeout(r, 1000));
+        }
+      }
+    }
+
+    async function postTeacherAction(subAction, payload = {}) {
+      const url = resolveActiveScriptUrl();
+      if (!url) {
+        return simulatePreviewTeacherAction(subAction, payload);
+      }
+
+      const resp = await fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "text/plain;charset=utf-8" },
+        body: JSON.stringify({
+          action: "teacherAction",
+          pin: dashState.verifiedPin,
+          subAction: subAction,
+          payload: payload
+        })
+      });
+      return await resp.json();
+    }
+
+    function buildPreviewSimulationData() {
+      if (dashState.peringkat && dashState.peringkat.length === 9) {
+        return {
+          ok: true,
+          isPreview: true,
+          serverTime: Date.now(),
+          pengaturan: dashState.pengaturan,
+          misiTerbuka: dashState.misiTerbuka,
+          peringkat: dashState.peringkat,
+          kotak: dashState.kotak,
+          statistikLevel: dashState.statistikLevel,
+          soalTersulit: dashState.soalTersulit
+        };
+      }
+
+      const demoScores = [
+        { nama: "Andi Aisyah Humaira Nurmuhammad", status: "SELESAI", misi: 6, mDone: [true,true,true,true,true,true], km: 2, ks: 14, ksl: 21, skor: 66.8, benar: 3, salah: 0, waktu: 94, xp: 260, lvl: "Arsitek Utama Smart-Gate Lv. 4" },
+        { nama: "Muhammad Faiz Dako", status: "SEDANG_MENGERJAKAN", misi: 6, mDone: [true,true,true,true,true,false], km: 5, ks: 16, ksl: 24, skor: 63.5, benar: 3, salah: 0, waktu: 112, xp: 235, lvl: "Insinyur Ahli Polinomial Lv. 3" },
+        { nama: "Nida' Husniah R. Ma'ruf", status: "SEDANG_MENGERJAKAN", misi: 5, mDone: [true,true,true,true,false,false], km: 1, ks: 11, ksl: 22, skor: 61.2, benar: 3, salah: 0, waktu: 128, xp: 210, lvl: "Insinyur Ahli Polinomial Lv. 3" },
+        { nama: "Alif Firmansya Monoarfa", status: "SEDANG_MENGERJAKAN", misi: 4, mDone: [true,true,true,false,false,false], km: 4, ks: 15, ksl: 27, skor: 33.4, benar: 2, salah: 0, waktu: 118, xp: 155, lvl: "Insinyur Kalibrasi Lv. 2" },
+        { nama: "Fathiyyah Naailah Abdullah", status: "SEDANG_MENGERJAKAN", misi: 4, mDone: [true,true,true,false,false,false], km: 8, ks: 12, ksl: 25, skor: 31.8, benar: 2, salah: 1, waktu: 140, xp: 145, lvl: "Insinyur Kalibrasi Lv. 2" },
+        { nama: "Lutfiah Nur Magfirah Pakaya", status: "SEDANG_MENGERJAKAN", misi: 4, mDone: [true,true,true,false,false,false], km: 3, ks: 18, ksl: null, skor: 29.5, benar: 2, salah: 0, waktu: 135, xp: 130, lvl: "Insinyur Kalibrasi Lv. 2" },
+        { nama: "Nurul Istiqomah R. Ali", status: "SEDANG_MENGERJAKAN", misi: 4, mDone: [true,true,true,false,false,false], km: 7, ks: 19, ksl: null, skor: 11.4, benar: 1, salah: 0, waktu: 98, xp: 105, lvl: "Insinyur Kalibrasi Lv. 2" },
+        { nama: "Shofiyyah Sholihah Adam", status: "SEDANG_MENGERJAKAN", misi: 3, mDone: [true,true,false,false,false,false], km: 10, ks: null, ksl: null, skor: 10.8, benar: 1, salah: 0, waktu: 115, xp: 80, lvl: "Insinyur Kalibrasi Lv. 2" },
+        { nama: "Zuhairah Diniyyah Atifah Pakudu", status: "SEDANG_MENGERJAKAN", misi: 2, mDone: [true,false,false,false,false,false], km: null, ks: null, ksl: null, skor: 0, benar: 0, salah: 0, waktu: 0, xp: 25, lvl: "Insinyur Muda Lv. 1" }
+      ];
+
+      const peringkat = demoScores.map((d, idx) => ({
+        peringkat: idx + 1,
+        id_siswa: "S0" + (idx + 1),
+        nama_siswa: d.nama,
+        status_umum: d.status,
+        misi_aktif: d.misi,
+        m1_selesai: d.mDone[0],
+        m2_selesai: d.mDone[1],
+        m3_selesai: d.mDone[2],
+        m4_selesai: d.mDone[3],
+        m5_selesai: d.mDone[4],
+        m6_selesai: d.mDone[5],
+        jml_misi_selesai: d.mDone.filter(Boolean).length,
+        kotak_mudah: d.km,
+        kotak_sedang: d.ks,
+        kotak_sulit: d.ksl,
+        total_skor: d.skor,
+        jml_benar: d.benar,
+        jml_salah: d.salah,
+        rata_waktu_detik: d.waktu,
+        xp: d.xp,
+        level_insinyur: d.lvl
+      }));
+
+      const kotak = [];
+      for (let i = 1; i <= 30; i++) {
+        const lvl = i <= 10 ? "MUDAH" : (i <= 20 ? "SEDANG" : "SULIT");
+        let status = "TERSEDIA";
+        let pemilih = "";
+        let benar = false;
+
+        demoScores.forEach(s => {
+          if (s.km === i || s.ks === i || s.ksl === i) {
+            pemilih = s.nama;
+            if (i === 27 || i === 19) {
+              status = "DIKERJAKAN";
+            } else {
+              status = "SELESAI";
+              benar = (i !== 25);
+            }
+          }
+        });
+
+        kotak.push({
+          no_kotak: i,
+          level: lvl,
+          status: status,
+          pemilih: pemilih,
+          status_benar: benar
+        });
+      }
+
+      const statistikLevel = {
+        MUDAH: { total: 10, tersedia: 2, dikerjakan: 0, selesai: 8, benar: 8, salah: 0 },
+        SEDANG: { total: 10, tersedia: 3, dikerjakan: 1, selesai: 6, benar: 6, salah: 0 },
+        SULIT: { total: 10, tersedia: 5, dikerjakan: 1, selesai: 4, benar: 3, salah: 1 }
+      };
+
+      const soalTersulit = [
+        { no_kotak: 25, level: "SULIT", label_stem: "T-M", judul_konteks: "Enkripsi Cuaca Pelabuhan Gorontalo #25", jml_salah: 2, jml_percobaan: 3 },
+        { no_kotak: 12, level: "SEDANG", label_stem: "M", judul_konteks: "Syarat Habis Dibagi (Pecahan) #12", jml_salah: 1, jml_percobaan: 2 },
+        { no_kotak: 22, level: "SULIT", label_stem: "T-E-M", judul_konteks: "Struktur Pintu Air Sungai Biyonga #22", jml_salah: 1, jml_percobaan: 2 }
+      ];
+
+      return {
+        ok: true,
+        isPreview: true,
+        serverTime: Date.now(),
+        pengaturan: dashState.pengaturan,
+        misiTerbuka: dashState.misiTerbuka,
+        peringkat: peringkat,
+        kotak: kotak,
+        statistikLevel: statistikLevel,
+        soalTersulit: soalTersulit
+      };
+    }
+
+    function simulatePreviewTeacherAction(subAction, payload) {
+      if (subAction === "verifyPin") {
+        if (dashState.verifiedPin === "2026") {
+          return { ok: true, pengaturan: dashState.pengaturan };
+        }
+        return { ok: false, message: "PIN Pratinjau adalah 2026" };
+      }
+      if (subAction === "toggleMission") {
+        dashState.misiTerbuka = String(payload.misiTerbuka || "1,2,3,4,5,6").split(",").map(Number);
+        return { ok: true, message: "Mode Pratinjau: Akses misi diperbarui.", state: buildPreviewSimulationData() };
+      }
+      if (subAction === "exportSummary") {
+        return { ok: true, message: "Mode Pratinjau: File CSV Rekap Kelas berhasil diunduh." };
+      }
+      return { ok: true, message: "Mode Pratinjau: Aksi guru disimulasikan. Hubungkan SCRIPT_URL untuk menulis ke Google Sheets.", state: buildPreviewSimulationData() };
+    }
+
+    function renderDashboardAll(data) {
+      if (!data || !data.ok) return;
+
+      dashState.lastUpdateTimestampMs = Date.now();
+      if (data.pengaturan) dashState.pengaturan = Object.assign({}, dashState.pengaturan, data.pengaturan);
+      if (Array.isArray(data.misiTerbuka)) dashState.misiTerbuka = data.misiTerbuka;
+      if (Array.isArray(data.peringkat)) dashState.peringkat = data.peringkat;
+      if (Array.isArray(data.kotak)) dashState.kotak = data.kotak;
+      if (data.statistikLevel) dashState.statistikLevel = data.statistikLevel;
+      if (Array.isArray(data.soalTersulit)) dashState.soalTersulit = data.soalTersulit;
+
+      renderKpiStrip(data.isPreview);
+      renderTop3Podium(dashState.peringkat);
+      renderLeaderboardWithFlipAnimation(dashState.peringkat);
+      renderLevelMasteryCharts(dashState.statistikLevel);
+      renderHardestQuestionsRadar(dashState.soalTersulit);
+      renderMiniBoxesMatrix(dashState.kotak);
+    }
+
+    function renderKpiStrip(isPreview) {
+      const list = dashState.peringkat || [];
+      const activeOrDone = list.filter(s => s.status_umum !== "BELUM_MULAI").length;
+      const finishedAll = list.filter(s => s.status_umum === "SELESAI").length;
+
+      document.getElementById("kpiActiveCount").textContent = `${activeOrDone} / ${list.length || 9}`;
+      document.getElementById("kpiFinishedCount").textContent = `(${finishedAll} Tuntas Penuh)`;
+
+      const boxes = dashState.kotak || [];
+      const claimedCount = boxes.filter(b => b.status !== "TERSEDIA").length;
+      const doneBoxes = boxes.filter(b => b.status === "SELESAI").length;
+      document.getElementById("kpiBoxesClaimed").textContent = `${claimedCount} / 30`;
+      document.getElementById("kpiBoxesTarget").textContent = `${doneBoxes} Selesai • Target: 27`;
+
+      let totalBenar = 0;
+      let totalSalah = 0;
+      list.forEach(s => {
+        totalBenar += Number(s.jml_benar || 0);
+        totalSalah += Number(s.jml_salah || 0);
+      });
+      const totalTried = totalBenar + totalSalah;
+      const acc = totalTried > 0 ? Math.round((totalBenar / totalTried) * 100) : 0;
+      document.getElementById("kpiClassAccuracy").textContent = `${acc}%`;
+      document.getElementById("kpiCorrectRatio").textContent = `${totalBenar} Benar • ${totalSalah} Belum Tepat`;
+
+      const mOpen = (dashState.misiTerbuka || []).join(", ");
+      document.getElementById("kpiOpenMissionsText").textContent = mOpen ? `Misi ${mOpen} Terbuka` : "Semua Misi Terkunci";
+
+      const pollSec = Math.round((dashState.pengaturan.POLLING_INTERVAL_MS || 4000) / 1000);
+      document.getElementById("pollingRateLabel").textContent = isPreview
+        ? "Mode Pratinjau • Tempel SCRIPT_URL di ⚙️ Server"
+        : `Auto-Update: ${pollSec} dtk`;
+    }
+
+    function renderTop3Podium(peringkat) {
+      const stage = document.getElementById("podiumStage");
+      if (!stage || !Array.isArray(peringkat) || peringkat.length < 3) return;
+
+      // Urutan visual panggung podium: Peringkat 2 (Kiri), Peringkat 1 (Tengah), Peringkat 3 (Kanan)
+      const visualOrder = [peringkat[1], peringkat[0], peringkat[2]];
+
+      stage.innerHTML = visualOrder.map((s) => {
+        if (!s) return "";
+        const rank = s.peringkat;
+        const crown = rank === 1 ? "👑 #1" : (rank === 2 ? "🥈 #2" : "🥉 #3");
+        return `
+          <div class="podium-card podium-rank-${rank}">
+            <div class="podium-medal">${crown}</div>
+            <div>
+              <div class="podium-name">${escapeHtml(s.nama_siswa)}</div>
+              <div style="font-size:0.75rem; color:var(--cyan-primary); font-weight:700;">
+                ${escapeHtml(s.level_insinyur || "Insinyur Muda")}
+              </div>
+            </div>
+            <div class="podium-score">${s.total_skor} <span style="font-size:0.78rem; font-weight:600;">Poin</span></div>
+            <div style="font-size:0.76rem; color:var(--text-muted); display:flex; gap:8px; justify-content:center; flex-wrap:wrap;">
+              <span>✅ ${s.jml_benar} Benar</span>
+              <span>•</span>
+              <span>📋 ${s.jml_misi_selesai}/6 Misi</span>
+              <span>•</span>
+              <span>⏱️ ${s.rata_waktu_detik || 0}d</span>
+            </div>
+          </div>
+        `;
+      }).join("");
+    }
+
+    function renderLeaderboardWithFlipAnimation(peringkat) {
+      const container = document.getElementById("leaderboardContainer");
+      if (!container) return;
+
+      // 1. Rekam posisi Y lama setiap baris sebelum DOM diperbarui (Teknik FLIP)
+      const oldPositions = {};
+      container.querySelectorAll(".rank-row").forEach((row) => {
+        const id = row.getAttribute("data-student-id");
+        if (id) {
+          oldPositions[id] = row.getBoundingClientRect().top;
+        }
+      });
+
+      // 2. Render urutan baru
+      container.innerHTML = peringkat.map((s) => {
+        const prevRank = dashState.previousRanksMap[s.id_siswa];
+        const climbedUp = (prevRank !== undefined && s.peringkat < prevRank);
+        dashState.previousRanksMap[s.id_siswa] = s.peringkat;
+
+        const topClass = s.peringkat <= 3 ? `rank-top-${s.peringkat}` : "";
+        const upClass = climbedUp ? "rank-changed-up" : "";
+
+        let statusClass = "status-belum";
+        let statusText = "Belum Mulai";
+        if (s.status_umum === "SELESAI") {
+          statusClass = "status-selesai";
+          statusText = "✅ Selesai Seluruh Misi";
+        } else if (s.status_umum === "SEDANG_MENGERJAKAN") {
+          statusClass = "status-aktif";
+          statusText = `⚡ Aktif di Misi ${s.misi_aktif || 1}`;
+        }
+
+        const mFlags = [s.m1_selesai, s.m2_selesai, s.m3_selesai, s.m4_selesai, s.m5_selesai, s.m6_selesai];
+        const mPillsHtml = mFlags.map((done, idx) => {
+          const mNum = idx + 1;
+          const isCurr = (!done && s.status_umum === "SEDANG_MENGERJAKAN" && Number(s.misi_aktif) === mNum);
+          return `<span class="m-pill ${done ? 'done' : ''} ${isCurr ? 'current' : ''}">M${mNum}</span>`;
+        }).join("");
+
+        const kMudah = s.kotak_mudah ? `#${s.kotak_mudah}` : "-";
+        const kSedang = s.kotak_sedang ? `#${s.kotak_sedang}` : "-";
+        const kSulit = s.kotak_sulit ? `#${s.kotak_sulit}` : "-";
+
+        return `
+          <div class="rank-row ${topClass} ${upClass}" data-student-id="${s.id_siswa}">
+            <div class="rank-num-badge">${s.peringkat}</div>
+
+            <div>
+              <div style="font-weight:800; font-size:1.02rem; color:#fff; margin-bottom:4px;">
+                ${escapeHtml(s.nama_siswa)}
+              </div>
+              <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+                <span class="student-status-pill ${statusClass}">${statusText}</span>
+                <span style="font-size:0.75rem; color:var(--text-muted); font-weight:600;">
+                  ${s.xp || 0} XP • ${escapeHtml(s.level_insinyur || "")}
+                </span>
+              </div>
+            </div>
+
+            <div class="rank-col-missions">
+              <div class="mission-dots">${mPillsHtml}</div>
+            </div>
+
+            <div class="rank-col-stats font-mono" style="font-size:0.8rem; color:#cbd5e1;">
+              <div>Kotak: <strong style="color:var(--cyan-primary);">${kMudah}</strong> / <strong style="color:var(--gold-light);">${kSedang}</strong> / <strong style="color:#fda4af;">${kSulit}</strong></div>
+              <div style="font-size:0.75rem; color:var(--text-muted);">Rata-rata: ${s.rata_waktu_detik || 0} dtk/soal</div>
+            </div>
+
+            <div style="text-align:right;">
+              <div class="font-mono" style="font-size:1.25rem; font-weight:800; color:var(--gold-light);">
+                ${s.total_skor}
+              </div>
+              <div style="font-size:0.76rem; font-weight:700;">
+                <span style="color:var(--emerald-primary);">✓${s.jml_benar}</span>
+                <span style="color:var(--text-muted);"> / </span>
+                <span style="color:var(--rose-primary);">✗${s.jml_salah}</span>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join("");
+
+      // 3. Jalankan transisi FLIP jika ada perubahan posisi baris
+      container.querySelectorAll(".rank-row").forEach((row) => {
+        const id = row.getAttribute("data-student-id");
+        const oldTop = oldPositions[id];
+        if (oldTop !== undefined) {
+          const newTop = row.getBoundingClientRect().top;
+          const deltaY = oldTop - newTop;
+          if (Math.abs(deltaY) > 2) {
+            row.style.transition = "none";
+            row.style.transform = `translateY(${deltaY}px)`;
+            requestAnimationFrame(() => {
+              requestAnimationFrame(() => {
+                row.style.transition = "transform 0.55s cubic-bezier(0.22, 1, 0.36, 1)";
+                row.style.transform = "translateY(0)";
+              });
+            });
+          }
+        }
+      });
+    }
+
+    function renderLevelMasteryCharts(statObj) {
+      const wrap = document.getElementById("levelChartsContainer");
+      if (!wrap || !statObj) return;
+
+      const configs = [
+        { key: "MUDAH", title: "Level Mudah (Kotak 1–10)", accent: "var(--cyan-primary)" },
+        { key: "SEDANG", title: "Level Sedang (Kotak 11–20)", accent: "var(--gold-light)" },
+        { key: "SULIT", title: "Level Sulit • Kontekstual STEM (Kotak 21–30)", accent: "#fda4af" }
+      ];
+
+      wrap.innerHTML = configs.map((cfg) => {
+        const st = statObj[cfg.key] || { total: 10, tersedia: 10, dikerjakan: 0, selesai: 0, benar: 0, salah: 0 };
+        const total = st.total || 10;
+        const pctBenar = Math.round((st.benar / total) * 100);
+        const pctSalah = Math.round((st.salah / total) * 100);
+        const pctAktif = Math.round((st.dikerjakan / total) * 100);
+
+        return `
+          <div class="level-stat-block">
+            <div style="display:flex; justify-content:space-between; align-items:center; font-size:0.86rem; font-weight:800;">
+              <span style="color:${cfg.accent};">${cfg.title}</span>
+              <span class="font-mono" style="color:#fff;">${st.selesai}/${total} Selesai (${st.benar} Benar)</span>
+            </div>
+            <div class="stacked-bar">
+              <div class="bar-seg-benar" style="width:${pctBenar}%;" title="Benar: ${st.benar}"></div>
+              <div class="bar-seg-salah" style="width:${pctSalah}%;" title="Belum Tepat: ${st.salah}"></div>
+              <div class="bar-seg-aktif" style="width:${pctAktif}%;" title="Sedang Dikerjakan: ${st.dikerjakan}"></div>
+            </div>
+            <div style="display:flex; justify-content:space-between; font-size:0.75rem; color:var(--text-muted);">
+              <span>🟩 Benar: ${st.benar}</span>
+              <span>🟥 Belum Tepat: ${st.salah}</span>
+              <span>🟨 Aktif: ${st.dikerjakan}</span>
+              <span>🟦 Tersedia: ${st.tersedia}</span>
+            </div>
+          </div>
+        `;
+      }).join("");
+    }
+
+    function renderHardestQuestionsRadar(list) {
+      const wrap = document.getElementById("hardestQuestionsContainer");
+      if (!wrap) return;
+
+      if (!Array.isArray(list) || list.length === 0) {
+        wrap.innerHTML = `
+          <div style="padding:14px; border-radius:12px; background:rgba(16,185,129,0.08); border:1px solid rgba(16,185,129,0.3); font-size:0.84rem; color:#6ee7b7;">
+            🌟 Alhamdulillah, belum ada modul soal yang tercatat mengalami kesalahan berulang.
+          </div>
+        `;
+        return;
+      }
+
+      wrap.innerHTML = list.map((item) => `
+        <div style="padding:12px 14px; border-radius:12px; background:rgba(244,63,94,0.08); border:1px solid rgba(244,63,94,0.32); display:flex; justify-content:space-between; align-items:center; gap:10px;">
+          <div>
+            <div style="font-size:0.74rem; font-weight:800; color:#fda4af;">
+              KOTAK #${item.no_kotak} • LEVEL ${item.level} • [${item.label_stem || "M"}]
+            </div>
+            <div style="font-size:0.9rem; font-weight:700; color:#fff;">
+              ${escapeHtml(item.judul_konteks || ("Modul #" + item.no_kotak))}
+            </div>
+          </div>
+          <div style="text-align:right; flex-shrink:0;">
+            <div class="font-mono" style="font-size:0.95rem; font-weight:800; color:#fb7185;">
+              ${item.jml_salah}x Salah
+            </div>
+            <div style="font-size:0.72rem; color:var(--text-muted);">
+              dari ${item.jml_percobaan} percobaan
+            </div>
+          </div>
+        </div>
+      `).join("");
+    }
+
+    function renderMiniBoxesMatrix(boxes) {
+      const wrap = document.getElementById("miniBoxesMatrix");
+      if (!wrap || !Array.isArray(boxes)) return;
+
+      wrap.innerHTML = boxes.map((b) => {
+        let cls = "";
+        if (b.status === "DIKERJAKAN") cls = "dikerjakan";
+        else if (b.status === "SELESAI") cls = b.status_benar ? "selesai-benar" : "selesai-salah";
+
+        const shortName = b.pemilih ? b.pemilih.split(" ")[0] : "Siap";
+        return `
+          <div class="mini-box-cell ${cls}" title="Kotak #${b.no_kotak} (${b.level}) — ${b.pemilih || 'Tersedia'}">
+            <span>#${b.no_kotak}</span>
+            <span style="font-size:0.62rem; font-weight:600; max-width:100%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
+              ${escapeHtml(shortName)}
+            </span>
+          </div>
+        `;
+      }).join("");
+    }
+
+    function escapeHtml(str) {
+      return String(str || "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;");
+    }
+
+    function populateResetStudentDropdown() {
+      const sel = document.getElementById("selectResetStudent");
+      if (!sel) return;
+      sel.innerHTML = '<option value="">-- Pilih Siswa untuk Reset Individu --</option>';
+      WHITELIST_SISWA.forEach((nama) => {
+        const opt = document.createElement("option");
+        opt.value = nama;
+        opt.textContent = nama;
+        sel.appendChild(opt);
+      });
+    }
+
+    function downloadClassSummaryCsv() {
+      const headers = [
+        "Peringkat", "ID Siswa", "Nama Siswa", "Status", "Misi Selesai",
+        "Kotak Mudah", "Kotak Sedang", "Kotak Sulit", "Benar", "Salah",
+        "Rata Waktu (detik)", "Total Skor", "XP", "Level Insinyur"
+      ];
+      const rows = [headers];
+      (dashState.peringkat || []).forEach((s) => {
+        rows.push([
+          s.peringkat,
+          s.id_siswa,
+          `"${String(s.nama_siswa).replace(/"/g, '""')}"`,
+          s.status_umum,
+          `${s.jml_misi_selesai}/6`,
+          s.kotak_mudah || "-",
+          s.kotak_sedang || "-",
+          s.kotak_sulit || "-",
+          s.jml_benar,
+          s.jml_salah,
+          s.rata_waktu_detik || 0,
+          s.total_skor,
+          s.xp || 0,
+          `"${String(s.level_insinyur || "").replace(/"/g, '""')}"`
+        ]);
+      });
+
+      const csvContent = rows.map(r => r.join(",")).join("\n");
+      const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "Rekap_Limboto_SmartGate_XI_SMAIT_Al_Ishlah.csv";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+
+    async function pollDashboardCycle() {
+      try {
+        const data = await fetchDashboardStateFromServer();
+        renderDashboardAll(data);
+      } catch (e) {
+        // Tetap tampilkan data terakhir jika koneksi sempat terputus sesaat
+      }
+    }
+
+    function startPollingAndTicker() {
+      if (dashState.pollingTimerId) clearInterval(dashState.pollingTimerId);
+      const ms = Math.max(3000, Number(dashState.pengaturan.POLLING_INTERVAL_MS || 4000));
+      dashState.pollingTimerId = setInterval(pollDashboardCycle, ms);
+
+      if (dashState.secondTickerId) clearInterval(dashState.secondTickerId);
+      dashState.secondTickerId = setInterval(() => {
+        const diffSec = Math.max(0, Math.floor((Date.now() - dashState.lastUpdateTimestampMs) / 1000));
+        const label = document.getElementById("lastUpdatedText");
+        if (label) {
+          label.textContent = diffSec <= 1 ? "Diperbarui baru saja" : `Diperbarui ${diffSec} detik lalu`;
+        }
+      }, 1000);
+    }
+
+    window.addEventListener("DOMContentLoaded", async () => {
+      populateResetStudentDropdown();
+      await pollDashboardCycle();
+      startPollingAndTicker();
+
+      document.getElementById("btnRefreshNow").addEventListener("click", async () => {
+        await pollDashboardCycle();
+        showToast("Data dashboard berhasil disegarkan.", "info");
+      });
+
+      document.getElementById("btnToggleProjectorFont").addEventListener("click", (e) => {
+        document.body.classList.toggle("projector-mode");
+        const isProj = document.body.classList.contains("projector-mode");
+        e.currentTarget.textContent = isProj ? "🔍 Mode Proyektor: AKTIF" : "🔍 Mode Proyektor: STANDAR";
+      });
+
+      document.getElementById("btnFullscreen").addEventListener("click", () => {
+        if (!document.fullscreenElement) {
+          document.documentElement.requestFullscreen().catch(() => {});
+        } else {
+          document.exitFullscreen().catch(() => {});
+        }
+      });
+
+      document.getElementById("btnServerUrlModal").addEventListener("click", async () => {
+        const current = resolveActiveScriptUrl();
+        const res = await openGenericModal({
+          title: "Konfigurasi URL Server Google Apps Script",
+          htmlBody: `<p>Tempelkan URL Aplikasi Web (berakhiran <code>/exec</code>) dari hasil deploy <code>code.gs</code> untuk menghubungkan layar proyektor ke Google Sheets kelas:</p>`,
+          showInput: true,
+          defaultInput: current,
+          confirmText: "Simpan & Sinkronkan"
+        });
+        if (res.confirmed) {
+          if (res.value && res.value.startsWith("https://script.google.com/")) {
+            safeSetStorage(STORAGE_KEY_CUSTOM_URL, res.value);
+            dashState.peringkat = [];
+            await pollDashboardCycle();
+            showToast("Terhubung ke server Google Apps Script!", "success");
+          } else if (!res.value) {
+            safeRemoveStorage(STORAGE_KEY_CUSTOM_URL);
+            dashState.peringkat = [];
+            await pollDashboardCycle();
+            showToast("Kembali ke pengaturan default.", "info");
+          } else {
+            showToast("URL harus diawali https://script.google.com/.../exec", "warn");
+          }
+        }
+      });
+
+      // Modal Panel Guru
+      const teacherModal = document.getElementById("teacherModalBackdrop");
+      document.getElementById("btnOpenTeacherPanel").addEventListener("click", () => {
+        teacherModal.classList.add("open");
+      });
+      document.getElementById("btnCloseTeacherModal").addEventListener("click", () => {
+        teacherModal.classList.remove("open");
+      });
+
+      document.getElementById("btnVerifyPin").addEventListener("click", async () => {
+        const pinVal = document.getElementById("inputTeacherPin").value.trim();
+        if (!pinVal) {
+          showToast("Masukkan PIN Guru terlebih dahulu.", "warn");
+          return;
+        }
+        dashState.verifiedPin = pinVal;
+        try {
+          const res = await postTeacherAction("verifyPin", {});
+          if (!res.ok) {
+            showToast(res.message || "PIN Guru salah.", "error");
+            return;
+          }
+          document.getElementById("teacherPinGate").classList.add("hidden");
+          document.getElementById("teacherControlsBody").classList.remove("hidden");
+
+          // Isi nilai form sesuai pengaturan aktif
+          const p = res.pengaturan || dashState.pengaturan;
+          document.getElementById("setWaktuMudah").value = p.WAKTU_MUDAH_DETIK || 180;
+          document.getElementById("setWaktuSedang").value = p.WAKTU_SEDANG_DETIK || 300;
+          document.getElementById("setWaktuSulit").value = p.WAKTU_SULIT_DETIK || 480;
+          document.getElementById("setPoinMudah").value = p.POIN_MUDAH || 10;
+          document.getElementById("setPoinSedang").value = p.POIN_SEDANG || 20;
+          document.getElementById("setPoinSulit").value = p.POIN_SULIT || 30;
+
+          const checkboxes = document.querySelectorAll("#teacherMissionCheckboxes input[type='checkbox']");
+          checkboxes.forEach(cb => {
+            cb.checked = dashState.misiTerbuka.indexOf(Number(cb.value)) !== -1;
+          });
+
+          showToast("Panel Guru berhasil dibuka.", "success");
+        } catch (err) {
+          showToast("Gagal memverifikasi PIN ke server.", "error");
+        }
+      });
+
+      document.getElementById("btnSaveMissionAccess").addEventListener("click", async () => {
+        const checked = [];
+        document.querySelectorAll("#teacherMissionCheckboxes input[type='checkbox']").forEach(cb => {
+          if (cb.checked) checked.push(cb.value);
+        });
+        if (checked.length === 0) {
+          showToast("Minimal 1 misi harus dibuka.", "warn");
+          return;
+        }
+        const res = await postTeacherAction("toggleMission", { misiTerbuka: checked.join(",") });
+        if (res.ok) {
+          if (res.state) renderDashboardAll(res.state);
+          showToast(res.message || "Akses misi berhasil diperbarui.", "success");
+        } else {
+          showToast(res.message || "Gagal memperbarui akses misi.", "error");
+        }
+      });
+
+      document.getElementById("btnSaveSettings").addEventListener("click", async () => {
+        const payload = {
+          WAKTU_MUDAH_DETIK: document.getElementById("setWaktuMudah").value,
+          WAKTU_SEDANG_DETIK: document.getElementById("setWaktuSedang").value,
+          WAKTU_SULIT_DETIK: document.getElementById("setWaktuSulit").value,
+          POIN_MUDAH: document.getElementById("setPoinMudah").value,
+          POIN_SEDANG: document.getElementById("setPoinSedang").value,
+          POIN_SULIT: document.getElementById("setPoinSulit").value
+        };
+        const res = await postTeacherAction("updateSettings", payload);
+        if (res.ok) {
+          if (res.state) renderDashboardAll(res.state);
+          showToast(res.message || "Pengaturan berhasil disimpan.", "success");
+        } else {
+          showToast(res.message || "Gagal menyimpan pengaturan.", "error");
+        }
+      });
+
+      document.getElementById("btnExportClassSummary").addEventListener("click", async () => {
+        const res = await postTeacherAction("exportSummary", {});
+        downloadClassSummaryCsv();
+        if (res.ok) {
+          showToast(res.message || "Rekap nilai berhasil diekspor!", "success");
+        }
+      });
+
+      document.getElementById("btnResetSingleStudent").addEventListener("click", async () => {
+        const target = document.getElementById("selectResetStudent").value;
+        if (!target) {
+          showToast("Pilih nama siswa yang akan di-reset terlebih dahulu.", "warn");
+          return;
+        }
+        const conf = await openGenericModal({
+          title: "Reset Progres & Kotak Siswa?",
+          htmlBody: `<p>Apakah Ustadz/Ustadzah yakin ingin mereset seluruh progres misi dan membebaskan kembali kotak soal milik <strong>${escapeHtml(target)}</strong>?</p>`,
+          confirmText: "Ya, Reset Siswa Ini"
+        });
+        if (!conf.confirmed) return;
+
+        const res = await postTeacherAction("resetStudent", { nama: target });
+        if (res.ok) {
+          if (res.state) renderDashboardAll(res.state);
+          showToast(res.message, "success");
+        } else {
+          showToast(res.message || "Gagal mereset siswa.", "error");
+        }
+      });
+
+      document.getElementById("btnResetAllClass").addEventListener("click", async () => {
+        const conf = await openGenericModal({
+          title: "⚠️ Reset Seluruh Kelas (9 Siswa & 30 Kotak)?",
+          htmlBody: `<p>Tindakan ini akan mengembalikan <strong>seluruh 30 kotak soal menjadi TERSEDIA</strong> dan mengosongkan skor/progres ke-9 siswa untuk memulai sesi kelas baru.</p>`,
+          confirmText: "Ya, Reset Seluruh Kelas"
+        });
+        if (!conf.confirmed) return;
+
+        const res = await postTeacherAction("resetAll", {});
+        if (res.ok) {
+          if (res.state) renderDashboardAll(res.state);
+          showToast(res.message, "success");
+        } else {
+          showToast(res.message || "Gagal mereset kelas.", "error");
+        }
+      });
+    });
+  </script>
+</body>
+</html>
