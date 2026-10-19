@@ -1,0 +1,1547 @@
+<!DOCTYPE html>
+<html lang="id" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
+  <title>Bahan Tayang Papan Interaktif | Teorema Sisa Polinomial — SMAIT Al Ishlah Gorontalo</title>
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Google Fonts: Plus Jakarta Sans, Space Grotesk, JetBrains Mono, Amiri -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=JetBrains+Mono:wght@500;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@600;700;800&display=swap" rel="stylesheet" />
+
+  <!-- KaTeX CDN untuk perenderan rumus matematika beresolusi tinggi di Papan Interaktif -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css" crossorigin="anonymous" />
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js" crossorigin="anonymous"></script>
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/contrib/auto-render.min.js" crossorigin="anonymous"></script>
+
+  <style>
+    :root {
+      --bg-deep: #040914;
+      --cyan-glow: #00f2fe;
+      --cyan-primary: #38bdf8;
+      --gold-primary: #f59e0b;
+      --gold-light: #fde68a;
+      --emerald-primary: #10b981;
+      --rose-primary: #f43f5e;
+    }
+
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+    }
+
+    body {
+      background-color: var(--bg-deep);
+      color: #f8fafc;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      overflow-x: hidden;
+      min-height: 100vh;
+    }
+
+    .font-display {
+      font-family: 'Space Grotesk', sans-serif;
+    }
+    .font-mono-code {
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .font-arabic {
+      font-family: 'Amiri', serif;
+      line-height: 2.15;
+      direction: rtl;
+    }
+
+    /* Ambient Background Liquid Glass */
+    .ambient-bg {
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      background:
+        radial-gradient(circle at 12% 15%, rgba(0, 242, 254, 0.14), transparent 40%),
+        radial-gradient(circle at 88% 18%, rgba(245, 158, 11, 0.13), transparent 42%),
+        radial-gradient(circle at 50% 88%, rgba(16, 185, 129, 0.11), transparent 45%),
+        linear-gradient(180deg, #030712 0%, #09152b 55%, #040914 100%);
+    }
+
+    .ambient-grid {
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(56, 189, 248, 0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(56, 189, 248, 0.05) 1px, transparent 1px);
+      background-size: 44px 44px;
+    }
+
+    /* Glass Panels */
+    .glass-panel {
+      background: rgba(12, 23, 46, 0.76);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(56, 189, 248, 0.28);
+      box-shadow: 0 22px 55px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.14);
+    }
+
+    .glass-card {
+      background: rgba(17, 32, 64, 0.65);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(148, 163, 184, 0.22);
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .glass-card-interactive:hover {
+      border-color: rgba(56, 189, 248, 0.65);
+      transform: translateY(-2px);
+      box-shadow: 0 12px 30px rgba(0, 242, 254, 0.15);
+    }
+
+    /* Kanvas Coretan Papan Tulis Interaktif (Stylus / Touch Ink) */
+    #inkCanvas {
+      position: fixed;
+      inset: 0;
+      z-index: 45;
+      pointer-events: none;
+      touch-action: none;
+    }
+    #inkCanvas.drawing-active {
+      pointer-events: auto;
+      cursor: crosshair;
+    }
+
+    /* Transisi Slide */
+    .slide-frame {
+      display: none;
+      animation: slideFadeIn 0.32s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .slide-frame.active {
+      display: block;
+    }
+
+    @keyframes slideFadeIn {
+      from { opacity: 0; transform: translateY(12px) scale(0.99); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    /* Ukuran KaTeX ramah proyektor / IFP */
+    .katex {
+      font-size: 1.12em !important;
+    }
+    .katex-display {
+      margin: 0.65em 0 !important;
+    }
+
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: rgba(4, 9, 20, 0.8);
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(56, 189, 248, 0.35);
+      border-radius: 999px;
+    }
+  </style>
+</head>
+
+<body class="pb-28">
+  <div class="ambient-bg" aria-hidden="true">
+    <div class="ambient-grid"></div>
+  </div>
+
+  <!-- KANVAS CORETAN PAPAN INTERAKTIF (STYLUS / JARI) -->
+  <canvas id="inkCanvas"></canvas>
+
+  <!-- HEADER BAR PAPAN INTERAKTIF -->
+  <header class="sticky top-0 z-50 px-4 py-3">
+    <div class="max-w-[1600px] mx-auto glass-panel rounded-2xl px-5 py-3 flex flex-wrap items-center justify-between gap-3">
+      <!-- Identitas Modul & Sekolah -->
+      <div class="flex items-center gap-3.5">
+        <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-sky-400/30 to-amber-500/30 border border-sky-400/60 flex items-center justify-center font-display font-extrabold text-xl text-sky-300 shadow-lg shadow-sky-500/20">
+          P(x)
+        </div>
+        <div>
+          <div class="flex items-center gap-2.5 flex-wrap">
+            <span class="font-display font-extrabold text-lg md:text-xl tracking-tight text-white">
+              LIMBOTO SMART-GATE
+            </span>
+            <span class="px-2.5 py-0.5 rounded-md text-xs font-extrabold bg-sky-500/20 text-sky-300 border border-sky-400/40">
+              FASE F+ • KELAS XI
+            </span>
+            <span class="px-2.5 py-0.5 rounded-md text-xs font-extrabold bg-amber-500/20 text-amber-300 border border-amber-400/40" id="headerPhaseBadge">
+              PENDAHULUAN • 10 MENIT
+            </span>
+          </div>
+          <p class="text-xs md:text-sm text-slate-300">
+            Matematika Tingkat Lanjut — Teorema Sisa Polinomial • <strong>SMAIT Al Ishlah Gorontalo</strong> (Rahmat Djafar, S.Pd., Gr.)
+          </p>
+        </div>
+      </div>
+
+      <!-- Kontrol Timer Fase RPM & Alat Coretan Papan Digital -->
+      <div class="flex items-center gap-2.5 flex-wrap">
+        <!-- Timer Sesi -->
+        <div class="glass-card rounded-xl px-3.5 py-1.5 flex items-center gap-2.5 border border-sky-400/30">
+          <span class="text-xs uppercase font-bold text-slate-400" id="timerPhaseLabel">Timer Sesi:</span>
+          <span class="font-mono-code font-extrabold text-xl text-sky-300" id="classTimerDisplay">10:00</span>
+          <button type="button" onclick="toggleClassTimer()" id="btnTimerToggle" class="px-2.5 py-1 rounded-lg bg-sky-500/25 hover:bg-sky-500/40 text-sky-200 text-xs font-bold border border-sky-400/40 transition">
+            ▶ Mulai
+          </button>
+          <button type="button" onclick="resetClassTimerForCurrentSlide()" class="px-2 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-bold transition" title="Reset Timer Slide Ini">
+            ↺
+          </button>
+        </div>
+
+        <!-- Toggle Papan Coretan (Stylus Mode) -->
+        <button type="button" id="btnToggleInk" onclick="toggleInkMode()" class="min-h-[44px] px-4 py-2 rounded-xl bg-slate-800/90 hover:bg-slate-700 text-slate-100 font-bold text-sm border border-slate-600 flex items-center gap-2 transition">
+          ✏️ Mode Coretan: <span id="inkStatusLabel" class="text-slate-400">MATI</span>
+        </button>
+
+        <!-- Toolbar Warna Pena (Muncul saat Mode Coretan Aktif) -->
+        <div id="inkToolbar" class="hidden items-center gap-1.5 glass-card px-3 py-1.5 rounded-xl border border-amber-400/50">
+          <button type="button" onclick="setInkColor('#00f2fe', 4)" class="w-7 h-7 rounded-full bg-[#00f2fe] border-2 border-white" title="Pena Cyan"></button>
+          <button type="button" onclick="setInkColor('#f59e0b', 4)" class="w-7 h-7 rounded-full bg-[#f59e0b] border-2 border-transparent" title="Pena Emas"></button>
+          <button type="button" onclick="setInkColor('#10b981', 4)" class="w-7 h-7 rounded-full bg-[#10b981] border-2 border-transparent" title="Pena Hijau"></button>
+          <button type="button" onclick="setInkColor('#f43f5e', 4)" class="w-7 h-7 rounded-full bg-[#f43f5e] border-2 border-transparent" title="Pena Merah"></button>
+          <button type="button" onclick="clearInkCanvas()" class="px-2.5 py-1 rounded-lg bg-rose-500/25 text-rose-200 text-xs font-bold border border-rose-400/40 ml-1">
+            🗑️ Bersihkan
+          </button>
+        </div>
+
+        <!-- Layar Penuh Papan Interaktif -->
+        <button type="button" onclick="toggleFullScreen()" class="min-h-[44px] px-3.5 py-2 rounded-xl bg-slate-800/90 hover:bg-slate-700 text-slate-200 font-bold text-sm border border-slate-600 transition" title="Layar Penuh Papan Interaktif">
+          ⛶ Layar Penuh
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- CONTAINER UTAMA SLIDE BAHAN TAYANG -->
+  <main class="max-w-[1600px] mx-auto px-4 pt-2">
+
+    <!-- =========================================================================
+         SLIDE 1: SAMPUL & PRESENSI INTERAKTIF 9 PESERTA DIDIK (KEGIATAN AWAL)
+         ========================================================================= -->
+    <section class="slide-frame active" data-slide="1" data-phase="KEGIATAN AWAL • ORIENTASI (4 MENIT)" data-timer="240">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
+        <!-- Kolom Kiri: Hero Sampul Pembelajaran -->
+        <div class="lg:col-span-7 glass-panel rounded-3xl p-8 flex flex-col justify-between relative overflow-hidden">
+          <div>
+            <div class="flex flex-wrap gap-2 mb-5">
+              <span class="px-3.5 py-1 rounded-full text-xs font-extrabold uppercase tracking-wider bg-sky-500/20 text-sky-300 border border-sky-400/40">
+                Pembelajaran Mendalam (Mindful • Meaningful • Joyful)
+              </span>
+              <span class="px-3.5 py-1 rounded-full text-xs font-extrabold uppercase tracking-wider bg-amber-500/20 text-amber-300 border border-amber-400/40">
+                PBL Terintegrasi S-T-E-M & INTROFLEX
+              </span>
+            </div>
+
+            <h1 class="font-display font-extrabold text-3xl sm:text-5xl text-white leading-tight mb-4">
+              POLINOMIAL (SUKU BANYAK)<br />
+              <span class="text-transparent bg-clip-text bg-gradient-to-r from-sky-300 via-cyan-200 to-amber-300">
+                TEOREMA SISA
+              </span>
+            </h1>
+
+            <p class="text-base sm:text-lg text-slate-300 leading-relaxed mb-6">
+              Proyek Gim Edukasi STEM <strong>“Limboto Smart-Gate: Misi Penyelamatan Ekologi Danau Limboto”</strong>. Menggeser prosedur pembagian panjang menuju penalaran struktural aljabar yang efisien dan presisi.
+            </p>
+
+            <!-- Ringkasan Identitas RPM -->
+            <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-6">
+              <div class="glass-card rounded-2xl p-4">
+                <div class="text-xs font-bold text-slate-400 uppercase">Satuan Pendidikan</div>
+                <div class="text-base font-extrabold text-white mt-0.5">SMAIT Al Ishlah Gorontalo</div>
+              </div>
+              <div class="glass-card rounded-2xl p-4">
+                <div class="text-xs font-bold text-slate-400 uppercase">Kelas / Alokasi</div>
+                <div class="text-base font-extrabold text-sky-300 mt-0.5">XI Fase F+ • 2 × 40 Menit</div>
+              </div>
+              <div class="glass-card rounded-2xl p-4 col-span-2 sm:col-span-1">
+                <div class="text-xs font-bold text-slate-400 uppercase">Guru Pengampu</div>
+                <div class="text-base font-extrabold text-amber-300 mt-0.5">Rahmat Djafar, S.Pd., Gr.</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="glass-card rounded-2xl p-4 border-l-4 border-l-emerald-400 flex flex-wrap items-center justify-between gap-4">
+            <div>
+              <div class="text-xs font-extrabold uppercase tracking-wider text-emerald-300">Posisi Unit Polinomial</div>
+              <div class="text-sm sm:text-base font-bold text-white">Pertemuan ke-4 dari 6 Pertemuan (Setelah Pembagian Bersusun & Skema Horner)</div>
+            </div>
+            <button type="button" onclick="goToSlide(2)" class="px-5 py-3 rounded-xl bg-gradient-to-r from-sky-500 to-cyan-500 hover:from-sky-400 hover:to-cyan-400 text-slate-950 font-extrabold text-sm shadow-lg shadow-sky-500/25 transition">
+              Mulai Pembelajaran ➔
+            </button>
+          </div>
+        </div>
+
+        <!-- Kolom Kanan: Presensi Sentuh 9 Insinyur Muda -->
+        <div class="lg:col-span-5 glass-panel rounded-3xl p-6 flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between gap-2 mb-3">
+              <div>
+                <h2 class="font-display font-bold text-xl text-white">📋 Presensi Pos Komando (9 Murid)</h2>
+                <p class="text-xs text-slate-400">Ketuk nama peserta didik di layar papan interaktif untuk mencatat kehadiran:</p>
+              </div>
+              <button type="button" onclick="markAllPresent()" class="px-3 py-1.5 rounded-lg bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 text-xs font-bold border border-emerald-400/40 transition">
+                ✓ Hadir Semua
+              </button>
+            </div>
+
+            <div id="attendanceListContainer" class="grid grid-cols-1 gap-2 my-3"></div>
+          </div>
+
+          <div class="glass-card rounded-2xl p-3.5 flex items-center justify-between">
+            <span class="text-xs font-bold uppercase text-slate-300">Status Kesiapan Tim Insinyur Muda:</span>
+            <span id="attendanceSummaryBadge" class="px-3 py-1 rounded-full text-xs font-extrabold bg-emerald-500/20 text-emerald-300 border border-emerald-400/40">
+              9 / 9 Siap Bertugas
+            </span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================================================
+         SLIDE 2: ORIENTASI RUHIYAH — DOA & MUROJAAH QS. AL-MULK: 1-4
+         ========================================================================= -->
+    <section class="slide-frame" data-slide="2" data-phase="KEGIATAN AWAL • RUHIYAH & MUROJAAH (4 MENIT)" data-timer="240">
+      <div class="glass-panel rounded-3xl p-8">
+        <div class="flex flex-wrap items-center justify-between gap-4 mb-6">
+          <div>
+            <span class="px-3 py-1 rounded-full text-xs font-extrabold bg-amber-500/20 text-amber-300 border border-amber-400/40">
+              BERKESADARAN (MINDFUL) • BUDAYA RELIGIUS JSIT
+            </span>
+            <h2 class="font-display font-extrabold text-2xl sm:text-4xl text-white mt-2">
+              Orientasi Ruhiyah: Doa & Murojaah Bersama
+            </h2>
+          </div>
+          <div class="text-right">
+            <div class="text-xs font-bold text-slate-400 uppercase">Dimensi Profil Lulusan</div>
+            <div class="text-sm font-bold text-amber-300">Keimanan & Ketakwaan terhadap Tuhan YME</div>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          <!-- Kartu Murojaah QS Al-Mulk 3-4 -->
+          <div class="lg:col-span-8 glass-card rounded-3xl p-7 border border-amber-400/40 bg-gradient-to-br from-amber-500/10 to-slate-900/90">
+            <div class="flex items-center justify-between mb-4">
+              <span class="text-xs font-extrabold uppercase tracking-wider text-amber-300">
+                📖 Murojaah & Tadabbur Awal — QS. Al-Mulk [67]: 3–4
+              </span>
+              <span class="text-xs text-slate-400">Dibaca dengan tartil bersama-sama</span>
+            </div>
+
+            <div class="font-arabic text-2xl sm:text-4xl text-white text-right leading-loose mb-6 p-4 rounded-2xl bg-slate-950/60 border border-amber-400/20">
+              الَّذِي خَلَقَ سَبْعَ سَمَاوَاتٍ طِبَاقًا ۖ مَّا تَرَىٰ فِي خَلْقِ الرَّحْمَٰنِ مِن تَفَاوُتٍ ۖ فَارْجِعِ الْبَصَرَ هَلْ تَرَىٰ مِن فُطُورٍ ﴿٣﴾ ثُمَّ ارْجِعِ الْبَصَرَ كَرَّتَيْنِ يَنقَلِبْ إِلَيْكَ الْبَصَرُ خَاسِئًا وَهُوَ حَسِيرٌ ﴿٤﴾
+            </div>
+
+            <p class="text-base sm:text-lg text-slate-200 italic leading-relaxed mb-4">
+              "Yang telah menciptakan tujuh langit berlapis-lapis. <strong>Kamu sekali-kali tidak melihat pada ciptaan Tuhan Yang Maha Pemurah sesuatu yang tidak seimbang.</strong> Maka lihatlah berulang-ulang, adakah kamu lihat sesuatu yang tidak seimbang? Kemudian pandanglah sekali lagi niscaya penglihatanmu akan kembali kepadamu dengan tidak menemukan sesuatu cacat dan penglihatanmu itu pun dalam keadaan payah."
+            </p>
+
+            <div class="p-4 rounded-2xl bg-sky-500/10 border border-sky-400/30 text-sm sm:text-base text-sky-200">
+              💡 <strong>Benang Merah dengan Matematika:</strong> Alam semesta diciptakan Allah SWT dengan keteraturan dan presisi sempurna tanpa cacat sedikit pun. Mempelajari struktur polinomial melatih kita berpikir teratur, teliti (<em>Itqan</em>), dan menjaga keseimbangan lingkungan ciptaan-Nya.
+            </div>
+          </div>
+
+          <!-- Kartu Doa & Kesiapan Perangkat -->
+          <div class="lg:col-span-4 flex flex-col justify-between gap-4">
+            <div class="glass-card rounded-3xl p-6">
+              <h3 class="font-display font-bold text-lg text-sky-300 mb-3">🤲 Doa Sebelum Belajar</h3>
+              <div class="font-arabic text-2xl text-white text-right mb-3">
+                رَبِّ زِدْنِي عِلْمًا وَارْزُقْنِي فَهْمًا وَاجْعَلْنِي مِنَ الصَّالِحِينَ
+              </div>
+              <p class="text-sm text-slate-300 italic">
+                "Ya Rabbku, tambahkanlah kepadaku ilmu, berikanlah aku karunia untuk dapat memahaminya, dan jadikanlah aku termasuk golongan orang-orang yang shalih."
+              </p>
+            </div>
+
+            <div class="glass-card rounded-3xl p-6 border-l-4 border-l-sky-400">
+              <h3 class="font-display font-bold text-lg text-white mb-2">💻 Cek Kesiapan Pos Komando</h3>
+              <ul class="text-sm text-slate-300 space-y-2">
+                <li class="flex items-center gap-2">✅ Buku catatan & alat tulis siap di meja.</li>
+                <li class="flex items-center gap-2">✅ Laptop / HP terhubung ke internet sekolah.</li>
+                <li class="flex items-center gap-2">✅ Tab aplikasi <code>index.html</code> telah dibuka.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================================================
+         SLIDE 3: APERSEPSI, PEMANTIK & CEK DIAGNOSTIK CEPAT (KEGIATAN AWAL)
+         ========================================================================= -->
+    <section class="slide-frame" data-slide="3" data-phase="KEGIATAN AWAL • APERSEPSI & DIAGNOSTIK (4 MENIT)" data-timer="240">
+      <div class="glass-panel rounded-3xl p-8">
+        <div class="mb-6">
+          <span class="px-3 py-1 rounded-full text-xs font-extrabold bg-sky-500/20 text-sky-300 border border-sky-400/40">
+            BERMAKNA (MEANINGFUL) • INDIVIDUALISASI
+          </span>
+          <h2 class="font-display font-extrabold text-2xl sm:text-4xl text-white mt-2">
+            Apersepsi & Pemantik: Mengapa Butuh Teorema Sisa?
+          </h2>
+        </div>
+
+        <!-- Pertanyaan Pemantik Interaktif -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+          <div class="glass-card rounded-3xl p-6 border-l-4 border-l-amber-400">
+            <div class="text-xs font-extrabold uppercase text-amber-300 mb-2">Kilas Balik Pertemuan Ke-3</div>
+            <h3 class="font-display font-bold text-xl text-white mb-3">
+              Pembagian Bersusun & Skema Horner vs Kebutuhan Sensor Real-Time
+            </h3>
+            <p class="text-slate-300 text-base leading-relaxed mb-4">
+              <em>"Pada pertemuan lalu, kita membagi polinomial derajat 4 seperti $f(x) = 2x^4 - 3x^3 + x - 5$ dengan cara bersusun dan Horner. Bagaimana jika <strong>30 sensor pelampung di Danau Limboto</strong> hanya butuh nilai <strong>SISANYA saja</strong> setiap detik untuk kode verifikasi—apakah kita tetap wajib mencari hasil bagi $H(x)$-nya?"</em>
+            </p>
+            <button type="button" onclick="toggleElement('apersepsiInsight')" class="px-4 py-2.5 rounded-xl bg-amber-500/20 hover:bg-amber-500/35 text-amber-200 font-bold text-sm border border-amber-400/40 transition">
+              💡 Ketuk untuk Buka Kunci Pemikiran
+            </button>
+            <div id="apersepsiInsight" class="hidden mt-4 p-4 rounded-2xl bg-slate-950/75 border border-amber-400/30 text-sm text-amber-100">
+              Jika kita hanya membutuhkan <strong>Sisa ($S$)</strong>, menghitung seluruh koefisien Hasil Bagi $H(x)$ akan membuang memori dan waktu komputasi. Dengan <strong>Teorema Sisa</strong>, kita cukup menyubstitusikan <strong>pembuat nol pembagi</strong> langsung ke $f(x)$!
+            </div>
+          </div>
+
+          <!-- Cek Diagnostik Cepat Lisan (Ketuk untuk Buka Jawaban) -->
+          <div class="glass-card rounded-3xl p-6">
+            <div class="text-xs font-extrabold uppercase text-sky-300 mb-2">Pemanasan Prasyarat (Ketuk Kartu untuk Membuka)</div>
+            <h3 class="font-display font-bold text-xl text-white mb-4">
+              Cek Cepat: Menentukan Pembuat Nol Pembagi Linear
+            </h3>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+              <!-- Kartu Diagnostik 1 -->
+              <div onclick="toggleElement('diagAns1')" class="glass-card glass-card-interactive rounded-2xl p-4 cursor-pointer">
+                <div class="text-xs font-bold text-slate-400">PEMBAGI #1</div>
+                <div class="text-xl font-bold text-white my-1">Pembagi: $(x - 3)$</div>
+                <div class="text-xs text-sky-300">Ketuk untuk lihat pembuat nol ➔</div>
+                <div id="diagAns1" class="hidden mt-3 pt-2 border-t border-slate-700 text-emerald-300 font-bold">
+                  $x - 3 = 0 \implies x = 3$
+                </div>
+              </div>
+
+              <!-- Kartu Diagnostik 2 -->
+              <div onclick="toggleElement('diagAns2')" class="glass-card glass-card-interactive rounded-2xl p-4 cursor-pointer">
+                <div class="text-xs font-bold text-slate-400">PEMBAGI #2 (Waspada Tanda!)</div>
+                <div class="text-xl font-bold text-white my-1">Pembagi: $(x + 2)$</div>
+                <div class="text-xs text-sky-300">Ketuk untuk lihat pembuat nol ➔</div>
+                <div id="diagAns2" class="hidden mt-3 pt-2 border-t border-slate-700 text-emerald-300 font-bold">
+                  $x + 2 = 0 \implies x = -2$
+                </div>
+              </div>
+
+              <!-- Kartu Diagnostik 3 -->
+              <div onclick="toggleElement('diagAns3')" class="glass-card glass-card-interactive rounded-2xl p-4 cursor-pointer">
+                <div class="text-xs font-bold text-slate-400">PEMBAGI #3 (Bentuk $ax+b$)</div>
+                <div class="text-xl font-bold text-white my-1">Pembagi: $(2x - 1)$</div>
+                <div class="text-xs text-sky-300">Ketuk untuk lihat pembuat nol ➔</div>
+                <div id="diagAns3" class="hidden mt-3 pt-2 border-t border-slate-700 text-emerald-300 font-bold">
+                  $2x - 1 = 0 \implies x = \frac{1}{2}$
+                </div>
+              </div>
+
+              <!-- Kartu Diagnostik 4 -->
+              <div onclick="toggleElement('diagAns4')" class="glass-card glass-card-interactive rounded-2xl p-4 cursor-pointer">
+                <div class="text-xs font-bold text-slate-400">PEMBAGI #4 (Pecahan Negatif)</div>
+                <div class="text-xl font-bold text-white my-1">Pembagi: $(3x + 1)$</div>
+                <div class="text-xs text-sky-300">Ketuk untuk lihat pembuat nol ➔</div>
+                <div id="diagAns4" class="hidden mt-3 pt-2 border-t border-slate-700 text-emerald-300 font-bold">
+                  $3x + 1 = 0 \implies x = -\frac{1}{3}$
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================================================
+         SLIDE 4: TUJUAN PEMBELAJARAN & KONTRAK 6 MISI LIMBOTO SMART-GATE
+         ========================================================================= -->
+    <section class="slide-frame" data-slide="4" data-phase="KEGIATAN AWAL • MOTIVASI & KONTRAK MISI (2 MENIT)" data-timer="120">
+      <div class="glass-panel rounded-3xl p-8">
+        <div class="flex flex-wrap items-center justify-between gap-4 mb-6">
+          <div>
+            <span class="px-3 py-1 rounded-full text-xs font-extrabold bg-emerald-500/20 text-emerald-300 border border-emerald-400/40">
+              MENGGEMBIRAKAN (JOYFUL) • PETA JALAN PERTEMUAN
+            </span>
+            <h2 class="font-display font-extrabold text-2xl sm:text-4xl text-white mt-2">
+              Tujuan Pembelajaran & Alur 6 Misi INTROFLEX
+            </h2>
+          </div>
+        </div>
+
+        <!-- 5 Tujuan Pembelajaran (4 Olah) -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+          <div class="glass-card rounded-2xl p-5 border-t-4 border-t-sky-400">
+            <div class="text-xs font-extrabold text-sky-300 uppercase mb-1">1. Olah Pikir (Konseptual & Prosedural)</div>
+            <p class="text-sm sm:text-base text-slate-200">
+              Membuktikan rumus sisa $S = f(k)$ untuk pembagi $(x-k)$ dan $S = f\left(-\frac{b}{a}\right)$ untuk $(ax+b)$, menentukan parameter koefisien, serta syarat faktor ($S=0$).
+            </p>
+          </div>
+          <div class="glass-card rounded-2xl p-5 border-t-4 border-t-amber-400">
+            <div class="text-xs font-extrabold text-amber-300 uppercase mb-1">2. Olah Pikir (HOTS STEM) & Komunikasi</div>
+            <p class="text-sm sm:text-base text-slate-200">
+              Memecahkan masalah STEM Gorontalo dengan pembagi kuadrat $(x-a)(x-b) \implies S(x) = px+q$ serta mempresentasikan strateginya di depan kelas.
+            </p>
+          </div>
+          <div class="glass-card rounded-2xl p-5 border-t-4 border-t-emerald-400">
+            <div class="text-xs font-extrabold text-emerald-300 uppercase mb-1">3. Olah Hati & Rasa (Karakter Islami)</div>
+            <p class="text-sm sm:text-base text-slate-200">
+              Menginternalisasi sikap <strong>Itqan</strong> (teliti & sungguh-sungguh) serta <strong>Amanah</strong> melalui tadabbur <strong>QS. Al-Mulk: 3–4</strong> dan Hadis Nabi ﷺ.
+            </p>
+          </div>
+        </div>
+
+        <!-- Peta 6 Misi di Aplikasi Siswa -->
+        <h3 class="font-display font-bold text-lg text-amber-300 mb-3">
+          🗺️ Alur 6 Misi pada Aplikasi Web "Limboto Smart-Gate" (80 Menit):
+        </h3>
+        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+          <div class="glass-card rounded-2xl p-4">
+            <div class="text-xs font-extrabold text-sky-400">MISI 1 • 6 Menit</div>
+            <div class="font-display font-bold text-base text-white my-1">1. TELAAH</div>
+            <div class="text-xs text-slate-400">Identifikasi Diketahui & Ditanyakan (+25 XP)</div>
+          </div>
+          <div class="glass-card rounded-2xl p-4">
+            <div class="text-xs font-extrabold text-sky-400">MISI 2 • 8 Menit</div>
+            <div class="font-display font-bold text-base text-white my-1">2. EKSPLORASI</div>
+            <div class="text-xs text-slate-400">Uji 3 Sampel Lab & Bukti $S=f(k)$ (+25 XP)</div>
+          </div>
+          <div class="glass-card rounded-2xl p-4">
+            <div class="text-xs font-extrabold text-sky-400">MISI 3 • 6 Menit</div>
+            <div class="font-display font-bold text-base text-white my-1">3. RUMUSKAN</div>
+            <div class="text-xs text-slate-400">Susun 4 Kartu Cetak Biru Rumus (+25 XP)</div>
+          </div>
+          <div class="glass-card rounded-2xl p-4 border border-amber-400/60 bg-amber-500/10">
+            <div class="text-xs font-extrabold text-amber-300">MISI 4 • 20 Menit</div>
+            <div class="font-display font-bold text-base text-white my-1">4. APLIKASIKAN</div>
+            <div class="text-xs text-amber-200">Arena 30 Kotak (Wajib 1 Mudah, 1 Sedang, 1 Sulit)</div>
+          </div>
+          <div class="glass-card rounded-2xl p-4">
+            <div class="text-xs font-extrabold text-emerald-400">MISI 5 • 10 Menit</div>
+            <div class="font-display font-bold text-base text-white my-1">5. PRESENTASI</div>
+            <div class="text-xs text-slate-400">Paparkan Portofolio 3 Modul Soal (+25 XP)</div>
+          </div>
+          <div class="glass-card rounded-2xl p-4">
+            <div class="text-xs font-extrabold text-emerald-400">MISI 6 • 10 Menit</div>
+            <div class="font-display font-bold text-base text-white my-1">6. REFLEKSI</div>
+            <div class="text-xs text-slate-400">Makna Duniawi & Tadabbur Ukhrowi (+25 XP)</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================================================
+         SLIDE 5: MISI 1 (TELAAH) — SKENARIO DARURAT EKOLOGI DANAU LIMBOTO & STEM
+         ========================================================================= -->
+    <section class="slide-frame" data-slide="5" data-phase="FASE I: MEMAHAMI • MISI 1 TELAAH (6 MENIT)" data-timer="360">
+      <div class="glass-panel rounded-3xl p-8">
+        <div class="flex flex-wrap items-center justify-between gap-4 mb-5">
+          <div>
+            <span class="px-3 py-1 rounded-full text-xs font-extrabold bg-sky-500/20 text-sky-300 border border-sky-400/40">
+              MISI 1 • TELAAH (SADARI MASALAHNYA, TELAAH KONSEPNYA)
+            </span>
+            <h2 class="font-display font-extrabold text-2xl sm:text-4xl text-white mt-2">
+              Darurat Kalibrasi 30 Sensor Ekologi Danau Limboto
+            </h2>
+          </div>
+          <span class="px-3.5 py-1.5 rounded-xl bg-amber-500/20 text-amber-300 font-bold text-xs border border-amber-400/40">
+            Silakan Buka Tab Misi 1 di Perangkat Masing-Masing
+          </span>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          <!-- Narasi Kontekstual Gorontalo -->
+          <div class="lg:col-span-7 glass-card rounded-3xl p-6 flex flex-col justify-between border-l-4 border-l-sky-400">
+            <div class="space-y-4 text-base sm:text-lg text-slate-200 leading-relaxed">
+              <p>
+                🌊 <strong>Situasi Darurat di Danau Limboto:</strong> Balai Wilayah Sungai Sulawesi II bersama Tim Riset <strong>SMAIT Al Ishlah Gorontalo</strong> memantau laju sedimentasi muara Sungai Alo, debit pintu air Sungai Biyonga, dan suhu mesin <em>retort</em> UMKM <em>Binte Biluhuta</em> menggunakan sistem <strong>Limboto Smart-Gate</strong>.
+              </p>
+              <p>
+                Setiap sensor memodelkan data pengukuran ke dalam fungsi polinomial berderajat tinggi $f(x)$, lalu membaginya dengan modul filter $(x - k)$, $(ax + b)$, atau $(x - a)(x - b)$ untuk mengirimkan <strong>Sisa Pembagian $S(x)$</strong> sebagai kode verifikasi (<em>checksum</em>).
+              </p>
+              <div class="p-4 rounded-2xl bg-amber-500/15 border border-amber-400/40 text-amber-200 font-semibold">
+                ⚠️ <strong>Masalah Utama:</strong> Chip mikrokontroler pada 30 pelampung sensor memiliki memori sangat terbatas sehingga <strong>tidak sanggup melakukan pembagian bersusun setiap detik</strong>. Bagaimana cara mendapatkan nilai sisa $S(x)$ secara instan?
+              </div>
+            </div>
+
+            <div class="mt-6 pt-4 border-t border-slate-700/80 flex flex-wrap items-center justify-between gap-3">
+              <span class="text-sm text-slate-300 font-semibold">
+                ✍️ <strong>Tugas Siswa (Misi 1):</strong> Catat komponen <em>Diketahui</em> & <em>Ditanyakan</em> pada Lembar Kerja Insinyur 1!
+              </span>
+            </div>
+          </div>
+
+          <!-- Kartu Interaktif Integrasi S-T-E-M -->
+          <div class="lg:col-span-5 grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+            <div class="glass-card rounded-2xl p-5 border-t-4 border-t-emerald-400">
+              <span class="px-2.5 py-0.5 rounded text-xs font-extrabold bg-emerald-500/20 text-emerald-300">S • SCIENCE</span>
+              <h4 class="font-bold text-white text-base mt-2 mb-1">Sains Lingkungan & Pangan</h4>
+              <p class="text-xs sm:text-sm text-slate-300">
+                Pemodelan laju sedimentasi lumpur Danau Limboto, biogas eceng gondok, dan kurva termal sterilisasi kemasan jagung <em>Binte Biluhuta</em> dengan polinomial $f(x)$.
+              </p>
+            </div>
+
+            <div class="glass-card rounded-2xl p-5 border-t-4 border-t-sky-400">
+              <span class="px-2.5 py-0.5 rounded text-xs font-extrabold bg-sky-500/20 text-sky-300">T • TECHNOLOGY</span>
+              <h4 class="font-bold text-white text-base mt-2 mb-1">Algoritma Checksum IoT</h4>
+              <p class="text-xs sm:text-sm text-slate-300">
+                Verifikasi sisa paket data sensor telemetri pelampung Danau Limboto & Pelabuhan Gorontalo untuk menghemat memori mikrokontroler.
+              </p>
+            </div>
+
+            <div class="glass-card rounded-2xl p-5 border-t-4 border-t-amber-400">
+              <span class="px-2.5 py-0.5 rounded text-xs font-extrabold bg-amber-500/20 text-amber-300">E • ENGINEERING</span>
+              <h4 class="font-bold text-white text-base mt-2 mb-1">Rekayasa Struktur Pintu Air</h4>
+              <p class="text-xs sm:text-sm text-slate-300">
+                Kalibrasi lengkung pintu air Sungai Biyonga & kubah geodesik Masjid Kampus Al-Ishlah agar bebas getaran harmonik (syarat residu/sisa $= 0$).
+              </p>
+            </div>
+
+            <div class="glass-card rounded-2xl p-5 border-t-4 border-t-rose-400">
+              <span class="px-2.5 py-0.5 rounded text-xs font-extrabold bg-rose-500/20 text-rose-300">M • MATHEMATICS</span>
+              <h4 class="font-bold text-white text-base mt-2 mb-1">Penalaran Teorema Sisa</h4>
+              <p class="text-xs sm:text-sm text-slate-300">
+                Substitusi pembuat nol pada pembagi $(x-k)$, $(ax+b)$, serta eliminasi sistem persamaan sisa linear $S(x)=px+q$ pada pembagi kuadrat.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================================================
+         SLIDE 6: MISI 2 (EKSPLORASI) — LABORATORIUM INTERAKTIF BUKTI S = f(k)
+         ========================================================================= -->
+    <section class="slide-frame" data-slide="6" data-phase="FASE I: MEMAHAMI • MISI 2 EKSPLORASI (8 MENIT)" data-timer="480">
+      <div class="glass-panel rounded-3xl p-8">
+        <div class="flex flex-wrap items-center justify-between gap-4 mb-5">
+          <div>
+            <span class="px-3 py-1 rounded-full text-xs font-extrabold bg-sky-500/20 text-sky-300 border border-sky-400/40">
+              MISI 2 • EKSPLORASI (CARI TAHU & BUKTIKAN SENDIRI — KERJA KELOMPOK)
+            </span>
+            <h2 class="font-display font-extrabold text-2xl sm:text-4xl text-white mt-2">
+              Simulator Pembuktian: Pembagian Manual vs Substitusi $f(k)$
+            </h2>
+          </div>
+          <div class="flex gap-2">
+            <button type="button" onclick="selectLabSample(1)" id="btnLab1" class="px-4 py-2 rounded-xl font-bold text-sm bg-sky-500 text-slate-950 transition">
+              Sampel #1: $(x - 3)$
+            </button>
+            <button type="button" onclick="selectLabSample(2)" id="btnLab2" class="px-4 py-2 rounded-xl font-bold text-sm bg-slate-800 text-slate-200 hover:bg-slate-700 transition">
+              Sampel #2: $(x + 2)$
+            </button>
+            <button type="button" onclick="selectLabSample(3)" id="btnLab3" class="px-4 py-2 rounded-xl font-bold text-sm bg-slate-800 text-slate-200 hover:bg-slate-700 transition">
+              Sampel #3: $(2x - 1)$
+            </button>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          <!-- Panel Simulator Sampel di Papan Interaktif -->
+          <div class="lg:col-span-7 glass-card rounded-3xl p-6" id="labSimulatorContainer">
+            <!-- Diisi dinamis oleh JS selectLabSample() -->
+          </div>
+
+          <!-- Panel Bukti Deduktif Identitas Pembagian Polinomial -->
+          <div class="lg:col-span-5 glass-card rounded-3xl p-6 border border-amber-400/40 flex flex-col justify-between">
+            <div>
+              <span class="px-2.5 py-1 rounded-md text-xs font-extrabold bg-amber-500/20 text-amber-300">
+                PENALARAN DEDUKTIF INTI
+              </span>
+              <h3 class="font-display font-bold text-xl text-white mt-2 mb-3">
+                Mengapa Kita Tidak Perlu Menghitung $H(x)$?
+              </h3>
+              <p class="text-sm sm:text-base text-slate-300 mb-3">
+                Ingat identitas dasar pembagian polinomial:
+              </p>
+              <div class="p-4 rounded-2xl bg-slate-950/80 border border-sky-400/30 text-center text-lg text-white mb-4">
+                $$f(x) = \underbrace{(x - k)}_{\text{Pembagi}} \cdot \underbrace{H(x)}_{\text{Hasil Bagi}} + \underbrace{S}_{\text{Sisa}}$$
+              </div>
+
+              <p class="text-sm sm:text-base text-slate-300 mb-3">
+                Apa yang terjadi jika kita substitusikan pembuat nol pembagi yaitu $x = k$?
+              </p>
+
+              <button type="button" onclick="toggleElement('proofRevealBox')" class="w-full py-3 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 text-slate-950 font-extrabold text-sm shadow-lg transition">
+                ✨ Ketuk untuk Substitusikan $x = k$ ke Persamaan!
+              </button>
+
+              <div id="proofRevealBox" class="hidden mt-4 p-4 rounded-2xl bg-emerald-500/15 border border-emerald-400/40 text-white space-y-2">
+                <div class="text-center">
+                  $$f(k) = \underbrace{(k - k)}_{0} \cdot H(k) + S$$
+                  $$f(k) = 0 \cdot H(k) + S \implies \mathbf{S = f(k)}$$
+                </div>
+                <p class="text-xs sm:text-sm text-emerald-200 text-center font-semibold">
+                  Suku $(k-k)\cdot H(k)$ lenyap menjadi $0$ berapapun bentuk $H(x)$! Inilah rahasia kecepatan komputasi Teorema Sisa.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================================================
+         SLIDE 7: MISI 3 (RUMUSKAN) — CETAK BIRU 4 RUMUS TEOREMA SISA
+         ========================================================================= -->
+    <section class="slide-frame" data-slide="7" data-phase="FASE I: MEMAHAMI • MISI 3 RUMUSKAN (6 MENIT)" data-timer="360">
+      <div class="glass-panel rounded-3xl p-8">
+        <div class="flex flex-wrap items-center justify-between gap-4 mb-5">
+          <div>
+            <span class="px-3 py-1 rounded-full text-xs font-extrabold bg-sky-500/20 text-sky-300 border border-sky-400/40">
+              MISI 3 • RUMUSKAN (SIMPULKAN KONSEPNYA)
+            </span>
+            <h2 class="font-display font-extrabold text-2xl sm:text-4xl text-white mt-2">
+              Cetak Biru 4 Rumus Teorema Sisa Polinomial
+            </h2>
+          </div>
+          <button type="button" onclick="revealAllFormulas()" class="px-4 py-2 rounded-xl bg-sky-500/20 hover:bg-sky-500/35 text-sky-200 font-bold text-sm border border-sky-400/40 transition">
+            👁️ Buka Semua Rumus di Papan
+          </button>
+        </div>
+
+        <p class="text-slate-300 text-sm sm:text-base mb-5">
+          Ketuk masing-masing kartu di papan interaktif setelah peserta didik menyusun kartu <em>Drag & Drop / Tap-to-Place</em> pada <strong>Misi 3</strong>:
+        </p>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+          <!-- Rumus 1 -->
+          <div onclick="toggleElement('formulaCard1')" class="glass-card glass-card-interactive rounded-3xl p-6 cursor-pointer border-l-4 border-l-sky-400">
+            <div class="flex justify-between items-center mb-2">
+              <span class="text-xs font-extrabold uppercase text-sky-300">CETAK BIRU #1 • PEMBAGI LINEAR SEDERHANA</span>
+              <span class="text-xs text-slate-400">Ketuk Buka/Tutup</span>
+            </div>
+            <h3 class="font-display font-bold text-xl text-white mb-2">
+              Jika $f(x)$ dibagi oleh $(x - k)$
+            </h3>
+            <div id="formulaCard1" class="mt-3 p-4 rounded-2xl bg-slate-950/80 border border-sky-400/30">
+              <div class="text-emerald-300 font-bold text-lg">
+                Pembuat nol: $x - k = 0 \implies x = k$
+              </div>
+              <div class="text-white text-xl mt-1">
+                $$\text{Sisa } (S) = f(k)$$
+              </div>
+            </div>
+          </div>
+
+          <!-- Rumus 2 -->
+          <div onclick="toggleElement('formulaCard2')" class="glass-card glass-card-interactive rounded-3xl p-6 cursor-pointer border-l-4 border-l-amber-400">
+            <div class="flex justify-between items-center mb-2">
+              <span class="text-xs font-extrabold uppercase text-amber-300">CETAK BIRU #2 • WASPADA TANDA NEGATIF PECAHAN!</span>
+              <span class="text-xs text-slate-400">Ketuk Buka/Tutup</span>
+            </div>
+            <h3 class="font-display font-bold text-xl text-white mb-2">
+              Jika $f(x)$ dibagi oleh $(ax + b)$ dengan $a \neq 0$
+            </h3>
+            <div id="formulaCard2" class="mt-3 p-4 rounded-2xl bg-slate-950/80 border border-amber-400/30">
+              <div class="text-amber-300 font-bold text-lg">
+                Pembuat nol: $ax + b = 0 \implies x = -\frac{b}{a}$ <span class="text-rose-400 text-xs ml-2">(Bukan $+\frac{b}{a}$!)</span>
+              </div>
+              <div class="text-white text-xl mt-1">
+                $$\text{Sisa } (S) = f\left(-\frac{b}{a}\right)$$
+              </div>
+            </div>
+          </div>
+
+          <!-- Rumus 3 -->
+          <div onclick="toggleElement('formulaCard3')" class="glass-card glass-card-interactive rounded-3xl p-6 cursor-pointer border-l-4 border-l-rose-400">
+            <div class="flex justify-between items-center mb-2">
+              <span class="text-xs font-extrabold uppercase text-rose-300">CETAK BIRU #3 • PEMBAGI KUADRAT (DERAJAT 2)</span>
+              <span class="text-xs text-slate-400">Ketuk Buka/Tutup</span>
+            </div>
+            <h3 class="font-display font-bold text-xl text-white mb-2">
+              Jika $f(x)$ dibagi oleh $(x - a)(x - b)$
+            </h3>
+            <div id="formulaCard3" class="mt-3 p-4 rounded-2xl bg-slate-950/80 border border-rose-400/30">
+              <p class="text-xs sm:text-sm text-slate-300 mb-2">
+                Karena pembagi berderajat $2$, maka derajat sisa maksimal berderajat $2 - 1 = 1$ (berbentuk linear):
+              </p>
+              <div class="text-white text-lg">
+                $$S(x) = px + q \quad \text{dengan} \quad \begin{cases} f(a) = p\cdot a + q \\ f(b) = p\cdot b + q \end{cases}$$
+              </div>
+            </div>
+          </div>
+
+          <!-- Rumus 4 -->
+          <div onclick="toggleElement('formulaCard4')" class="glass-card glass-card-interactive rounded-3xl p-6 cursor-pointer border-l-4 border-l-emerald-400">
+            <div class="flex justify-between items-center mb-2">
+              <span class="text-xs font-extrabold uppercase text-emerald-300">CETAK BIRU #4 • JEMBATAN KE TEOREMA FAKTOR</span>
+              <span class="text-xs text-slate-400">Ketuk Buka/Tutup</span>
+            </div>
+            <h3 class="font-display font-bold text-xl text-white mb-2">
+              Syarat $(x - k)$ Habis Membagi / Faktor dari $f(x)$
+            </h3>
+            <div id="formulaCard4" class="mt-3 p-4 rounded-2xl bg-slate-950/80 border border-emerald-400/30">
+              <div class="text-emerald-300 font-bold text-lg">
+                Habis dibagi berarti tidak meninggalkan residu (sisa bernilai nol):
+              </div>
+              <div class="text-white text-xl mt-1">
+                $$S = f(k) = 0$$
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================================================
+         SLIDE 8: MISI 4 (APLIKASIKAN) — KOMANDO ARENA 30 KOTAK SOAL
+         ========================================================================= -->
+    <section class="slide-frame" data-slide="8" data-phase="FASE II: MENGAPLIKASI • MISI 4 ARENA 30 KOTAK (20 MENIT)" data-timer="1200">
+      <div class="glass-panel rounded-3xl p-8">
+        <div class="flex flex-wrap items-center justify-between gap-4 mb-6">
+          <div>
+            <span class="px-3 py-1 rounded-full text-xs font-extrabold bg-amber-500/20 text-amber-300 border border-amber-400/40">
+              MISI 4 • INTI PENILAIAN AUTENTIK (KEMANDIRIAN & KETELITIAN)
+            </span>
+            <h2 class="font-display font-extrabold text-2xl sm:text-4xl text-white mt-2">
+              Arena 30 Kotak Modul Limboto Smart-Gate
+            </h2>
+          </div>
+
+          <!-- Tombol Buka Dashboard Proyektor Kelas -->
+          <div class="flex gap-3 flex-wrap">
+            <a href="dashboard.html" target="_blank" class="px-5 py-3 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 text-slate-950 font-extrabold text-sm shadow-lg shadow-amber-500/25 flex items-center gap-2">
+              🏆 Buka Live Leaderboard & Radar Intervensi (dashboard.html) ↗
+            </a>
+          </div>
+        </div>
+
+        <!-- 3 Zona Kuota Wajib Siswa -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-5 mb-6">
+          <div class="glass-card rounded-3xl p-6 border-t-4 border-t-sky-400">
+            <div class="flex justify-between items-center mb-2">
+              <span class="px-2.5 py-1 rounded text-xs font-extrabold bg-sky-500/20 text-sky-300">ZONA 1 • KOTAK 1–10</span>
+              <span class="font-mono-code font-bold text-sm text-sky-300">⏱️ 3 Menit | 10 Poin</span>
+            </div>
+            <h3 class="font-display font-bold text-xl text-white mb-2">Wajib 1 Kotak Level Mudah</h3>
+            <p class="text-sm text-slate-300 mb-3">
+              Menentukan sisa pembagian polinomial oleh $(x - k)$, $(ax + b)$ sederhana, dan menguji syarat faktor ($S = 0$).
+            </p>
+            <div class="p-3 rounded-xl bg-slate-950/70 text-xs text-slate-300">
+              <strong>Contoh Kotak #5:</strong> Sisa pembagian $f(x) = 4x^3 - 2x^2 + 6x - 1$ oleh $(2x - 1)$ adalah $f\left(\frac{1}{2}\right) = 2$.
+            </div>
+          </div>
+
+          <div class="glass-card rounded-3xl p-6 border-t-4 border-t-amber-400">
+            <div class="flex justify-between items-center mb-2">
+              <span class="px-2.5 py-1 rounded text-xs font-extrabold bg-amber-500/20 text-amber-300">ZONA 2 • KOTAK 11–20</span>
+              <span class="font-mono-code font-bold text-sm text-amber-300">⏱️ 5 Menit | 20 Poin</span>
+            </div>
+            <h3 class="font-display font-bold text-xl text-white mb-2">Wajib 1 Kotak Level Sedang</h3>
+            <p class="text-sm text-slate-300 mb-3">
+              Menentukan nilai parameter koefisien ($p, k, m, a$) jika sisa diketahui, kesamaan sisa dua polinomial, dan pengantar pembagi kuadrat.
+            </p>
+            <div class="p-3 rounded-xl bg-slate-950/70 text-xs text-slate-300">
+              <strong>Contoh Kotak #12:</strong> $f(x) = x^3 + kx^2 - 5x + 6$ habis dibagi $(x+3) \implies f(-3)=0 \implies k = \frac{2}{3}$.
+            </div>
+          </div>
+
+          <div class="glass-card rounded-3xl p-6 border-t-4 border-t-rose-400">
+            <div class="flex justify-between items-center mb-2">
+              <span class="px-2.5 py-1 rounded text-xs font-extrabold bg-rose-500/20 text-rose-300">ZONA 3 • KOTAK 21–30</span>
+              <span class="font-mono-code font-bold text-sm text-rose-300">⏱️ 8 Menit | 30 Poin</span>
+            </div>
+            <h3 class="font-display font-bold text-xl text-white mb-2">Wajib 1 Kotak Sulit (STEM)</h3>
+            <p class="text-sm text-slate-300 mb-3">
+              Masalah kontekstual STEM Gorontalo dengan pembagi kuadrat $(x-a)(x-b) \implies S(x) = px + q$ serta sistem 2 parameter.
+            </p>
+            <div class="p-3 rounded-xl bg-slate-950/70 text-xs text-slate-300">
+              <strong>9 Murid × 3 Kotak = 27 Kotak Terpakai</strong> dari 30 kotak tersedia (penguncian atomik server).
+            </div>
+          </div>
+        </div>
+
+        <!-- Panduan Diferensiasi & Aturan Skor -->
+        <div class="glass-card rounded-2xl p-5 flex flex-wrap items-center justify-between gap-4 border border-sky-400/30">
+          <div class="text-sm text-slate-200 space-y-1">
+            <div>🎯 <strong>Aturan Skor Server:</strong> $\text{Skor} = \text{Poin Dasar} + \text{Bonus Kecepatan (maks 20\%)} - \text{Hint (15\%)} - \text{Percobaan Ke-2 (20\%)}$.</div>
+            <div>🤝 <strong>Diferensiasi Proses:</strong> Gunakan tombol <strong>💡 Buka Petunjuk (Hint)</strong> jika memerlukan perancah (<em>scaffolding</em>), atau raih lencana <strong>"Teliti"</strong> tanpa <em>Hint</em>!</div>
+          </div>
+          <button type="button" onclick="toggleInkMode()" class="px-4 py-2.5 rounded-xl bg-sky-500/20 hover:bg-sky-500/35 text-sky-200 font-bold text-xs border border-sky-400/40">
+            ✏️ Gunakan Mode Coretan untuk Bimbingan di Papan
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================================================
+         SLIDE 9: MISI 5 (PRESENTASIKAN) — UNDIAN PRESENTER & BEDAH SOAL STEM
+         ========================================================================= -->
+    <section class="slide-frame" data-slide="9" data-phase="FASE II: MENGAPLIKASI • MISI 5 PRESENTASIKAN (10 MENIT)" data-timer="600">
+      <div class="glass-panel rounded-3xl p-8">
+        <div class="flex flex-wrap items-center justify-between gap-4 mb-6">
+          <div>
+            <span class="px-3 py-1 rounded-full text-xs font-extrabold bg-emerald-500/20 text-emerald-300 border border-emerald-400/40">
+              MISI 5 • PRESENTASIKAN (OLAH RAGA, KOMUNIKASI & KOLABORASI)
+            </span>
+            <h2 class="font-display font-extrabold text-2xl sm:text-4xl text-white mt-2">
+              Panggung Presentasi Insinyur Muda & Bedah Kasus STEM
+            </h2>
+          </div>
+
+          <!-- Pemilih Acak Presenter dari 9 Siswa -->
+          <div class="glass-card rounded-2xl px-4 py-2.5 flex items-center gap-3 border border-amber-400/50">
+            <div>
+              <div class="text-[11px] font-bold uppercase text-amber-300">Presenter Terpilih:</div>
+              <div id="pickedStudentDisplay" class="font-display font-extrabold text-base text-white">
+                Klik "Acak Presenter" ➔
+              </div>
+            </div>
+            <button type="button" onclick="spinStudentPresenter()" class="px-4 py-2 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 text-slate-950 font-extrabold text-xs shadow transition">
+              🎲 Acak Presenter (9 Murid)
+            </button>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <!-- Bedah Kasus STEM 1: Kotak #21 Sensor Sedimentasi Danau Limboto -->
+          <div class="glass-card rounded-3xl p-6 border-l-4 border-l-sky-400">
+            <div class="flex justify-between items-center mb-2">
+              <span class="px-2.5 py-0.5 rounded text-xs font-extrabold bg-sky-500/20 text-sky-300">
+                BEDAH KASUS STEM #1 • KOTAK #21 [S-T-M]
+              </span>
+              <button type="button" onclick="toggleElement('solStem21')" class="text-xs font-bold text-amber-300 underline">
+                Buka / Tutup Langkah Eliminasi
+              </button>
+            </div>
+            <h3 class="font-display font-bold text-lg text-white mb-2">
+              Sensor Sedimentasi Danau Limboto (Pembagi Kuadrat)
+            </h3>
+            <p class="text-sm text-slate-300 mb-3">
+              Polinomial laju endapan lumpur $f(x)$ diuji modul $(x - 2)$ mencatat residu $9$, dan diuji modul $(x + 3)$ mencatat residu $-6$. Jika dibagi filter kuadrat $(x^2 + x - 6)$, tentukan ekspresi sisa $S(x) = px + q$!
+            </p>
+            <div id="solStem21" class="hidden p-4 rounded-2xl bg-slate-950/85 border border-sky-400/30 text-sm text-slate-200 space-y-1.5">
+              <div><strong>Langkah 1 (Faktorkan Pembagi):</strong> $x^2 + x - 6 = (x - 2)(x + 3)$. Misalkan $S(x) = px + q$.</div>
+              <div><strong>Langkah 2 (Susun Sistem Persamaan):</strong>
+                $$f(2) = 9 \implies 2p + q = 9 \quad \text{...(1)}$$
+                $$f(-3) = -6 \implies -3p + q = -6 \quad \text{...(2)}$$
+              </div>
+              <div><strong>Langkah 3 (Eliminasi $q$):</strong> Kurangkan (1) dan (2): $5p = 15 \implies p = 3$, lalu $2(3) + q = 9 \implies q = 3$.</div>
+              <div class="text-emerald-300 font-bold">Jadi, rumus sisa kalibrasinya adalah $S(x) = 3x + 3$.</div>
+            </div>
+          </div>
+
+          <!-- Bedah Kasus STEM 2: Kotak #22 Pintu Air Sungai Biyonga -->
+          <div class="glass-card rounded-3xl p-6 border-l-4 border-l-amber-400">
+            <div class="flex justify-between items-center mb-2">
+              <span class="px-2.5 py-0.5 rounded text-xs font-extrabold bg-amber-500/20 text-amber-300">
+                BEDAH KASUS STEM #2 • KOTAK #22 [T-E-M]
+              </span>
+              <button type="button" onclick="toggleElement('solStem22')" class="text-xs font-bold text-amber-300 underline">
+                Buka / Tutup Trik Cerdas
+              </button>
+            </div>
+            <h3 class="font-display font-bold text-lg text-white mb-2">
+              Struktur Pintu Air Sungai Biyonga (Parameter Ganda)
+            </h3>
+            <p class="text-sm text-slate-300 mb-3">
+              Tegangan lengkung pintu air $f(x) = x^4 + ax^3 - 3x^2 + bx - 4$ harus habis dibagi oleh $(x^2 - x - 2)$ agar bebas getaran harmonik ($S = 0$). Tentukan nilai $(a + b)$!
+            </p>
+            <div id="solStem22" class="hidden p-4 rounded-2xl bg-slate-950/85 border border-amber-400/30 text-sm text-slate-200 space-y-1.5">
+              <div><strong>Langkah 1 (Faktorkan Pembagi):</strong> $x^2 - x - 2 = (x - 2)(x + 1)$. Syarat habis dibagi: $f(2) = 0$ dan $f(-1) = 0$.</div>
+              <div><strong>Langkah 2 (Trik Efisien Substitusi $x = -1$):</strong>
+                $$f(-1) = (-1)^4 + a(-1)^3 - 3(-1)^2 + b(-1) - 4 = 0$$
+                $$1 - a - 3 - b - 4 = 0 \implies -(a + b) - 6 = 0 \implies \mathbf{a + b = -6}$$
+              </div>
+              <div class="text-amber-300 text-xs">
+                💡 <em>Catatan Insinyur:</em> Dengan mengamati struktur yang ditanyakan yaitu $(a+b)$, kita cukup mengevaluasi $f(-1)=0$ tanpa harus mengeliminasi $a$ dan $b$ satu per satu!
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================================================
+         SLIDE 10: MISI 6 (DUNIAWI & UKHROWI) — MAKNA SAINS & SIKAP ITQAN
+         ========================================================================= -->
+    <section class="slide-frame" data-slide="10" data-phase="FASE III: MEREFLEKSIKAN • MISI 6 DUNIAWI & UKHROWI (10 MENIT)" data-timer="600">
+      <div class="glass-panel rounded-3xl p-8">
+        <div class="mb-6">
+          <span class="px-3 py-1 rounded-full text-xs font-extrabold bg-amber-500/20 text-amber-300 border border-amber-400/40">
+            MISI 6 • REFLEKSI DUNIAWI & UKHROWI (OLAH HATI & RASA)
+          </span>
+          <h2 class="font-display font-extrabold text-2xl sm:text-4xl text-white mt-2">
+            Internalisasi Makna Duniawi & Karakter Ilmuwan Muslim
+          </h2>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <!-- Refleksi Duniawi -->
+          <div class="glass-card rounded-3xl p-6 border-t-4 border-t-sky-400 flex flex-col justify-between">
+            <div>
+              <span class="px-3 py-1 rounded-md text-xs font-extrabold bg-sky-500/20 text-sky-300">
+                🌍 1. REFLEKSI DUNIAWI (MANFAAT KONTEKSTUAL)
+              </span>
+              <h3 class="font-display font-bold text-2xl text-white mt-3 mb-3">
+                Efisiensi Penalaran Struktural dalam Rekayasa
+              </h3>
+              <p class="text-base text-slate-300 leading-relaxed mb-4">
+                Dengan memahami struktur identitas $f(x) = P(x)\cdot H(x) + S(x)$, seorang insinyur tidak perlu membuang sumber daya komputasi untuk menghitung hasil bagi $H(x)$ saat yang dibutuhkan hanyalah nilai residu/sisa kalibrasi $S(x)$.
+              </p>
+              <div class="p-4 rounded-2xl bg-slate-950/70 border border-sky-400/30 text-sm text-sky-200">
+                💬 <strong>Pertanyaan Diskusi Kelas:</strong><br />
+                <em>"Mengapa ketelitian membedakan sisa konstanta $S = f(k)$ pada pembagi linear dan sisa linear $S(x) = px + q$ pada pembagi kuadrat sangat penting dalam pemodelan sensor Danau Limboto?"</em>
+              </div>
+            </div>
+            <div class="mt-4 text-xs text-slate-400">
+               Tuliskan jawaban refleksi Anda pada kolom <strong>Refleksi Duniawi (Misi 6)</strong> di aplikasi.
+            </div>
+          </div>
+
+          <!-- Refleksi Ukhrowi -->
+          <div class="glass-card rounded-3xl p-6 border-t-4 border-t-amber-400 flex flex-col justify-between">
+            <div>
+              <span class="px-3 py-1 rounded-md text-xs font-extrabold bg-amber-500/20 text-amber-300">
+                🕌 2. REFLEKSI UKHROWI (NILAI ITQAN & AMANAH)
+              </span>
+              <h3 class="font-display font-bold text-2xl text-white mt-3 mb-3">
+                Ketelitian Tanda Aljabar sebagai Wujud <em>Itqan</em>
+              </h3>
+
+              <div class="p-4 rounded-2xl bg-amber-500/10 border border-amber-400/30 mb-4">
+                <div class="font-arabic text-2xl text-white text-right mb-2">
+                  إِنَّ اللَّهَ يُحِبُّ إِذَا عَمِلَ أَحَدُكُمْ عَمَلًا أَنْ يُتْقِنَهُ
+                </div>
+                <p class="text-sm text-amber-200 italic">
+                  "Sesungguhnya Allah mencintai jika salah seorang di antara kalian melakukan suatu pekerjaan, ia melakukannya secara <strong>itqan</strong> (teliti, rapi, dan sungguh-sungguh)." <strong>(HR. Thabrani)</strong>
+                </p>
+              </div>
+
+              <p class="text-sm sm:text-base text-slate-300 leading-relaxed">
+                Dalam Teorema Sisa, kelalaian satu tanda negatif saja (misalnya menulis $x = \frac{b}{a}$ padahal seharusnya $x = -\frac{b}{a}$) akan menghasilkan residu kalibrasi yang salah dan membahayakan pintu air. Sikap <strong>Itqan</strong> dan <strong>Amanah</strong> (jujur tanpa kecurangan) adalah ciri utama ilmuwan Muslim.
+              </p>
+            </div>
+            <div class="mt-4 text-xs text-amber-300 font-semibold">
+              🏆 Klik <strong>Simpan Refleksi Akhir</strong> di aplikasi untuk meraih Lencana <strong>"Penjaga Limboto"</strong>!
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================================================
+         SLIDE 11: KEGIATAN PENUTUP — REFLEKSI 4P, PENGAYAAN & TINDAK LANJUT
+         ========================================================================= -->
+    <section class="slide-frame" data-slide="11" data-phase="KEGIATAN PENUTUP • REFLEKSI 4P & APRESIASI (10 MENIT)" data-timer="600">
+      <div class="glass-panel rounded-3xl p-8">
+        <div class="flex flex-wrap items-center justify-between gap-4 mb-6">
+          <div>
+            <span class="px-3 py-1 rounded-full text-xs font-extrabold bg-emerald-500/20 text-emerald-300 border border-emerald-400/40">
+              KEGIATAN PENUTUP (10 MENIT) • APRESIASI & TINDAK LANJUT
+            </span>
+            <h2 class="font-display font-extrabold text-2xl sm:text-4xl text-white mt-2">
+              Refleksi 4P, Tantangan Pengayaan & Pertemuan Berikutnya
+            </h2>
+          </div>
+        </div>
+
+        <!-- 4 Kartu Refleksi 4P -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+          <div class="glass-card rounded-2xl p-5 border-b-4 border-b-sky-400">
+            <div class="text-xs font-extrabold text-sky-300 uppercase">1. PERASAAN (FEELING)</div>
+            <h4 class="font-bold text-white text-lg mt-1 mb-2">Bagaimana Perasaanmu?</h4>
+            <p class="text-xs sm:text-sm text-slate-300">
+              Bagaimana perasaan kalian belajar Teorema Sisa melalui misi penyelamatan Danau Limboto hari ini?
+            </p>
+          </div>
+          <div class="glass-card rounded-2xl p-5 border-b-4 border-b-amber-400">
+            <div class="text-xs font-extrabold text-amber-300 uppercase">2. PERISTIWA (FACTS)</div>
+            <h4 class="font-bold text-white text-lg mt-1 mb-2">Momen Paling Berkesan</h4>
+            <p class="text-xs sm:text-sm text-slate-300">
+              Kotak nomor berapa di Arena Misi 4 yang paling menantang dan bagaimana cara kalian menaklukkannya?
+            </p>
+          </div>
+          <div class="glass-card rounded-2xl p-5 border-b-4 border-b-emerald-400">
+            <div class="text-xs font-extrabold text-emerald-300 uppercase">3. PEMBELAJARAN (FINDINGS)</div>
+            <h4 class="font-bold text-white text-lg mt-1 mb-2">Inti Konsep Hari Ini</h4>
+            <p class="text-xs sm:text-sm text-slate-300">
+              Apa perbedaan bentuk sisa pembagian oleh pembagi berderajat 1 vs pembagi berderajat 2?
+            </p>
+          </div>
+          <div class="glass-card rounded-2xl p-5 border-b-4 border-b-rose-400">
+            <div class="text-xs font-extrabold text-rose-300 uppercase">4. PENERAPAN (FUTURE)</div>
+            <h4 class="font-bold text-white text-lg mt-1 mb-2">Langkah Ke Depan</h4>
+            <p class="text-xs sm:text-sm text-slate-300">
+              Strategi ketelitian (<em>Itqan</em>) apa yang akan kalian terapkan agar tidak keliru tanda negatif/pecahan lagi?
+            </p>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <!-- Tantangan Pengayaan -->
+          <div class="glass-card rounded-3xl p-6 border border-amber-400/40">
+            <span class="px-2.5 py-0.5 rounded text-xs font-extrabold bg-amber-500/20 text-amber-300">
+              🌟 TANTANGAN PENGAYAAN (HIGH PREPAREDNESS)
+            </span>
+            <h3 class="font-display font-bold text-lg text-white mt-2 mb-2">
+              Bagaimana Jika Pembaginya Faktor Kembar atau Derajat Tiga?
+            </h3>
+            <p class="text-sm text-slate-300">
+              <em>"Bagaimana bentuk sisa pembagian $S(x)$ jika polinomial $f(x)$ dibagi oleh pembagi kuadrat yang memiliki faktor kembar $(x - a)^2$ atau dibagi oleh polinomial berderajat tiga $(x - a)(x - b)(x - c)$?"</em>
+            </p>
+          </div>
+
+          <!-- Jembatan Pertemuan Ke-5 & Doa Penutup -->
+          <div class="glass-card rounded-3xl p-6 border border-emerald-400/40 flex flex-col justify-between">
+            <div>
+              <span class="px-2.5 py-0.5 rounded text-xs font-extrabold bg-emerald-500/20 text-emerald-300">
+                🔜 PERTEMUAN KE-5 BERIKUTNYA
+              </span>
+              <h3 class="font-display font-bold text-lg text-white mt-2 mb-1">
+                Teorema Faktor & Pemfaktoran Suku Banyak Berderajat Tinggi
+              </h3>
+              <p class="text-sm text-slate-300 mb-3">
+                Kelanjutan langsung dari kasus sisa bernilai nol ($S = f(k) = 0$) yang telah kita temukan pada Kotak #8, #12, #22, dan #26 hari ini!
+              </p>
+            </div>
+            <div class="p-3 rounded-2xl bg-slate-950/75 text-center text-xs sm:text-sm text-amber-200 font-semibold">
+              Mari kita tutup pembelajaran dengan membaca <em>Hamdalah</em> (<strong>Alhamdulillahi Rabbil 'Alamin</strong>) dan Doa <em>Kafaratul Majelis</em>.
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- DOCK NAVIGASI BAWAH KHUSUS PAPAN INTERAKTIF DIGITAL (BESAR & MUDAH DISENTUH) -->
+  <nav class="fixed bottom-3 inset-x-0 z-50 px-4" aria-label="Navigasi Slide Papan Interaktif">
+    <div class="max-w-[1280px] mx-auto glass-panel rounded-2xl px-4 py-2.5 flex items-center justify-between gap-3">
+      <!-- Tombol Slide Sebelumnya -->
+      <button type="button" onclick="changeSlide(-1)" id="btnPrevSlide" class="min-h-[48px] px-5 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-extrabold text-sm border border-slate-600 flex items-center gap-2 transition">
+        ◀ Sebelumnya
+      </button>
+
+      <!-- Indikator Nomor Slide Cepat (1 - 11) -->
+      <div class="flex items-center gap-1.5 overflow-x-auto py-1" id="slideDotsNav"></div>
+
+      <!-- Tombol Slide Berikutnya -->
+      <button type="button" onclick="changeSlide(1)" id="btnNextSlide" class="min-h-[48px] px-5 py-2.5 rounded-xl bg-gradient-to-r from-sky-500 to-cyan-500 hover:from-sky-400 hover:to-cyan-400 text-slate-950 font-extrabold text-sm shadow-lg shadow-sky-500/25 flex items-center gap-2 transition">
+        Berikutnya ▶
+      </button>
+    </div>
+  </nav>
+
+  <script>
+    // Daftar Putih 9 Peserta Didik Kelas XI SMAIT Al Ishlah Gorontalo
+    const STUDENTS_XI = [
+      "Alif Firmansya Monoarfa",
+      "Andi Aisyah Humaira Nurmuhammad",
+      "Fathiyyah Naailah Abdullah",
+      "Lutfiah Nur Magfirah Pakaya",
+      "Muhammad Faiz Dako",
+      "Nida' Husniah R. Ma'ruf",
+      "Nurul Istiqomah R. Ali",
+      "Shofiyyah Sholihah Adam",
+      "Zuhairah Diniyyah Atifah Pakudu"
+    ];
+
+    const SHORT_TITLES = [
+      "1. Sampul & Presensi",
+      "2. Ruhiyah (QS Al-Mulk)",
+      "3. Apersepsi & Pemantik",
+      "4. TP & Kontrak Misi",
+      "5. Misi 1: Telaah STEM",
+      "6. Misi 2: Eksplorasi Lab",
+      "7. Misi 3: Rumuskan",
+      "8. Misi 4: Arena 30 Kotak",
+      "9. Misi 5: Presentasikan",
+      "10. Misi 6: Duniawi-Ukhrowi",
+      "11. Penutup & Refleksi 4P"
+    ];
+
+    const state = {
+      currentSlide: 1,
+      totalSlides: 11,
+      attendance: STUDENTS_XI.map(() => true),
+      timerRemainingSec: 240,
+      timerRunning: false,
+      timerIntervalId: null,
+      inkActive: false,
+      inkColor: "#00f2fe",
+      inkWidth: 4,
+      isDrawing: false
+    };
+
+    function renderMathAll() {
+      if (typeof renderMathInElement === "function") {
+        try {
+          renderMathInElement(document.body, {
+            delimiters: [
+              { left: "$$", right: "$$", display: true },
+              { left: "$", right: "$", display: false }
+            ],
+            throwOnError: false
+          });
+        } catch (e) {}
+      }
+    }
+
+    function toggleElement(id) {
+      const el = document.getElementById(id);
+      if (!el) return;
+      el.classList.toggle("hidden");
+      renderMathAll();
+    }
+
+    function revealAllFormulas() {
+      ["formulaCard1", "formulaCard2", "formulaCard3", "formulaCard4"].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.classList.remove("hidden");
+      });
+    }
+
+    // 1. NAVIGASI SLIDE PAPAN INTERAKTIF
+    function renderSlideDots() {
+      const wrap = document.getElementById("slideDotsNav");
+      if (!wrap) return;
+      wrap.innerHTML = SHORT_TITLES.map((title, idx) => {
+        const num = idx + 1;
+        const isActive = num === state.currentSlide;
+        return `
+          <button type="button"
+                  onclick="goToSlide(${num})"
+                  title="${title}"
+                  class="min-w-[40px] h-10 px-2.5 rounded-xl font-mono-code font-extrabold text-xs transition ${
+                    isActive
+                      ? 'bg-amber-400 text-slate-950 shadow-md shadow-amber-400/30 scale-105'
+                      : 'bg-slate-800/90 text-slate-300 hover:bg-slate-700 border border-slate-700'
+                  }">
+            ${num}
+          </button>
+        `;
+      }).join("");
+    }
+
+    function goToSlide(slideNum) {
+      if (slideNum < 1 || slideNum > state.totalSlides) return;
+      state.currentSlide = slideNum;
+
+      document.querySelectorAll(".slide-frame").forEach((sec) => {
+        const s = Number(sec.getAttribute("data-slide"));
+        if (s === slideNum) {
+          sec.classList.add("active");
+          const phaseText = sec.getAttribute("data-phase") || "";
+          const defaultTimer = Number(sec.getAttribute("data-timer") || 300);
+          document.getElementById("headerPhaseBadge").textContent = phaseText;
+          if (!state.timerRunning) {
+            state.timerRemainingSec = defaultTimer;
+            updateTimerUI();
+          }
+        } else {
+          sec.classList.remove("active");
+        }
+      });
+
+      document.getElementById("btnPrevSlide").disabled = (slideNum === 1);
+      document.getElementById("btnNextSlide").disabled = (slideNum === state.totalSlides);
+      renderSlideDots();
+      renderMathAll();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    function changeSlide(delta) {
+      goToSlide(state.currentSlide + delta);
+    }
+
+    // 2. PRESENSI INTERAKTIF 9 PESERTA DIDIK
+    function renderAttendanceList() {
+      const container = document.getElementById("attendanceListContainer");
+      if (!container) return;
+
+      container.innerHTML = STUDENTS_XI.map((nama, idx) => {
+        const present = state.attendance[idx];
+        return `
+          <button type="button"
+                  onclick="toggleStudentAttendance(${idx})"
+                  class="w-full px-4 py-2.5 rounded-xl flex items-center justify-between text-left transition border ${
+                    present
+                      ? 'bg-emerald-500/15 border-emerald-400/50 text-white'
+                      : 'bg-slate-900/60 border-slate-700 text-slate-400'
+                  }">
+            <span class="font-bold text-sm">${idx + 1}. ${nama}</span>
+            <span class="px-2.5 py-0.5 rounded-full text-xs font-extrabold ${
+              present ? 'bg-emerald-400 text-slate-950' : 'bg-slate-800 text-slate-400'
+            }">
+              ${present ? '✓ Hadir' : 'Belum Hadir'}
+            </span>
+          </button>
+        `;
+      }).join("");
+
+      const count = state.attendance.filter(Boolean).length;
+      const badge = document.getElementById("attendanceSummaryBadge");
+      if (badge) {
+        badge.textContent = `${count} / 9 Siap Bertugas`;
+      }
+    }
+
+    function toggleStudentAttendance(idx) {
+      state.attendance[idx] = !state.attendance[idx];
+      renderAttendanceList();
+    }
+
+    function markAllPresent() {
+      state.attendance = STUDENTS_XI.map(() => true);
+      renderAttendanceList();
+    }
+
+    // 3. SIMULATOR LABORATORIUM MISI 2 (SAMPEL 1, 2, 3)
+    const LAB_SAMPLES = {
+      1: {
+        tag: "SAMPEL LABORATORIUM #1 • Pembagi Linear (x - k)",
+        poly: "$f(x) = x^2 - 5x + 8$",
+        divisor: "$(x - 3)$",
+        zeroMaker: "$x - 3 = 0 \\implies x = 3$",
+        manualResult: "Cara Bersusun / Pemfaktoran: $x^2 - 5x + 8 = (x - 3)(x - 2) + 2$, diperoleh Hasil Bagi $H(x) = x - 2$ dan <strong>Sisa $S = 2$</strong>.",
+        subSteps: "$$f(3) = (3)^2 - 5(3) + 8 = 9 - 15 + 8 = \\mathbf{2}$$",
+        conclusion: "Sisa pembagian manual ($S = 2$) <strong>sama persis</strong> dengan nilai substitusi $f(3) = 2$!"
+      },
+      2: {
+        tag: "SAMPEL LABORATORIUM #2 • Pembagi Linear (x + k)",
+        poly: "$f(x) = 2x^3 + 3x^2 - 4x + 5$",
+        divisor: "$(x + 2)$",
+        zeroMaker: "$x + 2 = 0 \\implies x = -2$ (Waspada tanda negatif!)",
+        manualResult: "Dengan Skema Horner untuk $x = -2$, diperoleh Hasil Bagi $H(x) = 2x^2 - x - 2$ dan <strong>Sisa $S = 9$</strong>.",
+        subSteps: "$$f(-2) = 2(-2)^3 + 3(-2)^2 - 4(-2) + 5 = 2(-8) + 3(4) + 8 + 5 = -16 + 12 + 8 + 5 = \\mathbf{9}$$",
+        conclusion: "Sisa Skema Horner ($S = 9$) <strong>sama persis</strong> dengan nilai substitusi $f(-2) = 9$!"
+      },
+      3: {
+        tag: "SAMPEL LABORATORIUM #3 • Pembagi Linear (ax + b)",
+        poly: "$f(x) = 2x^2 + 5x - 1$",
+        divisor: "$(2x - 1)$",
+        zeroMaker: "$2x - 1 = 0 \\implies x = \\frac{1}{2}$",
+        manualResult: "Cara Bersusun: $2x^2 + 5x - 1 = (2x - 1)(x + 3) + 2$, diperoleh Hasil Bagi $H(x) = x + 3$ dan <strong>Sisa $S = 2$</strong>.",
+        subSteps: "$$f\\left(\\frac{1}{2}\\right) = 2\\left(\\frac{1}{2}\\right)^2 + 5\\left(\\frac{1}{2}\\right) - 1 = \\frac{1}{2} + \\frac{5}{2} - 1 = 3 - 1 = \\mathbf{2}$$",
+        conclusion: "Sisa pembagian bersusun ($S = 2$) <strong>sama persis</strong> dengan nilai substitusi pecahan $f\\left(\\frac{1}{2}\\right) = 2$!"
+      }
+    };
+
+    function selectLabSample(num) {
+      [1, 2, 3].forEach(n => {
+        const b = document.getElementById("btnLab" + n);
+        if (b) {
+          b.className = (n === num)
+            ? "px-4 py-2 rounded-xl font-bold text-sm bg-sky-500 text-slate-950 transition"
+            : "px-4 py-2 rounded-xl font-bold text-sm bg-slate-800 text-slate-200 hover:bg-slate-700 transition";
+        }
+      });
+
+      const s = LAB_SAMPLES[num];
+      const box = document.getElementById("labSimulatorContainer");
+      if (!box || !s) return;
+
+      box.innerHTML = `
+        <span class="px-2.5 py-1 rounded text-xs font-extrabold bg-sky-500/20 text-sky-300">${s.tag}</span>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 my-4">
+          <div class="p-4 rounded-2xl bg-slate-950/70 border border-slate-700">
+            <div class="text-xs font-bold text-slate-400 uppercase">Polinomial Sensor</div>
+            <div class="text-lg font-bold text-white mt-1">${s.poly}</div>
+          </div>
+          <div class="p-4 rounded-2xl bg-slate-950/70 border border-slate-700">
+            <div class="text-xs font-bold text-slate-400 uppercase">Pembagi & Pembuat Nol</div>
+            <div class="text-lg font-bold text-amber-300 mt-1">${s.divisor} ➔ ${s.zeroMaker}</div>
+          </div>
+        </div>
+
+        <div class="p-4 rounded-2xl bg-slate-900/90 border border-slate-700 text-sm sm:text-base text-slate-200 mb-4">
+          📐 <strong>Hasil Pembagian Bersusun / Horner:</strong><br />
+          ${s.manualResult}
+        </div>
+
+        <button type="button" onclick="toggleElement('labSubReveal')" class="w-full py-3 rounded-xl bg-sky-500/25 hover:bg-sky-500/40 text-sky-200 font-extrabold text-sm border border-sky-400/50 transition">
+          🔍 Ketuk untuk Bandingkan dengan Substitusi Nilai Fungsi!
+        </button>
+
+        <div id="labSubReveal" class="mt-4 p-4 rounded-2xl bg-emerald-500/15 border border-emerald-400/40 text-white">
+          <div class="text-xs font-extrabold uppercase text-emerald-300 mb-1">Perhitungan Substitusi Langsung:</div>
+          <div class="text-base">${s.subSteps}</div>
+          <div class="text-sm text-emerald-200 mt-1">✅ ${s.conclusion}</div>
+        </div>
+      `;
+      renderMathAll();
+    }
+
+    // 4. UNDIAN PRESENTER ACAK MISI 5 (9 PESERTA DIDIK)
+    function spinStudentPresenter() {
+      const display = document.getElementById("pickedStudentDisplay");
+      if (!display) return;
+      let ticks = 0;
+      const maxTicks = 14;
+      const interval = setInterval(() => {
+        const randIdx = Math.floor(Math.random() * STUDENTS_XI.length);
+        display.textContent = "⏳ " + STUDENTS_XI[randIdx];
+        ticks++;
+        if (ticks >= maxTicks) {
+          clearInterval(interval);
+          const finalIdx = Math.floor(Math.random() * STUDENTS_XI.length);
+          display.textContent = "🎙️ " + STUDENTS_XI[finalIdx];
+        }
+      }, 75);
+    }
+
+    // 5. TIMER FASE PEMBELAJARAN
+    function updateTimerUI() {
+      const mins = String(Math.floor(state.timerRemainingSec / 60)).padStart(2, "0");
+      const secs = String(state.timerRemainingSec % 60).padStart(2, "0");
+      const el = document.getElementById("classTimerDisplay");
+      if (el) {
+        el.textContent = `${mins}:${secs}`;
+        el.className = "font-mono-code font-extrabold text-xl " + (
+          state.timerRemainingSec <= 30 ? "text-rose-400 animate-pulse" : "text-sky-300"
+        );
+      }
+    }
+
+    function toggleClassTimer() {
+      const btn = document.getElementById("btnTimerToggle");
+      if (state.timerRunning) {
+        clearInterval(state.timerIntervalId);
+        state.timerRunning = false;
+        if (btn) btn.textContent = "▶ Lanjut";
+      } else {
+        state.timerRunning = true;
+        if (btn) btn.textContent = "⏸ Jeda";
+        state.timerIntervalId = setInterval(() => {
+          if (state.timerRemainingSec > 0) {
+            state.timerRemainingSec--;
+            updateTimerUI();
+          } else {
+            clearInterval(state.timerIntervalId);
+            state.timerRunning = false;
+            if (btn) btn.textContent = "▶ Mulai";
+          }
+        }, 1000);
+      }
+    }
+
+    function resetClassTimerForCurrentSlide() {
+      if (state.timerIntervalId) clearInterval(state.timerIntervalId);
+      state.timerRunning = false;
+      const btn = document.getElementById("btnTimerToggle");
+      if (btn) btn.textContent = "▶ Mulai";
+      const activeSec = document.querySelector(`.slide-frame[data-slide="${state.currentSlide}"]`);
+      state.timerRemainingSec = activeSec ? Number(activeSec.getAttribute("data-timer") || 300) : 300;
+      updateTimerUI();
+    }
+
+    // 6. KANVAS CORETAN PAPAN TULIS INTERAKTIF (STYLUS / JARI)
+    function initInkCanvas() {
+      const canvas = document.getElementById("inkCanvas");
+      if (!canvas) return;
+      const ctx = canvas.getContext("2d");
+
+      const resizeCanvas = () => {
+        const tempImage = ctx.getImageData(0, 0, canvas.width || 1, canvas.height || 1);
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        ctx.putImageData(tempImage, 0, 0);
+      };
+
+      resizeCanvas();
+      window.addEventListener("resize", resizeCanvas);
+
+      const getPos = (e) => {
+        if (e.touches && e.touches.length > 0) {
+          return { x: e.touches[0].clientX, y: e.touches[0].clientY };
+        }
+        return { x: e.clientX, y: e.clientY };
+      };
+
+      const startDraw = (e) => {
+        if (!state.inkActive) return;
+        state.isDrawing = true;
+        const pos = getPos(e);
+        ctx.beginPath();
+        ctx.moveTo(pos.x, pos.y);
+      };
+
+      const moveDraw = (e) => {
+        if (!state.inkActive || !state.isDrawing) return;
+        e.preventDefault();
+        const pos = getPos(e);
+        ctx.lineTo(pos.x, pos.y);
+        ctx.strokeStyle = state.inkColor;
+        ctx.lineWidth = state.inkWidth;
+        ctx.lineCap = "round";
+        ctx.lineJoin = "round";
+        ctx.stroke();
+      };
+
+      const endDraw = () => {
+        state.isDrawing = false;
+      };
+
+      canvas.addEventListener("mousedown", startDraw);
+      canvas.addEventListener("mousemove", moveDraw);
+      window.addEventListener("mouseup", endDraw);
+
+      canvas.addEventListener("touchstart", startDraw, { passive: false });
+      canvas.addEventListener("touchmove", moveDraw, { passive: false });
+      window.addEventListener("touchend", endDraw);
+    }
+
+    function toggleInkMode() {
+      state.inkActive = !state.inkActive;
+      const canvas = document.getElementById("inkCanvas");
+      const statusLabel = document.getElementById("inkStatusLabel");
+      const toolbar = document.getElementById("inkToolbar");
+
+      if (state.inkActive) {
+        canvas.classList.add("drawing-active");
+        statusLabel.textContent = "AKTIF";
+        statusLabel.className = "text-amber-300 font-extrabold";
+        toolbar.classList.remove("hidden");
+        toolbar.classList.add("flex");
+      } else {
+        canvas.classList.remove("drawing-active");
+        statusLabel.textContent = "MATI";
+        statusLabel.className = "text-slate-400";
+        toolbar.classList.add("hidden");
+        toolbar.classList.remove("flex");
+      }
+    }
+
+    function setInkColor(color, width) {
+      state.inkColor = color;
+      state.inkWidth = width;
+    }
+
+    function clearInkCanvas() {
+      const canvas = document.getElementById("inkCanvas");
+      if (!canvas) return;
+      const ctx = canvas.getContext("2d");
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+    }
+
+    function toggleFullScreen() {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch(() => {});
+      } else {
+        document.exitFullscreen().catch(() => {});
+      }
+    }
+
+    // Navigasi Tombol Panah Keyboard
+    window.addEventListener("keydown", (e) => {
+      if (e.key === "ArrowRight") changeSlide(1);
+      if (e.key === "ArrowLeft") changeSlide(-1);
+    });
+
+    window.addEventListener("DOMContentLoaded", () => {
+      renderAttendanceList();
+      selectLabSample(1);
+      initInkCanvas();
+      goToSlide(1);
+      setTimeout(renderMathAll, 300);
+    });
+  </script>
+</body>
+</html>
